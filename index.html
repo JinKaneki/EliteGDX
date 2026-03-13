@@ -150,6 +150,10 @@
         .name-accent {
             color: #FFA500;
         }
+        .title-accent { 
+            color: #4af600;               /* Bright green */ 
+            text-shadow: 0 0 8px #4af600, 0 0 32px #4af600; /* Glow */
+        }
 
         /* Image Block */
         .image-block {
@@ -158,6 +162,7 @@
             border-radius: 16px; /* Slightly rounded corners look better than sharp squares */
             overflow: hidden;
             box-shadow: var(--shadow-outer);
+            margin: 0 auto 40px;
             margin-bottom: 40px;
             transition: all 0.5s ease;
         }
@@ -168,11 +173,93 @@
             object-fit: cover; /* Ensures the image fills the square without stretching */
             display: block;
         }
+
+        /* Ongoing development style section /*
+        /* Container for all blocks */
+        .content-blocks {
+            max-width: 800px;          /* Keeps blocks readable on large screens */
+            margin: 40px auto;         /* Centers the container and adds vertical spacing*/
+            padding: 0 20px;           /* Prevents content touching screen edges */
+        }
+
+        /* Individual block: text + image */
+        .block {
+            margin-bottom: 50px;       /* Space between blocks */
+            text-align: center;        /* Centers inline content (images and text) */
+        }
+
+
+        /* Optional: style the paragraph text */
+        .block-text {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto 40px;            /* Centers text block */
+            padding: 0 10px;
+        }
+    
+
+    /* Mobile-friendly tweaks */
+    @media (max-width: 600px) {
+        /* Move the toggle button down a bit so it doesn't touch the clock */
+        #theme-toggle {
+            top: 15px;          /* was 30px – less top space */
+            padding: 8px 16px;  /* slightly smaller button */
+            font-size: 14px;
+        }
+
+        /* Give the clock some extra top margin to clear the button */
+        .clock {
+            margin-top: 80px;   /* was 60px – more space below button */
+            width: 280px;       /* slightly smaller on narrow screens */
+            height: 280px;
+        }
+
+        /* Ensure the inner ring scales nicely */
+        .clock::before {
+            width: 250px;
+            height: 250px;
+        }
+
+        /* Adjust hand lengths for smaller clock */
+        .hour { height: 70px; }
+        .minute { height: 95px; }
+        .second { height: 115px; }
+
+        /* Give the name plate and extra text some side padding */
+        .name-plate {
+            padding: 0 20px;      /* prevents text touching screen edges */
+            text-align: center;   /* keeps it neat */
+            font-size: 1.3rem;    /* slightly smaller if needed */
+            margin-bottom: 20px;  /* less bottom margin */
+        }
+
+        /* The paragraph after the name plate */
+        .name-plate + div p {
+            padding: 0 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .block {
+            margin-bottom: 40px;
+        }
+        .block-text {
+            font-size: 1rem;
+        }
+
+        /* Optional: make the image block a bit smaller if it's too wide */
+        .image-block {
+            width: 300px;
+            height: 200px;
+        }
+    }
     </style>
 </head>
+
 <body>
 
-    <button id="theme-toggle">☀️ Light Mode</button>
+    <button id="theme-toggle">☀️ Light Mode</button> <br>
 
     <div class="clock">
         <div class="number num-12">12</div>
@@ -185,20 +272,183 @@
         <div class="hand second" id="second"></div>
         <div class="center-dot"></div>
     </div>
+    
+    <!-- MAIN TITLE -->
+    <div class="name-plate">
+        <span class="title-accent">ELITE GEMS</span>
+    </div> <br>
 
-    <div class="name-plate">Engineered by <span class="name-accent">Johan nlb</span>  <p> aka JIN KANEKI <br>
+    <div class="name-plate">Engineered by <span class="name-accent">Johan_nlb</span> <br>
+        aka  <span class="name-accent">@_@</span> <br>
+        JIN KANEKI <br>
         JOHN COHEN <br>
-        :) </p>
-    </div>
-    <div>
-        <p>
-           All things serve the beam!
+        DARK SAMURAI <br>
+        :)
+
+    </div> <br>
+    <!-- MAIN QUOTE -->
+    <div> <span class="block-text" style="font-family:Lucida Sans; font-size: larger; font-weight:bolder;"
+        >All Things Serve The Beam</span>
+    </div> <br>
+
+    <!--ONGOING DEVELOPMENT SECTION-->
+    <div class="content-blocks">
+        <div class="block">
+            <p class="block-text">We all look at the same sky</p>
+            <div class="image-block">
+                <img id="profile-img" src="images/IMG_BLUE.jpg" alt="BluJem">
+            </div>
+        </div>
+
+        <!-- Adding as many blocks as I need -->
+         <div class="block">
+            <p class="block-text">Golden Kitsune<br></p>
+            <div class="image-block">
+                <img src="images/OrangeKitsune.jpg" alt="GoldenKitsune">
+            </div>
+        </div>
+
+        
+        <div class="block">
+            <p class="block-text">The wheel of time turns, Ages come and pass, leaving memories that become legend.<br>
+            Legend fades to myth, and even myth is long forgotten when the Age that gave it birth comes again.</p> 
+            <div class="image-block">
+                <img src="images/WheelOfTimeMandala.jpg" alt="WOTMandala">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Roses are rose, violets are violet.<br>I love you</p>
+            <div class="image-block">
+                <img src="images/OrangeHairedWomen.jpg" alt="OrangeWomen">
+            </div>
+        </div>
+
+
+        <div class="block">
+            <p class="block-text">Eyes</p>
+            <div class="image-block">
+                <img src="images/BuddhaEyes.jpg" alt="">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Self-Reflection</p>
+            <div class="image-block">
+                <img src="images/Vagabond.jpg" alt="miyamoto">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">TKG</p>
+            <div class="image-block">
+                <img src="images/TKGeyepatch.jpg" alt="">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Chameleon</p>
+            <div class="image-block">
+                <img src="images/Chameleon.jpg" alt="">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The Alchemist</p>
+            <div class="image-block">
+                <img src="images/TheAlchemistofCohelo.jpg" alt="AlchemistOfCohelo">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Shotokan</p>
+            <div class="image-block">
+                <img src="images/ShotoKan.jpg" alt="ShotokanKarate">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Member 0</p>
+            <div class="image-block">
+                <img src="images/Chrollo.jpg" alt="ChrolloHxH">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Mindfullness</p>
+            <div class="image-block">
+                <img src="images/Mindfullness.jpg" alt="Mindfullness">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">HellsParadise</p>
+            <div class="image-block">
+                <img src="images/HellsParadise.jpg" alt="HellsParadise">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Aim to the Moon</p>
+            <div class="image-block">
+                <img src="images/BluRoyalArcher.jpg" alt="Archer">
+            </div>
+        </div>
+
+
+        <div class="block">
+            <p class="block-text">Shadows</p>
+            <div class="image-block">
+                <img src="images/BuddhaShadow.jpg" alt="Buddha">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Rising Sun</p>
+            <div class="image-block">
+                <img src="images/BonsaiRisingSun.jpg" alt="Bonsai">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Arch</p>
+            <div class="image-block">
+                <img src="images/BluYellowOnePiece.jpg" alt="Arch">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Sakura Tree</p>
+            <div class="image-block">
+                <img src="images/SakuraTree.jpg" alt="SakuraTree">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">On the Blu</p>
+            <div class="image-block">
+                <img src="images/OnTheBlu.jpg" alt="OTB">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Colourful</p>
+            <div class="image-block">
+                <img src="images/Colourful.jpg" alt="Colorful">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">And thus was the universe <br> 
+            thus experienced was life <br>
+            Peace And Love
         </p>
+        </div>
+
+
+
     </div>
 
-    <div class="image-block">
-        <img id="profile-img" src="images/IMG_BLUE.jpg" alt="Profile Image">
-    </div>
 
     <script>
         const hourHand = document.getElementById('hour');
