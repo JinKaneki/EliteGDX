@@ -31,7 +31,6 @@
         }
 
         body {
-            background-color: var(--bg-color);
             color: var(--text-color);
             font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
             margin: 0;
@@ -40,8 +39,35 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: all 0.5s ease;
+            transition: color 0.5s ease; /* Only transition text color, not the background image */
+            
+            /* NEW: Background Image Properties */
+            background-image: url('images/IMG_BLUE.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            position: relative; /* Crucial so the ::before overlay knows where to sit */
+            }
+
+            /* Dark Mode Overlay (Default) */
+        body::before {
+            content: '';
+            position: fixed; /* Fixed ensures it stays put even if the user scrolls */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75); /* Dark overlay to make the neon/magenta pop */
+            z-index: -1; /* Puts it behind your clock and images, but above the background */
+            transition: background-color 0.5s ease; /* Smooth theme switching */
         }
+
+        /* Light Mode Overlay */
+        body.light-mode::before {
+            background-color: rgba(230, 231, 238, 0.85); /* Uses a frosted version of your light theme color */
+        }
+
 
 
         /* Position the switch wrapper at top-right */
@@ -399,9 +425,9 @@
 
             /* Give the name plate and extra text some side padding */
             .name-plate {
-                padding: 0 20px;      /* prevents text touching screen edges */
+                padding: 0 auto 20px;      /* prevents text touching screen edges */
                 text-align: center;   /* keeps it neat */
-                font-size: 1.3rem;    /* slightly smaller if needed */
+                font-size: 1.1rem;    /* slightly smaller if needed */
                 margin-bottom: 20px;  /* less bottom margin */
             }
 
@@ -427,6 +453,41 @@
                 height: 200px;
             }
         }
+
+
+        .site-footer {
+            width: 100%;
+            padding: 40px 0;
+            margin-top: 60px;
+            text-align: center;
+            font-family: inherit;
+            opacity: 0.6;
+            font-size: 0.9rem;
+            transition: all 0.5s ease;
+        }
+
+        .footer-line {
+            width: 50px;
+            height: 1px;
+            background: var(--accent-color); /* Matches your Cyber-Cyan or Magenta */
+            margin: 0 auto 20px;
+            border-radius: 2px;
+        }
+
+        .footer-subtext {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            color:#00d5ff;
+        }
+
+        /* Light mode override to ensure visibility */
+        body.light-mode .site-footer {
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        
     </style>
 </head>
 
@@ -1033,11 +1094,14 @@
                 requestWakeLock();
             }
         });
-
-
-
         
+
+        // Automatically update the copyright year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+    
     </script>
+    
 
     <div class="content-blocks" style="margin-top: 100px; border-top: 1px solid var(--clock-border); padding-top: 40px;">
     <div class="block active" style="position: relative; opacity: 1; display: flex;">
@@ -1056,5 +1120,19 @@
         </ul>
     </div>
     </div>
+    
+    
 </body>
+
+<footer class="site-footer">
+    <div class="footer-line"></div>
+    <p>&copy; <span id="year"></span> 2026 built by Jin Kaneki | All Rights Reserved</p>
+    <p class="footer-subtext">All things serve the Beam.</p>
+    <div style="margin-top: 15px;">
+        <a href="https://github.com/JinKaneki/AnalogClockHost" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">GitHub</a>
+        <a href="https://youtube.com/" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">Youtube</a>
+        <a href="https://linkedin.com/in/yourusername" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">LinkedIn</a>
+    </div>
+    </div>
+</footer>
 </html>
