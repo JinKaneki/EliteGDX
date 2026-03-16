@@ -1,6 +1,4 @@
-Hosting my fancy Analog Clock AOD
-
-
+# Fancy Analog Clock AOD
 # 🚀 Elite Gems: Persistent Ambient Dashboard
 **An "Always-On" productivity clock and personal gallery engineered for professional workspaces.**
 
