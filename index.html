@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
     <title>Engineer Johan_nlb - Portfolio</title>
     <style>
         /* Upgraded Color Palettes */
@@ -42,26 +43,70 @@
             transition: all 0.5s ease;
         }
 
-        /* Top Toggle Button */
-        #theme-toggle {
-            position: absolute;
-            top: 30px;
-            background-color: var(--clock-bg);
-            color: var(--text-color);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-family: inherit;
-            font-weight: 600;
-            letter-spacing: 1px;
-            cursor: pointer;
-            box-shadow: var(--shadow-outer);
-            transition: all 0.3s ease;
+
+        /* Position the switch wrapper at top-right */
+        .theme-switch-wrapper {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 10;
         }
 
-        #theme-toggle:active {
-            box-shadow: var(--shadow-inner);
+        /* The actual switch */
+        .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 28px;
         }
+
+        .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        }
+
+        .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #565353;
+        transition: .4s;
+        border-radius: 34px;
+        }
+
+        .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: rgb(255, 217, 0);
+        transition: .4s;
+        border-radius: 50%;
+        }
+
+        input:checked + .slider {
+        background-color: #2196F3;
+        }
+
+        input:checked + .slider:before {
+        transform: translateX(16px);
+        }
+
+        /* Optional text beside the switch 
+        .switch-label {
+        font-size: 0.9rem;
+        color: #333;
+        }*/
+        
 
         /* Premium Clock Face */
         .clock {
@@ -139,6 +184,7 @@
 
         /* Typography */
         .name-plate {
+            text-align: center;
             font-size: 1.5rem;
             letter-spacing: 4px;
             font-weight: 800;
@@ -148,22 +194,158 @@
         }
 
         .name-accent {
-            color: #FFA500;
+            color: #ffb835;
         }
         .title-accent { 
             color: #4af600;               /* Bright green */ 
-            text-shadow: 0 0 8px #4af600, 0 0 32px #4af600; /* Glow */
+            text-shadow: 0 0 64px #4af600, 0 0 64px #4dff00; /* Glow */
         }
+
+
+
+        /* Container for the slideshow */
+        .content-blocks {
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            min-height: 450px; /* Adjust based on your tallest image/text combo */
+            position: relative;
+            margin: 40px auto;
+            padding: 0 auto 20px;           /* Prevents content touching screen edges */
+            display: flex;
+            justify-content: center;
+            box-sizing: border-box;    /* Ensures padding is included in width */
+        }
+
+        /* Individual block: Stacked on top of each other */
+        .block {
+            text-align: center;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            display: none;             /* Hidden by default */
+            flex-direction: column;
+            align-items: center;       /* Centers inline content (images and text) */
+            opacity: 0;
+            transition: opacity 1s ease-in-out; /* Smooth 1-second fade */
+        }
+
+        /* The active block will be shown and faded in */
+        .block.active {
+            display: flex;
+            opacity: 1;
+        }
+
+
+        /* Freeze Button Styling */
+        .controls {
+            margin-bottom: 20px;
+            z-index: 10;
+        }
+
+        #freeze-btn {
+        background: transparent;
+        color: #00fffb; /* Cyan/Magenta Text */
+        border: 2px solid #00fffb; /* Cyan/Magenta Border */
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+        opacity: 0.7;
+        box-shadow: 0 0 5px rgba(255, 0, 255, 0.2);
+        }
+
+        #freeze-btn:hover {
+        opacity: 1;
+        box-shadow: 0 0 15px rgba(255, 0, 255, 0.6);
+        background: rgba(255, 0, 255, 0.05); /* Very slight magenta tint on hover */
+        }
+
+        /* Updated 'frozen' state to be solid Magenta with black text */
+        #freeze-btn.frozen {
+        background: #b7099fb9;
+        color: #ffff00;
+        font-weight: bold;
+        opacity: 1;
+        box-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+        }
+
+        
+        .controls {
+        margin-top: 20px;
+        margin-bottom: 10px;
+        z-index: 100;
+        }
+
+        #volume-slider {
+        -webkit-appearance: none;
+        appearance: none;                /* add standard property to silence linter */
+        width: 80px;
+        height: 4px;
+        background: var(--clock-border);  /* your track color – change if needed */
+        border-radius: 5px;
+        outline: none;
+        cursor: pointer;
+        }
+
+        /* WebKit (Chrome, Safari, Edge) thumb */
+        #volume-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;                /* standard property for completeness */
+        width: 12px;
+        height: 12px;
+        background: #00fffb;             /* electric cyan */
+        border-radius: 50%;
+        box-shadow: 0 0 10px #00fffb;     /* matching glow */
+        }
+
+        /* Firefox thumb */
+        #volume-slider::-moz-range-thumb {
+        width: 12px;
+        height: 12px;
+        background: #00fffb;             /* same electric cyan */
+        border-radius: 50%;
+        border: none;
+        }
+        /* Typewriter Cursor Animation */
+        .cursor {
+        color: var(--accent-color);
+        font-weight: bold;
+        animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+        }
+
+        /* Typewriter Text Color & Glow */
+        #typewriter {
+        color: #f6ff00; /* ff00ff Solid Magenta/ Solid Yellow */
+        text-shadow: 0 0 5px rgba(255, 0, 255, 0.3);
+        font-weight: bold;
+        }
+
+        /* Matching Cursor */
+        .cursor {
+        color: #ff00ff; /*ff00ff Solid Magenta */
+        font-weight: bold;
+        animation: blink 0.7s infinite;
+        }
+                
 
         /* Image Block */
         .image-block {
-            width: 360px;/*180px*/
-            height: 220px;/*180px*/
+            width: 370px;/*180px*/
+            height: 250px;/*180px*/
             border-radius: 16px; /* Slightly rounded corners look better than sharp squares */
             overflow: hidden;
             box-shadow: var(--shadow-outer);
             margin: 0 auto 40px;
-            margin-bottom: 40px;
+            margin-bottom: 10px;
             transition: all 0.5s ease;
         }
 
@@ -174,92 +356,89 @@
             display: block;
         }
 
-        /* Ongoing development style section /*
-        /* Container for all blocks */
-        .content-blocks {
-            max-width: 800px;          /* Keeps blocks readable on large screens */
-            margin: 40px auto;         /* Centers the container and adds vertical spacing*/
-            padding: 0 20px;           /* Prevents content touching screen edges */
-        }
-
-        /* Individual block: text + image */
-        .block {
-            margin-bottom: 50px;       /* Space between blocks */
-            text-align: center;        /* Centers inline content (images and text) */
-        }
-
 
         /* Optional: style the paragraph text */
         .block-text {
+            text-align: center;
             font-size: 1.2rem;
             line-height: 1.6;
             max-width: 600px;
-            margin: 0 auto 40px;            /* Centers text block */
+            margin: 0 auto 20px;            /* Centers text block */
             padding: 0 10px;
         }
+
+
     
 
-    /* Mobile-friendly tweaks */
-    @media (max-width: 600px) {
-        /* Move the toggle button down a bit so it doesn't touch the clock */
-        #theme-toggle {
-            top: 15px;          /* was 30px – less top space */
-            padding: 8px 16px;  /* slightly smaller button */
-            font-size: 14px;
-        }
+        /* MOBILE-FRIENDLY TWEAKS */
+        @media (max-width: 600px) {
+            /* Move the toggle button down a bit so it doesn't touch the clock */
+            #theme-toggle {
+                top: 15px;          /* was 30px – less top space */
+                padding: 8px 16px;  /* slightly smaller button */
+                font-size: 14px;
+            }
 
-        /* Give the clock some extra top margin to clear the button */
-        .clock {
-            margin-top: 80px;   /* was 60px – more space below button */
-            width: 280px;       /* slightly smaller on narrow screens */
-            height: 280px;
-        }
+            /* Give the clock some extra top margin to clear the button */
+            .clock {
+                margin-top: 80px;   /* was 60px – more space below button */
+                width: 280px;       /* slightly smaller on narrow screens */
+                height: 280px;
+            }
 
-        /* Ensure the inner ring scales nicely */
-        .clock::before {
-            width: 250px;
-            height: 250px;
-        }
+            /* Ensure the inner ring scales nicely */
+            .clock::before {
+                width: 250px;
+                height: 250px;
+            }
 
-        /* Adjust hand lengths for smaller clock */
-        .hour { height: 70px; }
-        .minute { height: 95px; }
-        .second { height: 115px; }
+            /* Adjust hand lengths for smaller clock */
+            .hour { height: 70px; }
+            .minute { height: 95px; }
+            .second { height: 115px; }
 
-        /* Give the name plate and extra text some side padding */
-        .name-plate {
-            padding: 0 20px;      /* prevents text touching screen edges */
-            text-align: center;   /* keeps it neat */
-            font-size: 1.3rem;    /* slightly smaller if needed */
-            margin-bottom: 20px;  /* less bottom margin */
-        }
+            /* Give the name plate and extra text some side padding */
+            .name-plate {
+                padding: 0 20px;      /* prevents text touching screen edges */
+                text-align: center;   /* keeps it neat */
+                font-size: 1.3rem;    /* slightly smaller if needed */
+                margin-bottom: 20px;  /* less bottom margin */
+            }
 
-        /* The paragraph after the name plate */
-        .name-plate + div p {
-            padding: 0 20px;
-            text-align: center;
-            font-size: 1rem;
-        }
+            /* The paragraph after the name plate */
+            .name-plate + div p {
+                padding: 0 20px;
+                text-align: center;
+                font-size: 1rem;
+            }
 
-        .block {
-            margin-bottom: 40px;
-        }
-        .block-text {
-            font-size: 1rem;
-        }
+            .block {
+                text-align: center;
+                /*margin-bottom: 40px;*/
+            }
+            .block-text {
+                text-align: center;
+                font-size: 1rem;
+            }
 
-        /* Optional: make the image block a bit smaller if it's too wide */
-        .image-block {
-            width: 300px;
-            height: 200px;
+            /* Optional: make the image block a bit smaller if it's too wide */
+            .image-block {
+                width: 300px;
+                height: 200px;
+            }
         }
-    }
     </style>
 </head>
 
 <body>
-
-    <button id="theme-toggle">☀️ Light Mode</button> <br>
+    <div class="page">
+    <div class="theme-switch-wrapper">
+        <!--<span class="switch-label">Light/Dark</span> -->
+    <label class="switch" for="theme-toggle">
+      <input type="checkbox" id="theme-toggle">
+      <span class="slider round"></span>
+    </label>
+    </div>
 
     <div class="clock">
         <div class="number num-12">12</div>
@@ -272,26 +451,32 @@
         <div class="hand second" id="second"></div>
         <div class="center-dot"></div>
     </div>
-    
+     </div>
     <!-- MAIN TITLE -->
     <div class="name-plate">
-        <span class="title-accent">ELITE GEMS</span>
-    </div> <br>
+        <span class="title-accent">ELITE GEMS DASHBOARD</span>
+    </div>
 
     <div class="name-plate">Engineered by <span class="name-accent">Johan_nlb</span> <br>
-        aka  <span class="name-accent">@_@</span> <br>
-        JIN KANEKI <br>
-        JOHN COHEN <br>
-        DARK SAMURAI <br>
-        :)
+        @_@ AKA @_@  <br>
+        <span id="typewriter" class="name-accent"></span><span class="cursor">|</span>
+    </div>
 
-    </div> <br>
     <!-- MAIN QUOTE -->
-    <div> <span class="block-text" style="font-family:Lucida Sans; font-size: larger; font-weight:bolder;"
-        >All Things Serve The Beam</span>
-    </div> <br>
+    <div>
+        <span class="block-text" style="font-family:Verdana; font-size:medium; font-weight:bolder;"
+        >Time Waits For No One XD</span>
+    </div>
 
     <!--ONGOING DEVELOPMENT SECTION-->
+    <div class="controls">
+    <button id="freeze-btn">❄️ FREEZE MOMENT</button>
+    <div class="volume-container" style="display: inline-flex; align-items: center; margin: 10px;">
+        <span style="font-size: 1.6rem; margin-right: 10px; opacity: 0.7;">🔊</span>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.06">
+    </div>
+    </div>
+
     <div class="content-blocks">
         <div class="block">
             <p class="block-text">We all look at the same sky</p>
@@ -302,9 +487,9 @@
 
         <!-- Adding as many blocks as I need -->
          <div class="block">
-            <p class="block-text">Golden Kitsune<br></p>
+            <p class="block-text">Okami Fox Golden Kitsune<br></p>
             <div class="image-block">
-                <img src="images/OrangeKitsune.jpg" alt="GoldenKitsune">
+                <img src="images/OkamiKitsune.jpg" alt="SolarDeityAmaterasu">
             </div>
         </div>
 
@@ -340,6 +525,13 @@
         </div>
 
         <div class="block">
+            <p class="block-text">Rainbow Bird</p>
+            <div class="image-block">
+                <img src="images/rainbow_bird.jpg" alt="rainbow_bird">
+            </div>
+        </div>
+
+        <div class="block">
             <p class="block-text">TKG</p>
             <div class="image-block">
                 <img src="images/TKGeyepatch.jpg" alt="">
@@ -361,9 +553,37 @@
         </div>
 
         <div class="block">
-            <p class="block-text">Shotokan</p>
+            <p class="block-text">Johan The Observer/Wanderer</p>
             <div class="image-block">
-                <img src="images/ShotoKan.jpg" alt="ShotokanKarate">
+                <img src="images/JohanNlbProfile.jpg" alt="JohanNlbProfile">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Coolitude</p>
+            <div class="image-block">
+                <img src="images/CooL.jpeg" alt="CooL">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The One Piece</p>
+            <div class="image-block">
+                <img src="images/AwokenHat.jpg" alt="AwokenHat">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">A Good Christian</p>
+            <div class="image-block">
+                <img src="images/GoodChristian.jpeg" alt="GoodChristian">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Toranomaki</p>
+            <div class="image-block">
+                <img src="images/ToraNoMaki.jpg" alt="ShotokanKarate">
             </div>
         </div>
 
@@ -371,6 +591,27 @@
             <p class="block-text">Member 0</p>
             <div class="image-block">
                 <img src="images/Chrollo.jpg" alt="ChrolloHxH">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Smile</p>
+            <div class="image-block">
+                <img src="images/Smile.jpeg" alt="Smiley">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The Archetype</p>
+            <div class="image-block">
+                <img src="images/JHNarchetype.jpg" alt="JHNarchetype">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Green leaf</p>
+            <div class="image-block">
+                <img src="images/GreenLeafOnSereneBlueSky.jpeg" alt="GreenLeafOnSereneBlueSky">
             </div>
         </div>
 
@@ -389,17 +630,16 @@
         </div>
 
         <div class="block">
-            <p class="block-text">Aim to the Moon</p>
-            <div class="image-block">
-                <img src="images/BluRoyalArcher.jpg" alt="Archer">
-            </div>
-        </div>
-
-
-        <div class="block">
             <p class="block-text">Shadows</p>
             <div class="image-block">
                 <img src="images/BuddhaShadow.jpg" alt="Buddha">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Aim to the Moon</p>
+            <div class="image-block">
+                <img src="images/BluRoyalArcher.jpg" alt="Archer">
             </div>
         </div>
 
@@ -411,9 +651,23 @@
         </div>
 
         <div class="block">
+            <p class="block-text">Head of buddha</p>
+            <div class="image-block">
+                <img src="images/HeadOfBuddha.jpg" alt="HeadOfBuddha">
+            </div>
+        </div>
+
+        <div class="block">
             <p class="block-text">Arch</p>
             <div class="image-block">
                 <img src="images/BluYellowOnePiece.jpg" alt="Arch">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Ataraxy</p>
+            <div class="image-block">
+                <img src="images/KanJinAtaraxia.jpg" alt="KanJinAtaraxia">
             </div>
         </div>
 
@@ -425,7 +679,7 @@
         </div>
 
         <div class="block">
-            <p class="block-text">On the Blu</p>
+            <p class="block-text">Blues on purples</p>
             <div class="image-block">
                 <img src="images/OnTheBlu.jpg" alt="OTB">
             </div>
@@ -437,6 +691,126 @@
                 <img src="images/Colourful.jpg" alt="Colorful">
             </div>
         </div>
+
+        <div class="block">
+            <p class="block-text">Pure Serenity</p>
+            <div class="image-block">
+                <img src="images/JohanSerenity.jpeg" alt="JohanSerenity">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Mechatronics</p>
+            <div class="image-block">
+                <img src="images/Mechatronics-Graph-01.jpeg" alt="Mechatronics">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">John Cohen in High School</p>
+            <div class="image-block">
+                <img src="images/JohnCohenInHSClass.jpg" alt="JohnCohenInHSClass">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Focus Observation</p>
+            <div class="image-block">
+                <img src="images/JHNFcusObserver.jpg" alt="JHNFcusObserver">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Cyber</p>
+            <div class="image-block">
+                <img src="images/CyberFlipper.jpg" alt="CyberFlipper">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Buddhismic flag</p>
+            <div class="image-block">
+                <img src="images/BuddhismFlag.jpeg" alt="BuddhismFlag">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Wallpapers</p>
+            <div class="image-block">
+                <img src="images/KpopWallp.jpg" alt="KpopWallpaper">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Mononoke</p>
+            <div class="image-block">
+                <img src="images/PrincessMononoke.jpg" alt="PrincessMononoke">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Otaku</p>
+            <div class="image-block">
+                <img src="images/SubmissiveOtakuGirl.jpg" alt="Otaku">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The cherry blossom</p>
+            <div class="image-block">
+                <img src="images/sakuyamon_the_cherry_blossom.jpg" alt="sakuyamon_the_cherry_blossom">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Glowing chameleon</p>
+            <div class="image-block">
+                <img src="images/Glowing Chameleon.jpg" alt="GlowingChameleon">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Calisthenics</p>
+            <div class="image-block">
+                <img src="images/Calisthenics.jpeg" alt="Calisthenos">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Beautyfullness</p>
+            <div class="image-block">
+                <img src="images/Beautyfullness.jpg" alt="Beautyfullness">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Peacefully</p>
+            <div class="image-block">
+                <img src="images/Peacefully.jpg" alt="Peacefully">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Dreamax</p>
+            <div class="image-block">
+                <img src="images/JcohenDreamax.jpeg" alt="JcohenDreamax">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The Quote</p>
+            <div class="image-block">
+                <img src="images/NelsonMandelaQuote.jpeg" alt="NelsonMandelaQuote">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Gahnk!</p>
+            <div class="image-block">
+                <img src="images/MahoragaWheel.jpeg" alt="MahoragaWheel">
+            </div>
+        </div>
+
 
         <div class="block">
             <p class="block-text">And thus was the universe <br> 
@@ -451,21 +825,173 @@
 
 
     <script>
+        // --- PRO ANALOG TICK GENERATOR SETUP---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Volume slider
+        const volumeSlider = document.getElementById('volume-slider');
+        let currentVolume = 0.06;          // matches your slider's default value
+
+        volumeSlider.addEventListener('input', (e) => {
+            currentVolume = parseFloat(e.target.value);
+        });
+
+        // --- TICK GENERATOR (uses currentVolume) ---
+        function playTick(isTock = false) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+
+            // Square wave for that mechanical "snap"
+            osc.type = 'square';
+            
+            // Tock (first second of minute) deeper than regular tick
+            osc.frequency.setValueAtTime(isTock ? 400 : 800, audioCtx.currentTime);
+
+            // Low‑pass filter removes harsh buzz – simulates wood case
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(7000, audioCtx.currentTime);  // adjust to taste 2000 (7000 is brighter)
+
+            // Volume: slider value, with tock 1.5x louder
+            const volumeLevel = isTock ? currentVolume * 1.5 : currentVolume;
+            
+            // Very short percussive envelope
+            gain.gain.setValueAtTime(volumeLevel, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.09);  // 90ms decay
+
+            // Connect: oscillator → filter → gain → destination
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.03);   // stop after 30ms
+        }
+
+
+        const typewriterElement = document.getElementById('typewriter');
+        const names = ["JIN KANEKI", "JOHN COHEN","@_@","THE OBSERVER","DARK SAMURAI","THE WANDERER","JIN LEE","KANJIN","How many have you counted?",":)"];
+        let nameIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typeSpeed = 100;
+
+        function type() {
+            const currentName = names[nameIndex];
+            
+            if (isDeleting) {
+                // Remove characters
+                typewriterElement.textContent = currentName.substring(0, charIndex - 1);
+                charIndex--;
+                typeSpeed = 50; // Deleting is usually faster
+            } else {
+                // Add characters
+                typewriterElement.textContent = currentName.substring(0, charIndex + 1);
+                charIndex++;
+                typeSpeed = 150; // Typing speed
+            }
+
+            // Logic for pausing at the end of a word
+            if (!isDeleting && charIndex === currentName.length) {
+                isDeleting = true;
+                typeSpeed = 5000; // Wait 2 seconds =2000 before starting to delete
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                nameIndex = (nameIndex + 1) % names.length; // Move to next name
+                typeSpeed = 1000; // Small pause before typing next name 100
+            }
+
+            setTimeout(type, typeSpeed);
+        }
+
+        // Start the effect
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(type, 1000); // Wait 1 second after page load to start
+        });
+
         const hourHand = document.getElementById('hour');
         const minuteHand = document.getElementById('minute');
         const secondHand = document.getElementById('second');
         const themeToggle = document.getElementById('theme-toggle');
+        const freezeBtn = document.getElementById('freeze-btn');
         const body = document.body;
+
+        // Slideshow Variables
+        let blocks = Array.from(document.querySelectorAll('.block'));
+        let currentBlockIndex = 0;
+        let lastMinute = new Date().getMinutes();
+        let isFrozen = false;
+
+        // Function to Shuffle the Array (Fisher-Yates Algorithm)
+        function shuffleBlocks() {
+            for (let i = blocks.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [blocks[i], blocks[j]] = [blocks[j], blocks[i]];
+            }
+        }
+
+        // Initial Shuffle so it's random every time you refresh
+        shuffleBlocks();
+
+        // Initialize: Show the first random block
+        if(blocks.length > 0) {
+            blocks.forEach(b => b.classList.remove('active')); // Clean slate
+            blocks[0].classList.add('active');
+        }
+
+        // Freeze Toggle Logic
+        freezeBtn.addEventListener('click', () => {
+            isFrozen = !isFrozen;
+            freezeBtn.classList.toggle('frozen');
+            freezeBtn.innerText = isFrozen ? "🔥 Resume Loop" : "❄️ Freeze Image";
+        });
 
         themeToggle.addEventListener('click', () => {
             body.classList.toggle('light-mode');
             themeToggle.innerText = body.classList.contains('light-mode') ? '🌙 Dark Mode' : '☀️ Light Mode';
         });
 
+        function cycleBlocks() {
+            if (isFrozen) return; // Stop right here if frozen;
+
+            // Hide current
+            blocks[currentBlockIndex].classList.remove('active');
+            
+            // Increment index
+            currentBlockIndex++;
+
+            // If we reached the end of the shuffled list, reshuffle and start over
+            if (currentBlockIndex >= blocks.length) {
+                shuffleBlocks();
+                currentBlockIndex = 0;
+            }
+            
+            // Show next
+            blocks[currentBlockIndex].classList.add('active');
+        }
+
         function updateClock() {
             const currentDate = new Date();
-            const secondsRatio = currentDate.getSeconds() / 60;
-            const minutesRatio = (secondsRatio + currentDate.getMinutes()) / 60;
+            const seconds = currentDate.getSeconds();
+            const minutes = currentDate.getMinutes();
+
+            // Play the ticking sound
+            playTick();
+            // If it's the 0th second, play the 'Tock' (deeper sound)
+            playTick(seconds === 0);
+
+            // Minute Reset Rule
+            if (minutes !== lastMinute) {
+                cycleBlocks();
+                lastMinute = minutes;
+            }
+
+            const secondsRatio = seconds / 60;
+            const minutesRatio = (secondsRatio + minutes) / 60;
             const hoursRatio = (minutesRatio + currentDate.getHours()) / 12;
 
             secondHand.style.transform = `translateX(-50%) rotate(${secondsRatio * 360}deg)`;
@@ -475,6 +1001,60 @@
 
         setInterval(updateClock, 1000);
         updateClock();
+
+
+
+        // --- SCREEN WAKE LOCK API ---
+        let wakeLock = null;
+
+        // Function to request the screen to stay awake
+        const requestWakeLock = async () => {
+            try {
+                // Requesting the 'screen' wake lock
+                wakeLock = await navigator.wakeLock.request('screen');
+                console.log('Wake Lock is active! Screen will stay on. 💡');
+                
+                // If the system forces it to release (like low battery), log it
+                wakeLock.addEventListener('release', () => {
+                    console.log('Wake Lock was released.');
+                });
+            } catch (err) {
+                // If the browser doesn't support it or blocks it
+                console.error(`Wake Lock error: ${err.name}, ${err.message}`);
+            }
+        };
+
+        // 1. Request it as soon as the page loads
+        requestWakeLock();
+
+        // 2. Re-request it if the user switches tabs and comes back
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                requestWakeLock();
+            }
+        });
+
+
+
+        
     </script>
+
+    <div class="content-blocks" style="margin-top: 100px; border-top: 1px solid var(--clock-border); padding-top: 40px;">
+    <div class="block active" style="position: relative; opacity: 1; display: flex;">
+        <h3 class="title-accent">Project Intent</h3>
+        <p class="block-text">
+            This dashboard is designed as a <b>Persistent Ambient Display</b>. 
+            The goal is to bridge the gap between a functional timepiece and a personal 
+            gallery, serving as an "Always-On" companion for a professional workspace.
+        </p>
+        
+        <h3 class="title-accent" style="font-size: 1rem; margin-top: 20px;">Technical Architecture</h3>
+        <ul class="block-text">
+            <li> <b>Screen Wake Lock API:</b> Prevents the host device from entering sleep mode or dimming the display, ensuring the clock remains visible during long work sessions.</li>
+            <li> <b>Fisher-Yates Shuffle:</b> An $O(n)$ complexity algorithm used to ensure an unbiased, non-repeating random sequence for the content rotation.</li>
+            <li> <b>Deterministic Minute-Reset:</b> State-management logic that synchronizes UI transitions precisely with the 00-second mark of the system clock.</li>
+        </ul>
+    </div>
+    </div>
 </body>
 </html>

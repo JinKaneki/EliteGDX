@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engineer Johan_nlb - Portfolio</title>
+    <style>
+        /* Upgraded Color Palettes */
+        :root {
+            --bg-color: #121214;
+            --text-color: #ececec;
+            --clock-bg: #1a1a1d;
+            --clock-border: #242428;
+            --hand-color: #ffffff;
+            --accent-color: #00f0ff; /* Electric Cyber-Cyan */
+            --shadow-outer: 10px 10px 30px rgba(0, 0, 0, 0.6), -10px -10px 30px rgba(255, 255, 255, 0.02);
+            --shadow-inner: inset 5px 5px 15px rgba(0, 0, 0, 0.5), inset -5px -5px 15px rgba(255, 255, 255, 0.03);
+        }
+
+        /* Light mode palette overrides */
+        body.light-mode {
+            --bg-color: #e6e7ee;
+            --text-color: #31344b;
+            --clock-bg: #e6e7ee;
+            --clock-border: #d1d9e6;
+            --hand-color: #31344b;
+            --accent-color: #005bb5; /* Deep Professional Blue */
+            --shadow-outer: 8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff;
+            --shadow-inner: inset 5px 5px 10px #d1d9e6, inset -5px -5px 10px #ffffff;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease;
+        }
+
+        /* Top Toggle Button */
+        #theme-toggle {
+            position: absolute;
+            top: 30px;
+            background-color: var(--clock-bg);
+            color: var(--text-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: var(--shadow-outer);
+            transition: all 0.3s ease;
+        }
+
+        #theme-toggle:active {
+            box-shadow: var(--shadow-inner);
+        }
+
+        /* Premium Clock Face */
+        .clock {
+            width: 320px;
+            height: 320px;
+            background-color: var(--clock-bg);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: var(--shadow-outer);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.5s ease;
+            margin-bottom: 40px;
+            margin-top: 60px;
+        }
+
+        /* Inner Ring */
+        .clock::before {
+            content: '';
+            position: absolute;
+            width: 290px;
+            height: 290px;
+            border-radius: 50%;
+            box-shadow: var(--shadow-inner);
+        }
+
+        /* Clock Numbers */
+        .number {
+            position: absolute;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+        .num-12 { top: 25px; }
+        .num-3 { right: 25px; }
+        .num-6 { bottom: 25px; }
+        .num-9 { left: 25px; }
+
+        /* Clock Hands */
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom;
+            background-color: var(--hand-color);
+            border-radius: 10px;
+            transform: translateX(-50%) rotate(0deg); 
+            transition: background-color 0.5s ease;
+        }
+
+        .hour { width: 6px; height: 85px; z-index: 1; border-radius: 6px 6px 0 0; }
+        .minute { width: 4px; height: 115px; z-index: 2; border-radius: 4px 4px 0 0; }
+        
+        .second { 
+            width: 2px; 
+            height: 135px; 
+            background-color: var(--accent-color); 
+            z-index: 3; 
+            box-shadow: 0 0 10px var(--accent-color); /* Glowing effect */
+        }
+
+        /* Center Pin */
+        .center-dot {
+            width: 16px;
+            height: 16px;
+            background-color: var(--bg-color);
+            border: 3px solid var(--accent-color);
+            border-radius: 50%;
+            position: absolute;
+            z-index: 4;
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        /* Typography */
+        .name-plate {
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 4px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .name-accent {
+            color: #FFA500;
+        }
+        .title-accent { 
+            color: #4af600;               /* Bright green */ 
+            text-shadow: 0 0 8px #4af600, 0 0 32px #4af600; /* Glow */
+        }
+
+        /* Image Block */
+        .image-block {
+            text-align: center;
+            width: 370px;/*180px*/
+            height: 250px;/*180px*/
+            border-radius: 16px; /* Slightly rounded corners look better than sharp squares */
+            overflow: hidden;
+            box-shadow: var(--shadow-outer);
+            margin: 0 auto 40px;
+            margin-bottom: 10px;
+            transition: all 0.5s ease;
+        }
+
+        .image-block img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the image fills the square without stretching */
+            display: block;
+        }
+
+        /* Ongoing development style section /*
+        /* Container for all blocks */
+        .content-blocks {
+            max-width: 800px;          /* Keeps blocks readable on large screens */
+            margin: 40px auto;         /* Centers the container and adds vertical spacing*/
+            padding: 0 20px;           /* Prevents content touching screen edges */
+        }
+
+        /* Individual block: text + image */
+        .block {
+            margin-bottom: 50px;       /* Space between blocks */
+            text-align: center;        /* Centers inline content (images and text) */
+        }
+
+
+        /* Optional: style the paragraph text */
+        .block-text {
+            text-align: center;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto 20px;            /* Centers text block */
+            padding: 0 10px;
+        }
+    
+
+        /* Mobile-friendly tweaks */
+        @media (max-width: 600px) {
+        /* Move the toggle button down a bit so it doesn't touch the clock */
+        #theme-toggle {
+            top: 15px;          /* was 30px – less top space */
+            padding: 8px 16px;  /* slightly smaller button */
+            font-size: 14px;
+        }
+
+        /* Give the clock some extra top margin to clear the button */
+        .clock {
+            margin-top: 80px;   /* was 60px – more space below button */
+            width: 280px;       /* slightly smaller on narrow screens */
+            height: 280px;
+        }
+
+        /* Ensure the inner ring scales nicely */
+        .clock::before {
+            width: 250px;
+            height: 250px;
+        }
+
+        /* Adjust hand lengths for smaller clock */
+        .hour { height: 70px; }
+        .minute { height: 95px; }
+        .second { height: 115px; }
+
+        /* Give the name plate and extra text some side padding */
+        .name-plate {
+            padding: 0 20px;      /* prevents text touching screen edges */
+            text-align: center;   /* keeps it neat */
+            font-size: 1.3rem;    /* slightly smaller if needed */
+            margin-bottom: 20px;  /* less bottom margin */
+        }
+
+        /* The paragraph after the name plate */
+        .name-plate + div p {
+            padding: 0 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .block {
+            margin-bottom: 40px;
+        }
+        .block-text {
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* Optional: make the image block a bit smaller if it's too wide */
+        .image-block {
+            width: 300px;
+            height: 200px;
+        }
+    }
+    </style>
+</head>
+
+<body>
+
+    <button id="theme-toggle">☀️ Light Mode</button> <br>
+
+    <div class="clock">
+        <div class="number num-12">12</div>
+        <div class="number num-3">3</div>
+        <div class="number num-6">6</div>
+        <div class="number num-9">9</div>
+
+        <div class="hand hour" id="hour"></div>
+        <div class="hand minute" id="minute"></div>
+        <div class="hand second" id="second"></div>
+        <div class="center-dot"></div>
+    </div>
+    
+    <!-- MAIN TITLE -->
+    <div class="name-plate">
+        <span class="title-accent">ELITE GEMS</span>
+    </div> <br>
+
+    <div class="name-plate">Engineered by <span class="name-accent">Johan_nlb</span> <br>
+        <span class="name-accent">@_@</span> aka  <span class="name-accent">@_@</span> <br>
+        JIN KANEKI <br>
+        JOHN COHEN <br>
+        :)
+    </div> <br>
+    <!-- MAIN QUOTE -->
+    <div> 
+        <span class="block-text" style="font-family:Lucida Sans; font-size:small; font-weight:bolder;"
+        >All Things Serve The Beam "\O/" </span> <br>
+        <span class="block-text"  style="font-family:Verdana; font-size: medium; font-weight: bolder;"
+        >All things serve the Steam!</span>
+    </div> <br>
+
+    <!--ONGOING DEVELOPMENT SECTION-->
+    <div class="content-blocks">
+        <div class="block">
+            <p class="block-text">We all look at the same sky</p>
+            <div class="image-block">
+                <img id="profile-img" src="images/IMG_BLUE.jpg" alt="BluJem">
+            </div>
+        </div>
+
+        <!-- Adding as many blocks as I need -->
+         <div class="block">
+            <p class="block-text">Okami Fox Golden Kitsune<br></p>
+            <div class="image-block">
+                <img src="images/OkamiKitsune.jpg" alt="SolarDeityAmaterasu">
+            </div>
+        </div>
+
+        
+        <div class="block">
+            <p class="block-text">The wheel of time turns, Ages come and pass, leaving memories that become legend.<br>
+            Legend fades to myth, and even myth is long forgotten when the Age that gave it birth comes again.</p> 
+            <div class="image-block">
+                <img src="images/WheelOfTimeMandala.jpg" alt="WOTMandala">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Roses are rose, violets are violet.<br>I love you</p>
+            <div class="image-block">
+                <img src="images/OrangeHairedWomen.jpg" alt="OrangeWomen">
+            </div>
+        </div>
+
+
+        <div class="block">
+            <p class="block-text">Eyes</p>
+            <div class="image-block">
+                <img src="images/BuddhaEyes.jpg" alt="">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Self-Reflection</p>
+            <div class="image-block">
+                <img src="images/Vagabond.jpg" alt="miyamoto">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Rainbow Bird</p>
+            <div class="image-block">
+                <img src="images/rainbow_bird.jpg" alt="rainbow_bird">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">TKG</p>
+            <div class="image-block">
+                <img src="images/TKGeyepatch.jpg" alt="">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Chameleon</p>
+            <div class="image-block">
+                <img src="images/Chameleon.jpg" alt="">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The Alchemist</p>
+            <div class="image-block">
+                <img src="images/TheAlchemistofCohelo.jpg" alt="AlchemistOfCohelo">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Johan The Observer/Wanderer</p>
+            <div class="image-block">
+                <img src="images/JohanNlbProfile.jpg" alt="JohanNlbProfile">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Coolitude</p>
+            <div class="image-block">
+                <img src="images/CooL.jpeg" alt="CooL">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The One Piece</p>
+            <div class="image-block">
+                <img src="images/AwokenHat.jpg" alt="AwokenHat">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">A Good Christian</p>
+            <div class="image-block">
+                <img src="images/GoodChristian.jpeg" alt="GoodChristian">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Toranomaki</p>
+            <div class="image-block">
+                <img src="images/ToraNoMaki.jpg" alt="ShotokanKarate">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Member 0</p>
+            <div class="image-block">
+                <img src="images/Chrollo.jpg" alt="ChrolloHxH">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Smile</p>
+            <div class="image-block">
+                <img src="images/Smile.jpeg" alt="Smiley">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The Archetype</p>
+            <div class="image-block">
+                <img src="images/JHNarchetype.jpg" alt="JHNarchetype">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Green leaf</p>
+            <div class="image-block">
+                <img src="images/GreenLeafOnSereneBlueSky.jpeg" alt="GreenLeafOnSereneBlueSky">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Mindfullness</p>
+            <div class="image-block">
+                <img src="images/Mindfullness.jpg" alt="Mindfullness">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">HellsParadise</p>
+            <div class="image-block">
+                <img src="images/HellsParadise.jpg" alt="HellsParadise">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Shadows</p>
+            <div class="image-block">
+                <img src="images/BuddhaShadow.jpg" alt="Buddha">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Aim to the Moon</p>
+            <div class="image-block">
+                <img src="images/BluRoyalArcher.jpg" alt="Archer">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Rising Sun</p>
+            <div class="image-block">
+                <img src="images/BonsaiRisingSun.jpg" alt="Bonsai">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Head of buddha</p>
+            <div class="image-block">
+                <img src="images/HeadOfBuddha.jpg" alt="HeadOfBuddha">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Arch</p>
+            <div class="image-block">
+                <img src="images/BluYellowOnePiece.jpg" alt="Arch">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Ataraxy</p>
+            <div class="image-block">
+                <img src="images/KanJinAtaraxia.jpg" alt="KanJinAtaraxia">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Sakura Tree</p>
+            <div class="image-block">
+                <img src="images/SakuraTree.jpg" alt="SakuraTree">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Blues on purples</p>
+            <div class="image-block">
+                <img src="images/OnTheBlu.jpg" alt="OTB">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Colourful</p>
+            <div class="image-block">
+                <img src="images/Colourful.jpg" alt="Colorful">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Pure Serenity</p>
+            <div class="image-block">
+                <img src="images/JohanSerenity.jpeg" alt="JohanSerenity">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Mechatronics</p>
+            <div class="image-block">
+                <img src="images/Mechatronics-Graph-01.jpeg" alt="Mechatronics">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">John Cohen in High School</p>
+            <div class="image-block">
+                <img src="images/JohnCohenInHSClass.jpg" alt="JohnCohenInHSClass">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Focus Observation</p>
+            <div class="image-block">
+                <img src="images/JHNFcusObserver.jpg" alt="JHNFcusObserver">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Cyber</p>
+            <div class="image-block">
+                <img src="images/CyberFlipper.jpg" alt="CyberFlipper">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Buddhismic flag</p>
+            <div class="image-block">
+                <img src="images/BuddhismFlag.jpeg" alt="BuddhismFlag">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Wallpapers</p>
+            <div class="image-block">
+                <img src="images/KpopWallp.jpg" alt="KpopWallpaper">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Mononoke</p>
+            <div class="image-block">
+                <img src="images/PrincessMononoke.jpg" alt="PrincessMononoke">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Otaku</p>
+            <div class="image-block">
+                <img src="images/SubmissiveOtakuGirl.jpg" alt="Otaku">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The cherry blossom</p>
+            <div class="image-block">
+                <img src="images/sakuyamon_the_cherry_blossom.jpg" alt="sakuyamon_the_cherry_blossom">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Glowing chameleon</p>
+            <div class="image-block">
+                <img src="images/Glowing Chameleon.jpg" alt="GlowingChameleon">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Calisthenics</p>
+            <div class="image-block">
+                <img src="images/Calisthenics.jpeg" alt="Calisthenos">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Beautyfullness</p>
+            <div class="image-block">
+                <img src="images/Beautyfullness.jpg" alt="Beautyfullness">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Peacefully</p>
+            <div class="image-block">
+                <img src="images/Peacefully.jpg" alt="Peacefully">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Dreamax</p>
+            <div class="image-block">
+                <img src="images/JcohenDreamax.jpeg" alt="JcohenDreamax">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The Quote</p>
+            <div class="image-block">
+                <img src="images/NelsonMandelaQuote.jpeg" alt="NelsonMandelaQuote">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Gahnk!</p>
+            <div class="image-block">
+                <img src="images/MahoragaWheel.jpeg" alt="MahoragaWheel">
+            </div>
+        </div>
+
+
+        <div class="block">
+            <p class="block-text">And thus was the universe <br> 
+            thus experienced was life <br>
+            Peace And Love
+        </p>
+        </div>
+
+
+
+    </div>
+
+
+    <script>
+        const hourHand = document.getElementById('hour');
+        const minuteHand = document.getElementById('minute');
+        const secondHand = document.getElementById('second');
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            themeToggle.innerText = body.classList.contains('light-mode') ? '🌙 Dark Mode' : '☀️ Light Mode';
+        });
+
+        function updateClock() {
+            const currentDate = new Date();
+            const secondsRatio = currentDate.getSeconds() / 60;
+            const minutesRatio = (secondsRatio + currentDate.getMinutes()) / 60;
+            const hoursRatio = (minutesRatio + currentDate.getHours()) / 12;
+
+            secondHand.style.transform = `translateX(-50%) rotate(${secondsRatio * 360}deg)`;
+            minuteHand.style.transform = `translateX(-50%) rotate(${minutesRatio * 360}deg)`;
+            hourHand.style.transform = `translateX(-50%) rotate(${hoursRatio * 360}deg)`;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        
+
+        // --- SCREEN WAKE LOCK API ---
+        let wakeLock = null;
+
+        // Function to request the screen to stay awake
+        const requestWakeLock = async () => {
+            try {
+                // Requesting the 'screen' wake lock
+                wakeLock = await navigator.wakeLock.request('screen');
+                console.log('Wake Lock is active! Screen will stay on. 💡');
+                
+                // If the system forces it to release (like low battery), log it
+                wakeLock.addEventListener('release', () => {
+                    console.log('Wake Lock was released.');
+                });
+            } catch (err) {
+                // If the browser doesn't support it or blocks it
+                console.error(`Wake Lock error: ${err.name}, ${err.message}`);
+            }
+        };
+
+        // 1. Request it as soon as the page loads
+        requestWakeLock();
+
+        // 2. Re-request it if the user switches tabs and comes back
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                requestWakeLock();
+            }
+        });
+    </script>
+</body>
+</html>
