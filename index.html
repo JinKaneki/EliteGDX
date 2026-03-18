@@ -161,8 +161,8 @@
 
         /* Premium Clock Face */
         .clock {
-            width: 320px;
-            height: 320px;
+            width: 520px; /* was 320*/
+            height: 520px; /* was 320*/
             background-color: var(--clock-bg);
             border-radius: 50%;
             position: relative;
@@ -171,16 +171,16 @@
             justify-content: center;
             align-items: center;
             transition: all 0.5s ease;
+            margin-top: 30px;
             margin-bottom: 40px;
-            margin-top: 60px;
         }
 
         /* Inner Ring */
         .clock::before {
             content: '';
             position: absolute;
-            width: 290px;
-            height: 290px;
+            width: 490px; /* was 290*/
+            height: 490px; /* was 290*/
             border-radius: 50%;
             box-shadow: var(--shadow-inner);
         }
@@ -210,12 +210,12 @@
             transition: background-color 0.5s ease;
         }
 
-        .hour { width: 6px; height: 85px; z-index: 1; border-radius: 6px 6px 0 0; }
-        .minute { width: 4px; height: 115px; z-index: 2; border-radius: 4px 4px 0 0; }
+        .hour { width: 6px; height: 115px; z-index: 1; border-radius: 6px 6px 0 0; }
+        .minute { width: 4px; height: 150px; z-index: 2; border-radius: 4px 4px 0 0; }
         
         .second { 
             width: 2px; 
-            height: 135px; 
+            height: 240px; 
             background-color: var(--accent-color); 
             z-index: 3; 
             box-shadow: 0 0 10px var(--accent-color); /* Glowing effect */
@@ -223,8 +223,8 @@
 
         /* Center Pin */
         .center-dot {
-            width: 16px;
-            height: 16px;
+            width: 32px;
+            height: 32px;
             background-color: var(--bg-color);
             border: 3px solid var(--accent-color);
             border-radius: 50%;
@@ -234,13 +234,34 @@
         }
 
         /* Typography */
-        .name-plate {
+        /*.name-plate {
             text-align: center;
             font-size: 1.5rem;
             letter-spacing: 4px;
             font-weight: 800;
             text-transform: uppercase;
             margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }*/
+        /* Main title bigger */
+        .name-plate.main-title {
+            text-align: center;
+            font-size: 2.0rem; /* Adjust as you like */
+            letter-spacing: 2px; /* Optional: a bit more spacing for impact */
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Author info (inside #info-section) larger */
+        #info-section .name-plate {
+            text-align: center;
+            font-size: 1.5rem; /* Adjust as you like */
+            letter-spacing: 1px; /* Optional: a bit more spacing for impact */
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 15px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
@@ -398,6 +419,7 @@
             justify-content: center;
             gap: 8px;            /* space between icon and slider */
             width: 100%;
+            margin-top: 10px;
         }
 
         .vol-icon {
@@ -533,7 +555,95 @@
         }
 
 
+         /* Updated Digital Clock for Android Flagship Look */
+        /* #digital-clock {
+            font-size: 7rem;               /* Much bigger, like a home screen */
+            /*font-weight: 300;               /* 200 Thin/Light weight is the "Elite" look */
+            /*letter-spacing: -2px;           /* Tighter spacing for modern feel */
+            /*color: #00fffb;                 /* Electric Cyan (match your theme) */
+            /*text-shadow: 0 0 30px rgba(0, 255, 251, 0.504);
+            
+            /* Using system fonts mimics the Android/Motorola OS font */
+            /*font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            
+            margin: 10px 0;
+            line-height: 1;
+        }
+        /* Stacked Digital Look - Perfectly Centered */
+        #digital-clock {
+            display: none; /* Controlled by JS */
+            flex-direction: column;
+            align-items: center;    /* Centers items horizontally */
+            justify-content: center; /* Centers items vertically in the wrapper */
+            line-height: 0.85;       /* Tighter stack for that S25 Ultra look */
+            width: 100%;
+            margin: 0 auto;
+            /*color: #00fffb;                 /* Electric Cyan (match your theme) */
+        }
+
+        #digital-clock #digi-hours, 
+        #digital-clock #digi-minutes {
+            font-size: 8rem; 
+            font-weight: 200;
+            /* Using system fonts mimics the Android/Motorola OS font */
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            text-align: center;
+            letter-spacing: -2px;
+        }
+
+        /* Container for Colon + Minutes to keep them centered together */
+        #digital-clock .minutes-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .digi-colon {
+            animation: pulse-colon 2s infinite ease-in-out;
+            font-size: 0.5rem; /*4rem
+            margin-right: 15px;*/
+            position: relative;
+            margin-top: -10px; /* Optical alignment */
+            color: var(--text-color);
+        }
+        @keyframes pulse-colon {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        #hide-info-btn {
+            background: transparent;
+            color: #f6ff00;
+            border: 2px solid var(--clock-border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        #hide-info-btn:hover {
+            box-shadow: 0 0 15px rgb(53, 255, 56);
+            background: rgba(0, 255, 17, 0.072);
+        }
     
+        .text-wrapper {
+            height: 220px;                /* Adjust this value to match your text height */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            transition: opacity 0.3s ease;
+            text-align: center;
+        }
+
+        /* When clean view is ON, hide the text but keep the space */
+        .clean-view .text-wrapper {
+            opacity: 0;
+            pointer-events: none;         /* So user can't accidentally click invisible text */
+        }
+
 
         /* MOBILE-FRIENDLY TWEAKS */
         @media (max-width: 600px) {
@@ -546,7 +656,7 @@
 
             /* Give the clock some extra top margin to clear the button */
             .clock {
-                margin-top: 80px;   /* was 60px – more space below button */
+                margin-top: 30px;   /* – more space below button */
                 width: 280px;       /* slightly smaller on narrow screens */
                 height: 280px;
             }
@@ -562,20 +672,40 @@
             .minute { height: 95px; }
             .second { height: 115px; }
 
-            /* Give the name plate and extra text some side padding */
-            .name-plate {
-                padding: 0 auto 20px;      /* prevents text touching screen edges */
-                text-align: center;   /* keeps it neat */
-                font-size: 1.1rem;    /* slightly smaller if needed */
-                margin-bottom: 20px;  /* less bottom margin */
+            .center-dot {
+            width: 16px;
+            height: 16px;
             }
 
-            /* The paragraph after the name plate */
+            /* Give the name plate and extra text some side padding 
+            .name-plate {
+                padding: 0 auto 20px;     
+                text-align: center;  
+                font-size: 1.1rem;    
+                margin-bottom: 20px;  
+            } */
+
+            /* The paragraph after the name plate 
             .name-plate + div p {
                 padding: 0 20px;
                 text-align: center;
                 font-size: 1rem;
+            }*/
+            .name-plate.main-title {
+                padding: 0 auto 20px;      /* prevents text touching screen edges */
+                text-align: center;   /* keeps it neat */
+                font-size: 1.0rem;    /* slightly smaller on mobile if needed */
+                margin-bottom: 10px;  /* less bottom margin */
+                letter-spacing: 2px;
             }
+            #info-section .name-plate {
+                padding: 0 auto 20px;      /* prevents text touching screen edges */
+                text-align: center;   /* keeps it neat */
+                font-size: 0.7rem;    /* slightly smaller if needed */
+                margin-bottom: 5px;  /* less bottom margin */
+            }
+
+            
 
             .block {
                 text-align: center;
@@ -625,6 +755,7 @@
         body.light-mode .site-footer {
             border-top: 1px solid rgba(0, 0, 0, 0.05);
         }
+        
 
         
     </style>
@@ -641,34 +772,58 @@
     </label>
     </div>
 
-    <div class="clock">
-        <div class="number num-12">12</div>
-        <div class="number num-3">3</div>
-        <div class="number num-6">6</div>
-        <div class="number num-9">9</div>
-
-        <div class="hand hour" id="hour"></div>
-        <div class="hand minute" id="minute"></div>
-        <div class="hand second" id="second"></div>
-        <div class="center-dot"></div>
-    </div>
     
-    </div>
+    <div class="timepiece-wrapper" style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 300px;"> 
+        <div class="clock" id="analog-clock">
+            <div class="number num-12">12</div>
+            <div class="number num-3">3</div>
+            <div class="number num-6">6</div>
+            <div class="number num-9">9</div>
+            <div class="hand hour" id="hour"></div>
+            <div class="hand minute" id="minute"></div>
+            <div class="hand second" id="second"></div>
+            <div class="center-dot"></div>
+        </div>
+
+        <div id="digital-clock">
+            <div id="digi-hours">00</div>
+            <div class="minutes-row">
+                <span class="digi-colon">:</span>
+            <div id="digi-minutes">00</div>
+        </div>
+
+        <div id="digital-date" style="font-size: 0.7rem; font-weight: 100;flex-direction: column;align-items: center; letter-spacing: 1px; color: var(--text-color); opacity: 0.8;margin-top: 5px ;margin-bottom: 10px;"></div>
+    </div> 
+
+    <!--<div id="digital-clock" style="display: none; flex-direction: column; align-items: center; line-height: 0.9;">
+        <div id="digi-hours">00</div>
+        <div style="display: flex; align-items: center;">
+            <span class="digi-colon" style="font-size: 0.5rem;">:</span>
+            <div id="digi-minutes">00</div>
+        </div>
+        <div id="digital-date" style="font-size: 1.2rem; font-weight: 400; letter-spacing: 2px; color: var(--text-color); opacity: 0.8; margin-top: 10px; text-transform: uppercase;"></div>
+    </div> -->
+
     <!-- MAIN TITLE -->
-    <div class="name-plate">
+    <div class="name-plate main-title">
         <span class="title-accent">ELITE GEMS DASHBOARD</span>
-    </div>
+    </div> <br>
 
-    <div class="name-plate">Engineered by <span class="name-accent">Johan_nlb</span> <br>
-        @_@ AKA @_@  <br>
-        <span id="typewriter" class="name-accent"></span><span class="cursor">|</span>
+    <div class="text-wrapper">
+         <div id="info-section">
+        <div class="name-plate">
+            Engineered by <span class="name-accent">Johan_nlb</span> <br>
+            @_@ AKA @_@  <br>
+            <span id="typewriter" class="name-accent"></span><span class="cursor">|</span>
+        </div> <br><br>
+        <!-- MAIN QUOTE -->
+        <div style="text-align: center;">
+            <span class="block-text" style="font-family:Verdana; font-size:small; font-weight:bold;">Time Waits For No One XD</span>
+        </div>
     </div>
+   
 
-    <!-- MAIN QUOTE -->
-    <div>
-        <span class="block-text" style="font-family:Verdana; font-size:medium; font-weight:bolder;"
-        >Time Waits For No One XD</span>
-    </div>
+
 
     <!--ONGOING DEVELOPMENT SECTION-->
     <div class="controls">
@@ -678,14 +833,16 @@
         <button id="bg-toggle-btn">🖼️ BG: SYNCED 🌌</button>
     </div>
 
-    <!-- Row 2: Zen/Glass + Volume with mute icon -->
+    <!-- Row 2: Zen/Glass + -->
     <div class="button-row">
         <button id="zen-toggle-btn">GLASS: OFF</button>
-        <div class="volume-container">
-            <span id="mute-btn" class="vol-icon" style="cursor: pointer; user-select: none;">🔊</span>
-            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.06">
-        </div>
+        <button id="hide-info-btn">🖥️ CLEAN VIEW: OFF</button>
     </div>
+
+    <!-- Row 3: Volume with mute icon -->
+    <div class="volume-container">
+        <span id="mute-btn" class="vol-icon" style="cursor: pointer; user-select: none;">🔊</span>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.06">
     </div>
 
 
@@ -1431,42 +1588,175 @@
             }
 
             if (e.key.toLowerCase() === 'z') {
-                e.preventDefault(); // avoid accidental browser shortcuts
-                const isZen = clockElement.classList.toggle('zen-mode');
-                updateZenButton(isZen);
-                playTick(true);
-                if (typeof triggerGhost === 'function') {
-                    triggerGhost(isZen ? "🧘 ZEN MODE ON" : "🕒 ZEN MODE OFF");
-                }
+            e.preventDefault();
+            // Cycle the style mode
+            currentModeIndex = (currentModeIndex + 1) % clockModes.length;
+            const mode = clockModes[currentModeIndex];
+
+            // Manually apply the same changes as the button click (to avoid double sound)
+            analogClock.classList.remove('zen-mode');
+            analogClock.style.display = 'flex';
+            digitalClock.style.display = 'none';
+            styleBtn.classList.remove('zen-active');
+            styleBtn.style.borderColor = "var(--clock-border)";
+            styleBtn.style.color = "var(--text-color)";
+
+            if (mode === 'classic') {
+                styleBtn.innerText = "🕰️ STYLE: CLASSIC";
+            } else if (mode === 'glass') {
+                analogClock.classList.add('zen-mode');
+                styleBtn.innerText = "💎 STYLE: GLASSIC";
+                styleBtn.classList.add('zen-active');
+            } else if (mode === 'digital') {
+                analogClock.style.display = 'none';
+                digitalClock.style.display = 'flex';
+                styleBtn.innerText = "📟 STYLE: DIGITAL";
+                styleBtn.classList.add('zen-active');
+                styleBtn.style.borderColor = "var(--clock-border)";
+            }
+
+            playTick(true);
+            if (typeof triggerGhost === 'function') {
+                triggerGhost(modeMessages[mode]);
+            }
+        }
+        });
+
+
+        // --- ELITE 3-STATE CLOCK TOGGLE (Classic / Glass / Digital) ---
+        const styleBtn = document.getElementById('zen-toggle-btn');
+        const analogClock = document.getElementById('analog-clock');
+        const digitalClock = document.getElementById('digital-clock');
+
+        // State: 0 = Classic, 1 = Glass, 2 = Digital
+        const clockModes = ['classic', 'glass', 'digital'];
+        let currentModeIndex = 0;
+
+        // Set initial button text
+        styleBtn.innerText = "🕰️ STYLE: CLASSIC";
+
+        // Map mode to ghost message
+        const modeMessages = {
+            'classic': '🕰️ CLASSIC MODE',
+            'glass': '💎 GLASS MODE',
+            'digital': '📟 DIGITAL MODE'
+        };
+
+        styleBtn.addEventListener('click', () => {
+            currentModeIndex = (currentModeIndex + 1) % clockModes.length;
+            const mode = clockModes[currentModeIndex];
+
+            playTick(true); // sound feedback
+
+            // Reset everything
+            analogClock.classList.remove('zen-mode');
+            analogClock.style.display = 'flex';
+            digitalClock.style.display = 'none';
+            styleBtn.classList.remove('zen-active');
+            styleBtn.style.borderColor = "var(--clock-border)";
+            styleBtn.style.color = "var(--text-color)";
+
+            // Apply new mode
+            if (mode === 'classic') {
+                styleBtn.innerText = "🕰️ STYLE: CLASSIC";
+            } else if (mode === 'glass') {
+                analogClock.classList.add('zen-mode');
+                styleBtn.innerText = "💎 STYLE: GLASSIC";
+                styleBtn.classList.add('zen-active');
+            } else if (mode === 'digital') {
+                analogClock.style.display = 'none';
+                digitalClock.style.display = 'flex';
+                styleBtn.innerText = "📟 STYLE: DIGITAL";
+                styleBtn.classList.add('zen-active');
+                styleBtn.style.borderColor = "var(--clock-border)";
+            }
+
+            // Show ghost message
+            if (typeof triggerGhost === 'function') {
+                triggerGhost(modeMessages[mode]);
             }
         });
 
-        // --- ZEN MODE TOGGLE (GLASS) ---
-        const clockElement = document.querySelector('.clock');
-        const zenBtn = document.getElementById('zen-toggle-btn');
 
-        // Function to update button appearance
-        function updateZenButton(isZen) {
-            zenBtn.innerText = isZen ? "GLASS: ON" : "GLASS: OFF";
-            // zenBtn.style.borderColor = isZen ? "#00fffb" : "var(--clock-border)";
+       
+        // 1. New Date Engine
+        function updateDate() {
+            const now = new Date();
+            const options = { weekday: 'long', month: 'long', day: 'numeric' };
+            document.getElementById('digital-date').innerText = now.toLocaleDateString('en-US', options);
         }
 
-        // Button click event
-        zenBtn.addEventListener('click', () => {
-            const isZen = clockElement.classList.toggle('zen-mode');
-            updateZenButton(isZen);
-            playTick(true); // sound feedback (tock)
-            
-            // Optional: show a ghost message if you have that function
-            if (typeof triggerGhost === 'function') {
-                triggerGhost(isZen ? "🧘 ZEN MODE ON" : "🕒 ZEN MODE OFF");
+        // 2. Hide Info Logic
+        // --- CLEAN VIEW 3‑STATE CYCLE (with space preservation) ---
+        const hideBtn = document.getElementById('hide-info-btn');
+        const infoSection = document.getElementById('info-section');
+        const contentBlocks = document.querySelectorAll('.content-blocks'); // both slideshow and the extra one
+        let cleanViewMode = 0; // 0 = all visible, 1 = info hidden, 2 = both hidden
+
+        function updateCleanView() {
+            if (cleanViewMode === 0) {
+                // All visible
+                infoSection.style.display = ''; // restore default
+                contentBlocks.forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.pointerEvents = 'auto';
+                });
+                hideBtn.innerText = '🖥️ CLEAN VIEW: OFF';
+                hideBtn.style.color = '#f6ff00'; // Solid Yellow/Magenta
+            } else if (cleanViewMode === 1) {
+                // Info hidden, images visible
+                infoSection.style.display = 'none';
+                contentBlocks.forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.pointerEvents = 'auto';
+                });
+                hideBtn.innerText = '🖥️ CLEAN VIEW:(text off)';
+                hideBtn.style.color = '#ffb835'; // Orange
+            } else { // mode 2
+                // Everything hidden (info + images)
+                infoSection.style.display = 'none';
+                contentBlocks.forEach(el => {
+                    el.style.opacity = '0';
+                    el.style.pointerEvents = 'none';
+                });
+                hideBtn.innerText = '🖥️ CLEAN VIEW: ON(full)';
+                hideBtn.style.color = '#00fffb'; // Cyber Cyan
             }
+        }
+
+        hideBtn.addEventListener('click', () => {
+            cleanViewMode = (cleanViewMode + 1) % 3;
+            updateCleanView();
+            playTick(true); // sound feedback
         });
 
+
+        // --- DIGITAL CLOCK TIME ENGINE ---
+        // You likely already have an interval running for your analog hands.
+        // You can just drop this function in and call it on an interval.
+        function updateDigitalTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            document.getElementById('digi-hours').innerText = hours;
+            document.getElementById('digi-minutes').innerText = minutes;
+        }
+
+        // Start the digital clock immediately, and update every second
+        updateDigitalTime();
+        setInterval(updateDigitalTime, 1000);
         
 
-
-
+        // 3. Update the existing Digital Clock function to include Date
+        function updateDigitalTime() {
+            const now = new Date();
+            document.getElementById('digi-hours').innerText = String(now.getHours()).padStart(2, '0');
+            document.getElementById('digi-minutes').innerText = String(now.getMinutes()).padStart(2, '0');
+            updateDate(); // Updates date every second as well
+        }
+        
+        
 
         // --- SCREEN WAKE LOCK API ---
         let wakeLock = null;
