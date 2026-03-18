@@ -63,7 +63,7 @@ index.html                     # Core logic, styles, and structure
 
 ---
 
-## 📜 Version 2.1 Change Log (April 2026)
+## 📜 Version 2.1 Change Log (March 2026)
 
 The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced state management.
 
