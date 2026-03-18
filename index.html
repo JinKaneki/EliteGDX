@@ -39,35 +39,60 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: color 0.5s ease; /* Only transition text color, not the background image */
+            transition: color 0.5s ease, background-image 0.8s ease-in-out;
             
-            /* NEW: Background Image Properties */
-            background-image: url('images/IMG_BLUE.jpg');
+            /* 1. STARTING STATE: Solid dark background */
+            background-color: #000000; 
+            background-image: none; 
+            
+            /* 2. PREPARED STATE: Settings for when an image is eventually loaded */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            position: relative; /* Crucial so the ::before overlay knows where to sit */
-            }
+            position: relative; 
+        }
 
-            /* Dark Mode Overlay (Default) */
+        /* THE OVERLAY: This sits between your wallpaper and your clock/text */
         body::before {
             content: '';
-            position: fixed; /* Fixed ensures it stays put even if the user scrolls */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.75); /* Dark overlay to make the neon/magenta pop */
-            z-index: -1; /* Puts it behind your clock and images, but above the background */
-            transition: background-color 0.5s ease; /* Smooth theme switching */
+            
+            /* 3. THE MASK: 0.75 opacity for that deep, dark premium look */
+            background-color: rgba(0, 0, 0, 0.75); 
+            
+            /* 4. THE FROST: Blur is subtle (1px) as you requested */
+            backdrop-filter: blur(1px); /* 15px for that sleek look */
+            -webkit-backdrop-filter: blur(1px); /* for safari */
+            
+            z-index: -1; 
+            transition: background-color 0.5s ease;
         }
 
-        /* Light Mode Overlay */
+        /* Light mode overlay adjustment */
         body.light-mode::before {
-            background-color: rgba(230, 231, 238, 0.85); /* Uses a frosted version of your light theme color */
+            background-color: rgba(255, 255, 255, 0.3); 
         }
 
+        /* Zen mode for your clock (makes background transparent) */
+        .clock.zen-mode {
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* Optional: make numbers glow more in Zen mode */
+        .clock.zen-mode .number {
+            text-shadow: 0 0 15px rgba(255, 0, 255, 0.7);
+        }
+
+        /* Optional: also make hands a bit more subtle */
+        .clock.zen-mode .hand {
+            opacity: 0.8;
+        }
 
 
         /* Position the switch wrapper at top-right */
@@ -262,80 +287,176 @@
             opacity: 1;
         }
 
-
-        /* Freeze Button Styling */
+        
+        /* Unified Controls
+        /* 1. Main Container: Using Flexbox to stack rows */
         .controls {
+            display: flex;
+            flex-direction: column; 
+            align-items: center;    
+            gap: 20px;              /* Vertical space between Buttons and Slider */
+            margin-top: 30px;
             margin-bottom: 20px;
-            z-index: 10;
+            z-index: 100;
         }
-
-        #freeze-btn {
-        background: transparent;
-        color: #00fffb; /* Cyan/Magenta Text */
-        border: 2px solid #00fffb; /* Cyan/Magenta Border */
-        padding: 8px 16px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 0.8rem;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        transition: all 0.3s ease;
-        opacity: 0.7;
-        box-shadow: 0 0 5px rgba(255, 0, 255, 0.2);
-        }
-
-        #freeze-btn:hover {
-        opacity: 1;
-        box-shadow: 0 0 15px rgba(255, 0, 255, 0.6);
-        background: rgba(255, 0, 255, 0.05); /* Very slight magenta tint on hover */
-        }
-
-        /* Updated 'frozen' state to be solid Magenta with black text */
-        #freeze-btn.frozen {
-        background: #b7099fb9;
-        color: #ffff00;
-        font-weight: bold;
-        opacity: 1;
-        box-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+        /* --- New row layout --- */
+        .button-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;          /* space between items in the row */
+            width: 100%;
         }
 
         
-        .controls {
-        margin-top: 20px;
-        margin-bottom: 10px;
-        z-index: 100;
+        /* Freeze Button: Electric Cyan Theme */
+        #freeze-btn {
+            background: transparent;
+            color: #00fffb; 
+            border: 2px solid var(--clock-border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            opacity: 0.7;
         }
 
+        #freeze-btn:hover {
+            opacity: 1;
+            box-shadow: 0 0 15px rgba(0, 255, 251, 0.6);
+            background: rgba(0, 255, 251, 0.05);
+        }
+
+        #freeze-btn.frozen {
+            background: transparent; /* Your specific magenta-tint background */
+            color: #ffff00;        /* Yellow text for high contrast */
+            font-weight: bold;
+            opacity: 1;
+            border-color:#1a1a1d;
+        }
+
+        /* Background Toggle Button: Standard to Magenta Theme */
+        #bg-toggle-btn {
+            background: transparent;
+            color: var(--text-color);
+            border: 2px solid var(--clock-border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        #bg-toggle-btn:hover {
+            opacity: 1;
+            border-color: #ff00ff;
+            box-shadow: 0 0 15px rgba(255, 0, 225, 0.682);
+            color: #ff00ff;
+        }
+
+        #zen-toggle-btn {
+            background: transparent;
+            color: var(--text-color);
+            border: 2px solid var(--clock-border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+            min-width: 140px;   /* gives them a consistent width (adjust if needed) */
+        }
+
+        
+        #zen-toggle-btn:hover {
+            color: #ffb835;
+            border-color: #ffb835;
+            box-shadow: 0 0 15px rgb(255, 200, 0);
+        }
+
+        /* Zen button active state (matches your 'frozen' style) */
+        #zen-toggle-btn.zen-active {
+            background: transparent;
+            color: var(#272627);
+            border-color: #272627;
+            opacity: 1;
+        }
+
+
+        /* 3. Volume Row: Centered below buttons */
+        .volume-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;            /* space between icon and slider */
+            width: 100%;
+        }
+
+        .vol-icon {
+            font-size: 1.2rem;
+            margin-right: 12px;
+            opacity: 0.7;
+            color: var(--text-color);
+        }
+
+        /* The Slider Track */
         #volume-slider {
-        -webkit-appearance: none;
-        appearance: none;                /* add standard property to silence linter */
-        width: 80px;
-        height: 4px;
-        background: var(--clock-border);  /* your track color – change if needed */
-        border-radius: 5px;
-        outline: none;
-        cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100px;        /* was 150px – makes room for the icon */
+            height: 4px;
+            background: var(--clock-border);
+            border-radius: 5px;
+            outline: none;
+            cursor: pointer;
         }
 
-        /* WebKit (Chrome, Safari, Edge) thumb */
+        /* Slider Thumb: Electric Cyan Glow */
         #volume-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;                /* standard property for completeness */
-        width: 12px;
-        height: 12px;
-        background: #00fffb;             /* electric cyan */
-        border-radius: 50%;
-        box-shadow: 0 0 10px #00fffb;     /* matching glow */
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #00fffb;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00fffb;
+            transition: transform 0.2s ease;
         }
 
-        /* Firefox thumb */
-        #volume-slider::-moz-range-thumb {
-        width: 12px;
-        height: 12px;
-        background: #00fffb;             /* same electric cyan */
-        border-radius: 50%;
-        border: none;
+        #volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
         }
+
+        #volume-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: #00fffb;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 0 10px #00fffb;
+        }
+
+        #mute-btn:hover {
+            opacity: 1 !important;
+            transform: scale(1.2);
+            transition: transform 0.2s ease;
+        }
+
+        #mute-btn:active {
+            transform: scale(0.9); /* Click "shrink" effect */
+        }
+
+        
+
+
         /* Typewriter Cursor Animation */
         .cursor {
         color: var(--accent-color);
@@ -391,6 +512,24 @@
             max-width: 600px;
             margin: 0 auto 20px;            /* Centers text block */
             padding: 0 10px;
+        }
+
+
+        #ghost-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 1.5rem;
+            color: #ff00ff; /* Magenta to match your theme */
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+            opacity: 0;
+            pointer-events: none; /* User can't accidentally click it */
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        #ghost-indicator.show {
+            opacity: 0.8;
         }
 
 
@@ -492,6 +631,7 @@
 </head>
 
 <body>
+    <div id="ghost-indicator">👻 PAUSED</div>
     <div class="page">
     <div class="theme-switch-wrapper">
         <!--<span class="switch-label">Light/Dark</span> -->
@@ -531,12 +671,22 @@
 
     <!--ONGOING DEVELOPMENT SECTION-->
     <div class="controls">
-    <button id="freeze-btn">❄️ FREEZE MOMENT</button>
-    <div class="volume-container" style="display: inline-flex; align-items: center; margin: 10px;">
-        <span style="font-size: 1.6rem; margin-right: 10px; opacity: 0.7;">🔊</span>
-        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.06">
+    <!-- Row 1: Freeze + BG Toggle -->
+    <div class="button-row">
+        <button id="freeze-btn">❄️ FREEZE MOMENT</button>
+        <button id="bg-toggle-btn">🖼️ BG: SYNCED 🌌</button>
+    </div>
+
+    <!-- Row 2: Zen/Glass + Volume with mute icon -->
+    <div class="button-row">
+        <button id="zen-toggle-btn">GLASS: OFF</button>
+        <div class="volume-container">
+            <span id="mute-btn" class="vol-icon" style="cursor: pointer; user-select: none;">🔊</span>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.06">
+        </div>
     </div>
     </div>
+
 
     <div class="content-blocks">
         <div class="block">
@@ -559,7 +709,7 @@
             <p class="block-text">The wheel of time turns, Ages come and pass, leaving memories that become legend.<br>
             Legend fades to myth, and even myth is long forgotten when the Age that gave it birth comes again.</p> 
             <div class="image-block">
-                <img src="images/WheelOfTimeMandala.jpg" alt="WOTMandala">
+                <img src="images/WheelOfLifeMandala.jpg" alt="WOLMandala">
             </div>
         </div>
 
@@ -852,6 +1002,34 @@
         </div>
 
         <div class="block">
+            <p class="block-text">SmileyGraffiti</p>
+            <div class="image-block">
+                <img src="images/SmileyGrafitti.jpg" alt="SmileyGraffiti">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Formula 1</p>
+            <div class="image-block">
+                <img src="images/F1.jpg" alt="F1">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The Mask</p>
+            <div class="image-block">
+                <img src="images/OkamiMask.jpg" alt="OkamiMask">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The Call</p>
+            <div class="image-block">
+                <img src="images/SoulNature.jpg" alt="SoulNature">
+            </div>
+        </div>
+
+        <div class="block">
             <p class="block-text">Dreamax</p>
             <div class="image-block">
                 <img src="images/JcohenDreamax.jpeg" alt="JcohenDreamax">
@@ -880,59 +1058,92 @@
         </p>
         </div>
 
-
-
     </div>
 
 
     <script>
-        // --- PRO ANALOG TICK GENERATOR SETUP---
+        // --- 1. AUDIO CONTEXT SETUP ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // Volume slider
+        // --- 2. VOLUME & MUTE LOGIC ---
+        const muteBtn = document.getElementById('mute-btn');
         const volumeSlider = document.getElementById('volume-slider');
-        let currentVolume = 0.06;          // matches your slider's default value
 
-        volumeSlider.addEventListener('input', (e) => {
-            currentVolume = parseFloat(e.target.value);
+        // One single source of truth for volume
+        let currentVolume = parseFloat(volumeSlider.value); 
+        let previousVolume = currentVolume; 
+
+        // Mute Toggle Event
+        muteBtn.addEventListener('click', () => {
+            if (currentVolume > 0) {
+                // Muting: Store current value, set to zero
+                previousVolume = currentVolume;
+                currentVolume = 0;
+                volumeSlider.value = 0;
+                muteBtn.innerText = "🔇";
+                muteBtn.style.opacity = "0.5";
+            } else {
+                // Unmuting: Restore previous or default to 0.06
+                currentVolume = previousVolume > 0 ? previousVolume : 0.06;
+                volumeSlider.value = currentVolume;
+                muteBtn.innerText = "🔊";
+                muteBtn.style.opacity = "0.7";
+            }
         });
 
-        // --- TICK GENERATOR (uses currentVolume) ---
+        // Slider Input Event
+        volumeSlider.addEventListener('input', (e) => {
+            currentVolume = parseFloat(e.target.value);
+            
+            // Auto-update icon if user slides to zero
+            if (currentVolume === 0) {
+                muteBtn.innerText = "🔇";
+                muteBtn.style.opacity = "0.5";
+            } else {
+                muteBtn.innerText = "🔊";
+                muteBtn.style.opacity = "0.7";
+            }
+        });
+
+        // --- 3. THE ANALOG TICK GENERATOR ---
         function playTick(isTock = false) {
+            // Resume context (needed for browser security policies)
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
+
+            // Performance Guard: Don't process audio if muted
+            if (currentVolume <= 0) return;
 
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             const filter = audioCtx.createBiquadFilter();
 
-            // Square wave for that mechanical "snap"
+            // Square wave gives that mechanical "click"
             osc.type = 'square';
             
-            // Tock (first second of minute) deeper than regular tick
+            // Frequency: Tock (400Hz) is deeper than Tick (800Hz)
             osc.frequency.setValueAtTime(isTock ? 400 : 800, audioCtx.currentTime);
 
-            // Low‑pass filter removes harsh buzz – simulates wood case
+            // Filter: Lowpass at 7000Hz keeps it crisp but not "buzzy"
             filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(7000, audioCtx.currentTime);  // adjust to taste 2000 (7000 is brighter)
+            filter.frequency.setValueAtTime(7000, audioCtx.currentTime); 
 
-            // Volume: slider value, with tock 1.5x louder
+            // Volume calculation (Tock is 1.5x louder for emphasis)
             const volumeLevel = isTock ? currentVolume * 1.5 : currentVolume;
             
-            // Very short percussive envelope
+            // Percussive Envelope: Fast attack, 90ms decay
             gain.gain.setValueAtTime(volumeLevel, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.09);  // 90ms decay
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.09);
 
-            // Connect: oscillator → filter → gain → destination
+            // Routing: Osc -> Filter -> Gain -> Speakers
             osc.connect(filter);
             filter.connect(gain);
             gain.connect(audioCtx.destination);
 
             osc.start();
-            osc.stop(audioCtx.currentTime + 0.03);   // stop after 30ms
+            osc.stop(audioCtx.currentTime + 0.03); // Stop osc after 30ms
         }
-
 
         const typewriterElement = document.getElementById('typewriter');
         const names = ["JIN KANEKI", "JOHN COHEN","@_@","THE OBSERVER","DARK SAMURAI","THE WANDERER","JIN LEE","KANJIN","How many names have you counted?",":)"];
@@ -1016,24 +1227,7 @@
             themeToggle.innerText = body.classList.contains('light-mode') ? '🌙 Dark Mode' : '☀️ Light Mode';
         });
 
-        function cycleBlocks() {
-            if (isFrozen) return; // Stop right here if frozen;
 
-            // Hide current
-            blocks[currentBlockIndex].classList.remove('active');
-            
-            // Increment index
-            currentBlockIndex++;
-
-            // If we reached the end of the shuffled list, reshuffle and start over
-            if (currentBlockIndex >= blocks.length) {
-                shuffleBlocks();
-                currentBlockIndex = 0;
-            }
-            
-            // Show next
-            blocks[currentBlockIndex].classList.add('active');
-        }
 
         function updateClock() {
             const currentDate = new Date();
@@ -1062,6 +1256,214 @@
 
         setInterval(updateClock, 1000);
         updateClock();
+
+
+
+        function cycleBlocks() {
+            if (isFrozen) return; // Stop right here if frozen;
+
+            // Hide current
+            blocks[currentBlockIndex].classList.remove('active');
+            
+            // Increment index
+            currentBlockIndex++;
+
+            // If we reached the end of the shuffled list, reshuffle and start over
+            if (currentBlockIndex >= blocks.length) {
+                shuffleBlocks();
+                currentBlockIndex = 0;
+            }
+            
+            // Show next
+            blocks[currentBlockIndex].classList.add('active');
+
+            // NEW: Tell the background to update to match the new block! this call the global function
+            updateBackground();
+        }
+
+        // --- 1. GLOBAL VARIABLES ---
+        let isBgFrozen = false;
+        let bgMode = 'off'; // off 'sync' or 'independent'
+        const independentBgImages = [
+            'images/indepedentBG/ORIGINBACKG.jpeg.jpeg',
+            'images/indepedentBG/IMGBACKG.jpeg',
+            'images/indepedentBG/TheAlchemistV2.jpg',
+            'images/indepedentBG/Ataraxia.jpg',
+            'images/indepedentBG/BuddhaMobile.jpg',
+            'images/indepedentBG/CalisMobile.jpeg',
+            'images/indepedentBG/CoolMobileBG.jpeg',
+            'images/indepedentBG/DarkSamurai.jpeg',
+            'images/indepedentBG/HomeJCohen.jpg',
+            'images/indepedentBG/Luffy.jpg',
+            'images/indepedentBG/SteinsGate.jpeg',
+            'images/indepedentBG/Spring.png',
+            'images/indepedentBG/Space.jpg',
+            'images/indepedentBG/GokuSS3.jpeg',
+            'images/indepedentBG/Jungle.png',
+            'images/indepedentBG/SerenityIllustration.jpeg',
+            'images/indepedentBG/IchigoMask.jpeg',
+            'images/indepedentBG/JCohen.jpeg',
+            'images/indepedentBG/Soldiers.jpeg',
+            'images/indepedentBG/PinkGirl.jpeg',
+            'images/indepedentBG/LoveStory.jpg',
+            'images/indepedentBG/ChameleoMobile.jpg',
+            'images/indepedentBG/KidGoku.jpg',
+            'images/indepedentBG/AnAngel.jpg',
+            'images/indepedentBG/LuffyVsCp0.jpg',
+            'images/indepedentBG/Nika.jpg',
+            'images/indepedentBG/DBZ.jpg',
+            'images/indepedentBG/FireForce.jpg',
+            'images/indepedentBG/BluSage.jpg',
+            'images/indepedentBG/Angel.jpg',
+            'images/indepedentBG/EngDrawing.jpg',
+            'images/indepedentBG/FlammingBird.jpeg',
+            'images/indepedentBG/OkamiMobile.jpg',
+            'images/indepedentBG/Sherlock.jpg',
+            //'images/indepedentBG/',
+        ];
+
+        const ghost = document.getElementById('ghost-indicator');
+        const bgToggleBtn = document.getElementById('bg-toggle-btn');
+
+        // --- 2. THE MASTER UPDATE FUNCTION (Stand-alone) ---
+        function updateBackground() {
+            // 🛑 THE GATEKEEPER: If frozen, we exit immediately
+            if (isBgFrozen) {
+                console.log("Background locked. Ignoring update.");
+                return; 
+            }
+            // 🛑 If the mode is 'off', keep the primary dark background
+            if (bgMode === 'off') return;
+
+            // --- SYNC MODE: use the active block's image ---
+            if (bgMode === 'sync') {
+                const activeBlock = blocks[currentBlockIndex];
+                const img = activeBlock.querySelector('img');
+                if (img) {
+                    document.body.style.backgroundImage = `url('${img.src}')`;
+                }
+            }
+            // --- INDEPENDENT MODE: do nothing here (handled by interval & switch) ---
+        }
+
+
+        // --- 3. TIMERS & CYCLES ---
+         let independentInterval = null;
+        function startIndependentInterval() {
+            if (independentInterval) clearInterval(independentInterval);
+            independentInterval = setInterval(() => {
+                if (bgMode === 'independent' && !isBgFrozen) {
+                    setRandomIndependentBg();
+                }
+            }, 30000); // 30 seconds
+        }
+
+        // --- 4. GHOST UI & FEEDBACK ---
+        function triggerGhost(message) {
+            // If message is a boolean, use the original freeze messages
+            if (typeof message === 'boolean') {
+                ghost.innerText = message ? "👻 BG FROZEN" : "▶️ BG RESUMED";
+            } else {
+                // Otherwise, treat it as a custom string
+                ghost.innerText = message;
+            }
+            ghost.classList.add('show');
+            setTimeout(() => ghost.classList.remove('show'), 1200);
+        }
+        
+        // Setting Random independants
+        function setRandomIndependentBg() {
+            if (!independentBgImages || independentBgImages.length === 0) return;
+            const randomIndex = Math.floor(Math.random() * independentBgImages.length);
+            document.body.style.backgroundImage = `url('${independentBgImages[randomIndex]}')`;
+        }
+        function stopIndependentInterval() {
+            if (independentInterval) {
+                clearInterval(independentInterval);
+                independentInterval = null;
+            }
+        }
+        // --- 5. EVENT LISTENERS ---
+        bgToggleBtn.addEventListener('click', () => {
+            // If it's off or independent, we switch TO sync
+            if (bgMode === 'off' || bgMode === 'independent') {
+                // 🛑 If coming from independent, stop its interval
+                if (bgMode === 'independent') {
+                    stopIndependentInterval();
+                }
+                bgMode = 'sync';
+                bgToggleBtn.classList.remove('independent');
+                bgToggleBtn.innerText = "🖼️ BG: SYNCED 🌌";
+            } else {
+                // If it was sync, we switch TO independent
+                bgMode = 'independent';
+                bgToggleBtn.classList.add('independent');
+                bgToggleBtn.innerText = " BG: INDEPENDENT";
+
+                setRandomIndependentBg();   // immediate random background
+                startIndependentInterval(); // start 30s random cycle
+            }
+            
+            updateBackground(); // This triggers the fade-in (for sync) or is ignored for independent
+        });
+
+
+        // Double Click to Freeze/Unfreeze
+        document.body.addEventListener('dblclick', (e) => {
+            // Note: If you have an overlay, e.target might be the body or a div.
+            // This ensures it triggers when clicking the background area.
+            if (e.target === document.body || e.target.tagName === 'BODY') {
+                isBgFrozen = !isBgFrozen;
+                playTick(true); ; // Deeper 'Tock' sound for confirmation
+                triggerGhost(isBgFrozen);
+                if (!isBgFrozen) updateBackground();
+            }
+        });
+
+        // Key 'B' to Freeze/Unfreeze
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'b') {
+                isBgFrozen = !isBgFrozen;
+                playTick(true);; // Deeper 'Tock' sound for confirmation
+                triggerGhost(isBgFrozen);
+                if (!isBgFrozen) updateBackground();
+            }
+
+            if (e.key.toLowerCase() === 'z') {
+                e.preventDefault(); // avoid accidental browser shortcuts
+                const isZen = clockElement.classList.toggle('zen-mode');
+                updateZenButton(isZen);
+                playTick(true);
+                if (typeof triggerGhost === 'function') {
+                    triggerGhost(isZen ? "🧘 ZEN MODE ON" : "🕒 ZEN MODE OFF");
+                }
+            }
+        });
+
+        // --- ZEN MODE TOGGLE (GLASS) ---
+        const clockElement = document.querySelector('.clock');
+        const zenBtn = document.getElementById('zen-toggle-btn');
+
+        // Function to update button appearance
+        function updateZenButton(isZen) {
+            zenBtn.innerText = isZen ? "GLASS: ON" : "GLASS: OFF";
+            // zenBtn.style.borderColor = isZen ? "#00fffb" : "var(--clock-border)";
+        }
+
+        // Button click event
+        zenBtn.addEventListener('click', () => {
+            const isZen = clockElement.classList.toggle('zen-mode');
+            updateZenButton(isZen);
+            playTick(true); // sound feedback (tock)
+            
+            // Optional: show a ghost message if you have that function
+            if (typeof triggerGhost === 'function') {
+                triggerGhost(isZen ? "🧘 ZEN MODE ON" : "🕒 ZEN MODE OFF");
+            }
+        });
+
+        
+
 
 
 
@@ -1099,12 +1501,10 @@
         // Automatically update the copyright year
         document.getElementById('year').textContent = new Date().getFullYear();
 
-    
     </script>
     
-
     <div class="content-blocks" style="margin-top: 100px; border-top: 1px solid var(--clock-border); padding-top: 40px;">
-    <div class="block active" style="position: relative; opacity: 1; display: flex;">
+    <div class="block active" style="position: relative; opacity: 1; display: flex; flex-direction: column;">
         <h3 class="title-accent">Project Intent</h3>
         <p class="block-text">
             This dashboard is designed as a <b>Persistent Ambient Display</b>. 
@@ -1114,20 +1514,19 @@
         
         <h3 class="title-accent" style="font-size: 1rem; margin-top: 20px;">Technical Architecture</h3>
         <ul class="block-text">
-            <li> <b>Screen Wake Lock API:</b> Prevents the host device from entering sleep mode or dimming the display, ensuring the clock remains visible during long work sessions.</li>
-            <li> <b>Fisher-Yates Shuffle:</b> An $O(n)$ complexity algorithm used to ensure an unbiased, non-repeating random sequence for the content rotation.</li>
-            <li> <b>Deterministic Minute-Reset:</b> State-management logic that synchronizes UI transitions precisely with the 00-second mark of the system clock.</li>
-        </ul>
+            <li><b>Screen Wake Lock API:</b> Prevents the host device from entering sleep mode or dimming the display, ensuring the clock remains visible during long work sessions.</li>
+            <li><b>Fisher-Yates Shuffle:</b> An $O(n)$ complexity algorithm used to ensure an unbiased, non-repeating random sequence for the content rotation.</li>
+            <li><b>Deterministic Minute-Reset:</b> State-management logic that synchronizes UI transitions precisely with the 00-second mark of the system clock.</li>
+            <li><b>Hybrid Background Engine:</b> Supports both Synchronized (mirrored) and Independent background cycling with a deterministic state-management loop.</li>
+            <li><b>Stealth Gesture Layer:</b> Implements a "Ghost UI" using double-click event listeners and Keyboard Hotkeys to toggle state without persistent UI clutter.</li>
     </div>
     </div>
-    
-    
 </body>
 
 <footer class="site-footer">
     <div class="footer-line"></div>
-    <p>&copy; <span id="year"></span> 2026 built by Jin Kaneki | All Rights Reserved</p>
     <p class="footer-subtext">All things serve the Beam.</p>
+    <p>&copy; <span id="year"></span> 2026 built by Jin Kaneki | All Rights Reserved</p>
     <div style="margin-top: 15px;">
         <a href="https://github.com/JinKaneki/AnalogClockHost" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">GitHub</a>
         <a href="https://youtube.com/" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">Youtube</a>
