@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting…</title>
+  <script>
+    // Get the full path including the hash (if any)
+    const path = location.pathname + location.hash;
+    // Redirect to index.html, keeping the path as a hash
+    // This lets your app's router read the original URL
+    window.location.href = '/index.html#' + path;
+  </script>
+</head>
+<body>
+  If you are not redirected, <a href="/index.html">click here</a>.
+</body>
+</html>
