@@ -90,7 +90,7 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 ---
 
 ## 🧠 Philosophy
-> "All things serve the Beam. XD"
+> "All things serve the Steam. XD"
 
 This project demonstrates that even a simple utility can be elevated through high‑level engineering and attention to browser‑specific APIs.
 

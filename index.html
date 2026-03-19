@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="manifest.json">
-    <title>Engineer Johan_nlb - Portfolio</title>
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Elite Gems Dashboard</title>
     <style>
         /* Upgraded Color Palettes */
         :root {
@@ -16,6 +20,22 @@
             --accent-color: #00f0ff; /* Electric Cyber-Cyan */
             --shadow-outer: 10px 10px 30px rgba(0, 0, 0, 0.6), -10px -10px 30px rgba(255, 255, 255, 0.02);
             --shadow-inner: inset 5px 5px 15px rgba(0, 0, 0, 0.5), inset -5px -5px 15px rgba(255, 255, 255, 0.03);
+        }
+
+        html, body {
+            overscroll-behavior: none; /* prevents pull-to-refresh and edge glow */
+            touch-action: pan-y;        /* allows vertical scrolling only */
+            height: 100%;
+            overflow-x: hidden;
+            /* Prevents text selection on long-press (optional, but feels like an app) 
+            user-select: none;
+            -webkit-user-select: none;
+            /* Prevents the grey tap-highlight on mobile buttons 
+            -webkit-tap-highlight-color: transparent;*/
+        }
+        /* Make sure buttons feel like real hardware */
+        button {
+            touch-action: manipulation;
         }
 
         /* Light mode palette overrides */
@@ -38,19 +58,32 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: center; /*center*/
+            padding-top: 20px;
             transition: color 0.5s ease, background-image 0.8s ease-in-out;
             
             /* 1. STARTING STATE: Solid dark background */
             background-color: #000000; 
-            background-image: none; 
+            /*background-image: none;*/ 
             
-            /* 2. PREPARED STATE: Settings for when an image is eventually loaded */
+            /* 2. PREPARED STATE: Settings for when an image is eventually loaded 
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            background-attachment: fixed;
+            background-attachment: fixed;*/
             position: relative; 
+        }
+        .fixed-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -2; /* behind the overlay */
+            transition: background-image 0.8s ease-in-out;
         }
 
         /* THE OVERLAY: This sits between your wallpaper and your clock/text */
@@ -65,8 +98,8 @@
             /* 3. THE MASK: 0.75 opacity for that deep, dark premium look */
             background-color: rgba(0, 0, 0, 0.75); 
             
-            /* 4. THE FROST: Blur is subtle (1px) as you requested */
-            backdrop-filter: blur(1px); /* 15px for that sleek look */
+            /* 4. THE FROST: Blur is subtle (1px) as you requested 
+            backdrop-filter: blur(1px); /* 15px for that sleek look 
             -webkit-backdrop-filter: blur(1px); /* for safari */
             
             z-index: -1; 
@@ -171,8 +204,8 @@
             justify-content: center;
             align-items: center;
             transition: all 0.5s ease;
-            margin-top: 30px;
-            margin-bottom: 40px;
+            margin-top: 10px;
+            margin-bottom: 20px;
         }
 
         /* Inner Ring */
@@ -246,31 +279,33 @@
         /* Main title bigger */
         .name-plate.main-title {
             text-align: center;
-            font-size: 2.0rem; /* Adjust as you like */
+            font-size: 1.7rem; /* Adjust as you like */
             letter-spacing: 2px; /* Optional: a bit more spacing for impact */
             font-weight: 800;
             text-transform: uppercase;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         /* Author info (inside #info-section) larger */
         #info-section .name-plate {
             text-align: center;
-            font-size: 1.5rem; /* Adjust as you like */
+            font-size: 1.0rem; /* Adjust as you like */
             letter-spacing: 1px; /* Optional: a bit more spacing for impact */
             font-weight: bold;
             text-transform: uppercase;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .name-accent {
-            color: #ffb835;
+            color: #ffad16;
         }
         .title-accent { 
             color: #4af600;               /* Bright green */ 
-            text-shadow: 0 0 64px #4af600, 0 0 64px #4dff00; /* Glow */
+            text-shadow: 0 0 4px #ff0000, 0 0 8px #4dff00; /* Glow */
         }
 
 
@@ -282,7 +317,7 @@
             max-width: 800px;
             min-height: 450px; /* Adjust based on your tallest image/text combo */
             position: relative;
-            margin: 40px auto;
+            margin: 20px auto; /* 40px before */
             padding: 0 auto 20px;           /* Prevents content touching screen edges */
             display: flex;
             justify-content: center;
@@ -316,8 +351,8 @@
             flex-direction: column; 
             align-items: center;    
             gap: 20px;              /* Vertical space between Buttons and Slider */
-            margin-top: 30px;
-            margin-bottom: 20px;
+            margin-top: 5px;
+            margin-bottom: 5px;
             z-index: 100;
         }
         /* --- New row layout --- */
@@ -419,7 +454,7 @@
             justify-content: center;
             gap: 8px;            /* space between icon and slider */
             width: 100%;
-            margin-top: 10px;
+            margin-top: 5px;
         }
 
         .vol-icon {
@@ -494,7 +529,7 @@
         /* Typewriter Text Color & Glow */
         #typewriter {
         color: #f6ff00; /* ff00ff Solid Magenta/ Solid Yellow */
-        text-shadow: 0 0 5px rgba(255, 0, 255, 0.3);
+        text-shadow: 0 0 5px rgba(255, 0, 255, 0.236);
         font-weight: bold;
         }
 
@@ -513,8 +548,7 @@
             border-radius: 16px; /* Slightly rounded corners look better than sharp squares */
             overflow: hidden;
             box-shadow: var(--shadow-outer);
-            margin: 0 auto 40px;
-            margin-bottom: 10px;
+            margin: 0 auto 20px;
             transition: all 0.5s ease;
         }
 
@@ -529,7 +563,7 @@
         /* Optional: style the paragraph text */
         .block-text {
             text-align: center;
-            font-size: 1.2rem;
+            font-size: small;
             line-height: 1.6;
             max-width: 600px;
             margin: 0 auto 20px;            /* Centers text block */
@@ -555,7 +589,8 @@
         }
 
 
-         /* Updated Digital Clock for Android Flagship Look */
+
+        /* Updated Digital Clock for Android Flagship Look */
         /* #digital-clock {
             font-size: 7rem;               /* Much bigger, like a home screen */
             /*font-weight: 300;               /* 200 Thin/Light weight is the "Elite" look */
@@ -578,7 +613,6 @@
             line-height: 0.85;       /* Tighter stack for that S25 Ultra look */
             width: 100%;
             margin: 0 auto;
-            /*color: #00fffb;                 /* Electric Cyan (match your theme) */
         }
 
         #digital-clock #digi-hours, 
@@ -644,6 +678,39 @@
             pointer-events: none;         /* So user can't accidentally click invisible text */
         }
 
+        .site-footer {
+            width: 100%;
+            padding: 40px 0;
+            padding-top: 20px;
+            text-align: center;
+            font-family: inherit;
+            opacity: 0.6;
+            font-size: 0.8rem;
+            transition: all 0.5s ease;
+        }
+
+        .footer-line {
+            width: 50px;
+            height: 1px;
+            background: var(--accent-color); /* Matches your Cyber-Cyan or Magenta */
+            margin: 0 auto 20px;
+            border-radius: 2px;
+        }
+
+        .footer-subtext {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            color:#00d5ff;
+        }
+
+        /* Light mode override to ensure visibility */
+        body.light-mode .site-footer {
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+    
+
 
         /* MOBILE-FRIENDLY TWEAKS */
         @media (max-width: 600px) {
@@ -656,7 +723,8 @@
 
             /* Give the clock some extra top margin to clear the button */
             .clock {
-                margin-top: 30px;   /* – more space below button */
+                margin-top: 10px;   /* – more space below button */
+                margin-bottom: 10px;
                 width: 280px;       /* slightly smaller on narrow screens */
                 height: 280px;
             }
@@ -694,14 +762,14 @@
             .name-plate.main-title {
                 padding: 0 auto 20px;      /* prevents text touching screen edges */
                 text-align: center;   /* keeps it neat */
-                font-size: 1.0rem;    /* slightly smaller on mobile if needed */
+                font-size: 0.9rem;    /* slightly smaller on mobile if needed */
                 margin-bottom: 10px;  /* less bottom margin */
                 letter-spacing: 2px;
             }
             #info-section .name-plate {
                 padding: 0 auto 20px;      /* prevents text touching screen edges */
                 text-align: center;   /* keeps it neat */
-                font-size: 0.7rem;    /* slightly smaller if needed */
+                font-size: 0.5rem;    /* slightly smaller if needed */
                 margin-bottom: 5px;  /* less bottom margin */
             }
 
@@ -709,11 +777,11 @@
 
             .block {
                 text-align: center;
-                /*margin-bottom: 40px;*/
+                margin-bottom: 60px; /* was 10*/
             }
             .block-text {
                 text-align: center;
-                font-size: 1rem;
+                font-size: small;
             }
 
             /* Optional: make the image block a bit smaller if it's too wide */
@@ -721,47 +789,33 @@
                 width: 300px;
                 height: 200px;
             }
-        }
+
+            #ghost-indicator {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                font-size: 1.0rem;
+            }
+
+            .timepiece-wrapper {
+                margin-top: 20px; /* Tighter gap for mobile */
+            }
+            
+            #digital-clock #digi-hours, 
+            #digital-clock #digi-minutes {
+                font-size: 6.5rem; /* Slightly smaller so it doesn't wrap on thin phones */
+            }
+
+    }
 
 
-        .site-footer {
-            width: 100%;
-            padding: 40px 0;
-            margin-top: 60px;
-            text-align: center;
-            font-family: inherit;
-            opacity: 0.6;
-            font-size: 0.9rem;
-            transition: all 0.5s ease;
-        }
-
-        .footer-line {
-            width: 50px;
-            height: 1px;
-            background: var(--accent-color); /* Matches your Cyber-Cyan or Magenta */
-            margin: 0 auto 20px;
-            border-radius: 2px;
-        }
-
-        .footer-subtext {
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-top: 10px;
-            color:#00d5ff;
-        }
-
-        /* Light mode override to ensure visibility */
-        body.light-mode .site-footer {
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
-        }
-        
-
-        
     </style>
 </head>
 
 <body>
+    <!-- Fixed background layer (behind everything) -->
+    <div class="fixed-bg"></div>
+
     <div id="ghost-indicator">👻 PAUSED</div>
     <div class="page">
     <div class="theme-switch-wrapper">
@@ -773,7 +827,7 @@
     </div>
 
     
-    <div class="timepiece-wrapper" style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 300px;"> 
+    <div class="timepiece-wrapper" style="display: flex; margin-top: 40px; flex-direction: column; justify-content: center; align-items: center; min-height: 200;width: 100%;z-index: 1;"> 
         <div class="clock" id="analog-clock">
             <div class="number num-12">12</div>
             <div class="number num-3">3</div>
@@ -792,10 +846,10 @@
             <div id="digi-minutes">00</div>
         </div>
 
-        <div id="digital-date" style="font-size: 0.7rem; font-weight: 100;flex-direction: column;align-items: center; letter-spacing: 1px; color: var(--text-color); opacity: 0.8;margin-top: 5px ;margin-bottom: 10px;"></div>
+        <div id="digital-date" style="font-size: 0.7rem; font-weight: 100;flex-direction: column;align-items: center;padding-top: 5px; letter-spacing: 1px; color: var(--text-color); opacity: 0.8; margin-bottom: 10px;"></div>
     </div> 
 
-    <!--<div id="digital-clock" style="display: none; flex-direction: column; align-items: center; line-height: 0.9;">
+    <!--<div id="digital-clock" style="display: none; flex-direction: column; align-items: center; line-height: 0.9;" 
         <div id="digi-hours">00</div>
         <div style="display: flex; align-items: center;">
             <span class="digi-colon" style="font-size: 0.5rem;">:</span>
@@ -815,10 +869,11 @@
             Engineered by <span class="name-accent">Johan_nlb</span> <br>
             @_@ AKA @_@  <br>
             <span id="typewriter" class="name-accent"></span><span class="cursor">|</span>
-        </div> <br><br>
+        </div>
+        
         <!-- MAIN QUOTE -->
-        <div style="text-align: center;">
-            <span class="block-text" style="font-family:Verdana; font-size:small; font-weight:bold;">Time Waits For No One XD</span>
+        <div>
+            <span style="font-family:Verdana; font-size:small; font-weight:bold;text-align: center;">Time Waits For No One XD</span>
         </div>
     </div>
    
@@ -1498,7 +1553,7 @@
                 const activeBlock = blocks[currentBlockIndex];
                 const img = activeBlock.querySelector('img');
                 if (img) {
-                    document.body.style.backgroundImage = `url('${img.src}')`;
+                    document.querySelector('.fixed-bg').style.backgroundImage = `url('${img.src}')`;
                 }
             }
             // --- INDEPENDENT MODE: do nothing here (handled by interval & switch) ---
@@ -1533,7 +1588,7 @@
         function setRandomIndependentBg() {
             if (!independentBgImages || independentBgImages.length === 0) return;
             const randomIndex = Math.floor(Math.random() * independentBgImages.length);
-            document.body.style.backgroundImage = `url('${independentBgImages[randomIndex]}')`;
+            document.querySelector('.fixed-bg').style.backgroundImage = `url('${independentBgImages[randomIndex]}')`;
         }
         function stopIndependentInterval() {
             if (independentInterval) {
@@ -1756,7 +1811,7 @@
             updateDate(); // Updates date every second as well
         }
         
-        
+
 
         // --- SCREEN WAKE LOCK API ---
         let wakeLock = null;
@@ -1794,7 +1849,7 @@
 
     </script>
     
-    <div class="content-blocks" style="margin-top: 100px; border-top: 1px solid var(--clock-border); padding-top: 40px;">
+    <div class="content-blocks" style="margin-top: 200px; border-top: 1px solid var(--clock-border); padding-top: 40px;">
     <div class="block active" style="position: relative; opacity: 1; display: flex; flex-direction: column;">
         <h3 class="title-accent">Project Intent</h3>
         <p class="block-text">
@@ -1816,13 +1871,13 @@
 
 <footer class="site-footer">
     <div class="footer-line"></div>
-    <p class="footer-subtext">All things serve the Beam.</p>
-    <p>&copy; <span id="year"></span> 2026 built by Jin Kaneki | All Rights Reserved</p>
     <div style="margin-top: 15px;">
         <a href="https://github.com/JinKaneki/AnalogClockHost" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">GitHub</a>
-        <a href="https://youtube.com/" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">Youtube</a>
+        <a href="https://youtube.com/@jinkaneki01?si=6zFtEGHjjxkAz1kn" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">Youtube</a>
         <a href="https://linkedin.com/in/yourusername" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">LinkedIn</a>
     </div>
+    <p class="footer-subtext">All things serve the Beam.</p>
+    <p>&copy; <span id="year"></span> 2026 built by Jin Kaneki | All Rights Reserved</p>
     </div>
 </footer>
 </html>
