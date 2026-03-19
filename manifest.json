@@ -1,8 +1,8 @@
 {
   "name": "Elite Gems Dashboard",
   "short_name": "EliteGemsDash",
-  "start_url": "/index.html",
-  "scope": "/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "fullscreen",
   "background_color": "#000000",
   "theme_color": "#000000",
