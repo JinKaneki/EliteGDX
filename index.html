@@ -23,14 +23,15 @@
         }
 
         html, body {
-            overscroll-behavior: none; /* prevents pull-to-refresh and edge glow */
+            overscroll-behavior: none; /* prevents pull-to-refresh and edge glow 
             touch-action: pan-y;        /* allows vertical scrolling only */
+            touch-action: pan-y pinch-zoom;
             height: 100%;
             overflow-x: hidden;
             /* Prevents text selection on long-press (optional, but feels like an app) 
             user-select: none;
             -webkit-user-select: none;
-            /* Prevents the grey tap-highlight on mobile buttons 
+              Prevents the grey tap-highlight on mobile buttons 
             -webkit-tap-highlight-color: transparent;*/
         }
         /* Make sure buttons feel like real hardware */
@@ -1790,27 +1791,16 @@
         // You likely already have an interval running for your analog hands.
         // You can just drop this function in and call it on an interval.
         function updateDigitalTime() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            
-            document.getElementById('digi-hours').innerText = hours;
-            document.getElementById('digi-minutes').innerText = minutes;
+        const now = new Date();
+        document.getElementById('digi-hours').innerText = String(now.getHours()).padStart(2, '0');
+        document.getElementById('digi-minutes').innerText = String(now.getMinutes()).padStart(2, '0');
+        updateDate(); // Updates date as well
         }
 
-        // Start the digital clock immediately, and update every second
+        // Start it once
         updateDigitalTime();
         setInterval(updateDigitalTime, 1000);
-        
 
-        // 3. Update the existing Digital Clock function to include Date
-        function updateDigitalTime() {
-            const now = new Date();
-            document.getElementById('digi-hours').innerText = String(now.getHours()).padStart(2, '0');
-            document.getElementById('digi-minutes').innerText = String(now.getMinutes()).padStart(2, '0');
-            updateDate(); // Updates date every second as well
-        }
-        
 
 
         // --- SCREEN WAKE LOCK API ---
@@ -1848,7 +1838,8 @@
         document.getElementById('year').textContent = new Date().getFullYear();
 
     </script>
-    
+
+
     <div class="content-blocks" style="margin-top: 200px; border-top: 1px solid var(--clock-border); padding-top: 40px;">
     <div class="block active" style="position: relative; opacity: 1; display: flex; flex-direction: column;">
         <h3 class="title-accent">Project Intent</h3>
