@@ -58,7 +58,7 @@ UI transitions are synchronized with the system clock, occurring precisely at `0
 ```
 index.html                     # Core logic, styles, and structure
 /images/                       # Gallery images for the slideshow
-/images/independentBgImages/  # Independent background set (optimized for mobile vertical)
+/images/independentBgImages/  # Independent background set (optimized for mobile vertically)
 ```
 
 ---
