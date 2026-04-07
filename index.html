@@ -8,7 +8,10 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Elite Gems Dashboard</title>
+
+    <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
+
+    <title>Elite Gems Dashboard </title>
     <style>
         /* Upgraded Color Palettes */
         :root {
@@ -647,6 +650,107 @@
             50% { opacity: 0.2; }
         }
 
+    
+
+        /* Cistercian clock centering fix */
+        #cistercian-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+            /*min-height: 520px;   /* matches analog clock height */
+            margin: 0 auto; /* Ensures the container itself stays centered */
+            overflow: hidden; /* Prevents internal SVG overflow from shifting alignment */
+        }
+
+        #cist-clock {
+            /* Force horizontal alignment */
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important; /* Prevents stacking on smaller screens */
+            margin: 0 auto; /* Standard horizontal centering */
+            font-size: 10rem; /* Massive, matching your digital font */
+            /* Colourful lines – same as your date row */
+            --cistercian-color-0: #ffffff;   /* centre line – white */
+            --cistercian-color-1: #ff5733;   /* top line – orange-red */
+            --cistercian-color-2: #33ff57;   /* NW‑SE diagonal – green */
+            --cistercian-color-3: #3357ff;   /* bottom line – blue */
+            --cistercian-color-4: #f033ff;   /* NE‑SW diagonal – purple */
+            --cistercian-color-5: #ffd733;   /* right line – yellow */
+            --cistercian-width: 4px;          /* thicker, bolder lines */
+            /*color: var(--accent-color); /* Cyber-Cyan */
+            /*filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.5)); /* Glow effect */
+        }
+
+        /* #cist-clock {
+            display: block;
+            margin: 0 auto;
+            font-size: 10rem;    /* keep your existing size 
+            --cistercian-width: 3px;
+            filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.6));
+        }*/
+
+        /* Optional: Light mode override: Light mode adjustment for Cistercian */
+        body.light-mode #cist-clock {
+            color: var(--text-color);
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.2));
+        }
+
+
+        /* Horizontal row for year/month/day */
+        .cistercian-date-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;                /* reduced gap for smaller look */
+            margin: 10px 0 15px 0;
+        }
+
+        /* Adjust size of each Cistercian numeral */
+        .cistercian-date-row cistercian-number {
+            font-size: 2rem;         /* was 2.8rem – smaller */
+            --cistercian-width: 2px;
+            /* Keep your colours or change them */
+            --cistercian-color-0: #ffffff;
+            --cistercian-color-1: #ff5733;
+            --cistercian-color-2: #33ff57;
+            --cistercian-color-3: #3357ff;
+            --cistercian-color-4: #f033ff;
+            --cistercian-color-5: #ffd733;
+            filter: drop-shadow(0 0 4px rgba(0,240,255,0.4));
+        }
+
+        /* Dot separators – smaller and vertically centered */
+        .cist-sep {
+            font-size: 1.2rem;       /* smaller than before */
+            font-weight: bold;
+            color: var(--accent-color);
+            margin: 0;
+            line-height: 1;
+        }
+
+        /* Light mode adjustments */
+        body.light-mode .cistercian-date-row cistercian-number {
+            filter: drop-shadow(0 0 2px rgba(0,0,0,0.2));
+        }
+        body.light-mode .cist-sep {
+            color: var(--text-color);
+        }
+
+        .small-cist-date cistercian-number {
+            font-size: 1.8rem;
+            --cistercian-color-0: #ffffff;
+            --cistercian-color-1: #ff5733;
+            --cistercian-color-2: #04ff00;
+            --cistercian-color-3: #e5ff00;
+            --cistercian-color-4: #ff00ff;
+            --cistercian-color-5: #00ccff;
+        }
+
+
         #hide-info-btn {
             background: transparent;
             color: #f6ff00;
@@ -807,6 +911,17 @@
                 font-size: 6.5rem; /* Slightly smaller so it doesn't wrap on thin phones */
             }
 
+
+            .cistercian-date-row cistercian-number {
+                font-size: 1.5rem;
+            }
+            .cist-sep {
+                font-size: 1rem;
+            }
+            .cistercian-date-row {
+                gap: 4px;
+            }
+
     }
 
 
@@ -844,10 +959,26 @@
             <div id="digi-hours">00</div>
             <div class="minutes-row">
                 <span class="digi-colon">:</span>
-            <div id="digi-minutes">00</div>
+                <div id="digi-minutes">00</div>
+            </div>
         </div>
 
-        <div id="digital-date" style="font-size: 0.7rem; font-weight: 100;flex-direction: column;align-items: center;padding-top: 5px; letter-spacing: 1px; color: var(--text-color); opacity: 0.8; margin-bottom: 10px;"></div>
+        <!-- Cistercian clock lives on its own, not inside a conflicting ID -->
+        <div id="cistercian-wrapper" style="display: none;">
+            <cistercian-clock id="cist-clock"></cistercian-clock>
+        </div>
+
+        <!-- New Cistercian date row (replaces the old text date) -->
+        <div id="cistercian-date-row" class="cistercian-date-row">
+            <cistercian-number id="cist-year" value="2026"></cistercian-number>
+            <span class="cist-sep">-</span>
+            <cistercian-number id="cist-month" value="4"></cistercian-number>
+            <span class="cist-sep">-</span>
+            <cistercian-number id="cist-day" value="7"></cistercian-number>
+        </div>
+
+
+        <!--<div id="digital-date" style="font-size: 0.7rem; font-weight: 100;flex-direction: column;align-items: center;padding-top: 5px; letter-spacing: 1px; color: var(--text-color); opacity: 0.8; margin-bottom: 10px;"></div>-->
     </div> 
 
     <!--<div id="digital-clock" style="display: none; flex-direction: column; align-items: center; line-height: 0.9;" 
@@ -978,7 +1109,7 @@
         </div>
 
         <div class="block">
-            <p class="block-text">Johan The Observer/Wanderer</p>
+            <p class="block-text">The Observer/Wanderer</p>
             <div class="image-block">
                 <img src="images/JohanNlbProfile.jpg" alt="JohanNlbProfile">
             </div>
@@ -1295,8 +1426,73 @@
 
     </div>
 
+    <!-- Cistercian clock block (rainbow colours, fully centered) -->
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 60px auto; border-radius: 50px; max-width: 600px;">
+        <cistercian-clock id="perm-cist-clock" style="font-size: 8rem;
+            --cistercian-width: 3px;
+            --cistercian-color-0: #ffffff;
+            --cistercian-color-1: #ff5733;
+            --cistercian-color-2: #33ff57;
+            --cistercian-color-3: #3357ff;
+            --cistercian-color-4: #f033ff;
+            --cistercian-color-5: #ffd733;
+            display: inline-block;
+            margin: 0 auto;">
+        </cistercian-clock>
+        <!-- Small Cistercian date row (no separators) -->
+        <div class="small-cist-date" style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 15px;">
+            <cistercian-number id="small-cist-year" value="2026" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
+            <cistercian-number id="small-cist-month" value="4" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
+            <cistercian-number id="small-cist-day" value="7" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
+        </div>
+    </div>
 
-    <script>
+    <div class="content-blocks" style="margin-top: 375px; padding-top: 5px;"> <!-- border-top: 1px solid var(--clock-border);-->
+    <div class="block active" style="position: relative; opacity: 1; display: flex; flex-direction: column;">
+        <h3 class="title-accent">Project Intent</h3>
+        <p class="block-text">
+            This dashboard is designed as a <b>Persistent Ambient Display</b>. 
+            The goal is to bridge the gap between a functional timepiece and a personal 
+            gallery, serving as an "Always-On" companion for a professional workspace.
+        </p>
+        
+        <h3 class="title-accent" style="font-size: 1rem; margin-top: 20px;">Technical Architecture</h3>
+        <ul class="block-text">
+            <li><b>Screen Wake Lock API:</b> Prevents the host device from entering sleep mode or dimming the display, ensuring the clock remains visible during long work sessions.</li>
+            <li><b>Fisher-Yates Shuffle:</b> An $O(n)$ complexity algorithm used to ensure an unbiased, non-repeating random sequence for the content rotation.</li>
+            <li><b>Deterministic Minute-Reset:</b> State-management logic that synchronizes UI transitions precisely with the 00-second mark of the system clock.</li>
+            <li><b>Hybrid Background Engine:</b> Supports both Synchronized (mirrored) and Independent background cycling with a deterministic state-management loop.</li>
+            <li><b>Stealth Gesture Layer:</b> Implements a "Ghost UI" using double-click event listeners and Keyboard Hotkeys to toggle state without persistent UI clutter.</li>
+    </div>
+    </div>
+    
+    <!-- Cistercian clock block with small date underneath -->
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 60px auto; margin-top: 100px; padding: 20px; border-radius: 48px; max-width: 600px;">
+        <h3 class="title-accent" style="padding-top: 100px; margin-bottom: 20px;">Cistercian Clock Date</h3>
+        <cistercian-clock id="perm-cist-clock" style="font-size: 8rem;
+            --cistercian-width: 3px;
+            --cistercian-color-0: #ffffff;
+            --cistercian-color-1: #ff5733;
+            --cistercian-color-2: #33ff57;
+            --cistercian-color-3: #3357ff;
+            --cistercian-color-4: #f033ff;
+            --cistercian-color-5: #ffd733;
+            display: inline-block;
+            margin: 0 auto;">
+        </cistercian-clock>
+
+        <!-- Small Cistercian date row (no separators) -->
+        <div class="small-cist-date" style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 15px;">
+            <cistercian-number id="small-cist-year" value="2026" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
+            <cistercian-number id="small-cist-month" value="4" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
+            <cistercian-number id="small-cist-day" value="7" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
+        </div>
+        
+        <p class="block-text" style="margin-top: 20px;">Medieval monk numerals – each symbol represents a number from 0–9999 <br>If you don't know about them, here's the introduction from the <a href="https://en.wikipedia.org/wiki/Cistercian_numerals">Wikipedia page</a> </p>
+    </div>
+</body>
+
+<script>
         // --- 1. AUDIO CONTEXT SETUP ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -1691,7 +1887,15 @@
             } else if (mode === 'digital') {
                 analogClock.style.display = 'none';
                 digitalClock.style.display = 'flex';
+                cistercianClock.style.display = 'none';
                 styleBtn.innerText = "📟 STYLE: DIGITAL";
+                styleBtn.classList.add('zen-active');
+                styleBtn.style.borderColor = "var(--clock-border)";
+            } else if (mode === 'cistercian') {
+                analogClock.style.display = 'none';
+                digitalClock.style.display = 'none';
+                cistercianClock.style.display = 'flex';
+                styleBtn.innerText = "🧮 STYLE: CISTERCIAN";
                 styleBtn.classList.add('zen-active');
                 styleBtn.style.borderColor = "var(--clock-border)";
             }
@@ -1704,13 +1908,14 @@
         });
 
 
-        // --- ELITE 3-STATE CLOCK TOGGLE (Classic / Glass / Digital) ---
+        // --- ELITE 4-STATE CLOCK TOGGLE (Classic / Glass / Digital / Cistercian) ---
         const styleBtn = document.getElementById('zen-toggle-btn');
         const analogClock = document.getElementById('analog-clock');
         const digitalClock = document.getElementById('digital-clock');
+        const cistercianClock = document.getElementById('cistercian-wrapper');// <-- NEW
 
-        // State: 0 = Classic, 1 = Glass, 2 = Digital
-        const clockModes = ['classic', 'glass', 'digital'];
+        // State: 0 = Classic, 1 = Glass, 2 = Digital , 3 = Cistercian ,
+        const clockModes = ['classic', 'glass', 'digital','cistercian'];
         let currentModeIndex = 0;
 
         // Set initial button text
@@ -1720,7 +1925,8 @@
         const modeMessages = {
             'classic': '🕰️ CLASSIC MODE',
             'glass': '💎 GLASS MODE',
-            'digital': '📟 DIGITAL MODE'
+            'digital': '📟 DIGITAL MODE',
+            'cistercian': '🧮 CISTERCIAN MODE' // <-- NEW
         };
 
         styleBtn.addEventListener('click', () => {
@@ -1733,6 +1939,7 @@
             analogClock.classList.remove('zen-mode');
             analogClock.style.display = 'flex';
             digitalClock.style.display = 'none';
+            cistercianClock.style.display = 'none';
             styleBtn.classList.remove('zen-active');
             styleBtn.style.borderColor = "var(--clock-border)";
             styleBtn.style.color = "var(--text-color)";
@@ -1747,7 +1954,15 @@
             } else if (mode === 'digital') {
                 analogClock.style.display = 'none';
                 digitalClock.style.display = 'flex';
+                cistercianClock.style.display = 'none';
                 styleBtn.innerText = "📟 STYLE: DIGITAL";
+                styleBtn.classList.add('zen-active');
+                styleBtn.style.borderColor = "var(--clock-border)";
+            } else if (mode === 'cistercian') {
+                analogClock.style.display = 'none';
+                digitalClock.style.display = 'none';
+                cistercianClock.style.display = 'flex'; // block //
+                styleBtn.innerText = "🧮 STYLE: CISTERCIAN";
                 styleBtn.classList.add('zen-active');
                 styleBtn.style.borderColor = "var(--clock-border)";
             }
@@ -1759,13 +1974,6 @@
         });
 
 
-       
-        // 1. New Date Engine
-        function updateDate() {
-            const now = new Date();
-            const options = { weekday: 'long', month: 'long', day: 'numeric' };
-            document.getElementById('digital-date').innerText = now.toLocaleDateString('en-US', options);
-        }
 
         // 2. Hide Info Logic
         // --- CLEAN VIEW 3‑STATE CYCLE (with space preservation) ---
@@ -1816,10 +2024,34 @@
         // You likely already have an interval running for your analog hands.
         // You can just drop this function in and call it on an interval.
         function updateDigitalTime() {
-        const now = new Date();
-        document.getElementById('digi-hours').innerText = String(now.getHours()).padStart(2, '0');
-        document.getElementById('digi-minutes').innerText = String(now.getMinutes()).padStart(2, '0');
-        updateDate(); // Updates date as well
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            
+            document.getElementById('digi-hours').innerText = String(now.getHours()).padStart(2, '0');
+            document.getElementById('digi-minutes').innerText = String(now.getMinutes()).padStart(2, '0');
+            
+            // Update Cistercian date numerals (year, month, day)
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;  // months are 0-indexed
+            const day = now.getDate();
+            
+            const yearElem = document.getElementById('cist-year');
+            const monthElem = document.getElementById('cist-month');
+            const dayElem = document.getElementById('cist-day');
+            
+            if (yearElem) yearElem.setAttribute('value', year);
+            if (monthElem) monthElem.setAttribute('value', month);
+            if (dayElem) dayElem.setAttribute('value', day);
+
+            // Update the small date inside the Cistercian clock block
+            const smallYear = document.getElementById('small-cist-year');
+            const smallMonth = document.getElementById('small-cist-month');
+            const smallDay = document.getElementById('small-cist-day');
+
+            if (smallYear) smallYear.setAttribute('value', year);
+            if (smallMonth) smallMonth.setAttribute('value', month);
+            if (smallDay) smallDay.setAttribute('value', day);
         }
 
         // Start it once
@@ -1862,28 +2094,7 @@
         // Automatically update the copyright year
         document.getElementById('year').textContent = new Date().getFullYear();
 
-    </script>
-
-
-    <div class="content-blocks" style="margin-top: 200px; border-top: 1px solid var(--clock-border); padding-top: 40px;">
-    <div class="block active" style="position: relative; opacity: 1; display: flex; flex-direction: column;">
-        <h3 class="title-accent">Project Intent</h3>
-        <p class="block-text">
-            This dashboard is designed as a <b>Persistent Ambient Display</b>. 
-            The goal is to bridge the gap between a functional timepiece and a personal 
-            gallery, serving as an "Always-On" companion for a professional workspace.
-        </p>
-        
-        <h3 class="title-accent" style="font-size: 1rem; margin-top: 20px;">Technical Architecture</h3>
-        <ul class="block-text">
-            <li><b>Screen Wake Lock API:</b> Prevents the host device from entering sleep mode or dimming the display, ensuring the clock remains visible during long work sessions.</li>
-            <li><b>Fisher-Yates Shuffle:</b> An $O(n)$ complexity algorithm used to ensure an unbiased, non-repeating random sequence for the content rotation.</li>
-            <li><b>Deterministic Minute-Reset:</b> State-management logic that synchronizes UI transitions precisely with the 00-second mark of the system clock.</li>
-            <li><b>Hybrid Background Engine:</b> Supports both Synchronized (mirrored) and Independent background cycling with a deterministic state-management loop.</li>
-            <li><b>Stealth Gesture Layer:</b> Implements a "Ghost UI" using double-click event listeners and Keyboard Hotkeys to toggle state without persistent UI clutter.</li>
-    </div>
-    </div>
-</body>
+</script>
 
 <footer class="site-footer">
     <div class="footer-line"></div>

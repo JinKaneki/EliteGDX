@@ -14,10 +14,16 @@ Live Demo: [https://jinkaneki.github.io/AnalogClockHost/]
 - **Dual-Mode Backgrounds:**
   - **Synced:** Background mirrors the central gallery image.
   - **Independent:** Background cycles on its own 30s timer, separate from the minute clock.
-- **Three‑State Clock Style:**
+- **Four Clock Styles** (Toggle with the **STYLE** button):
   - **Classic:** Solid analog clock with neumorphic shadows.
   - **Glass:** Transparent analog clock (numbers and hands only).
   - **Digital:** Large, minimal digital display with glowing colon.
+  - **Cistercian**: Displays the full time as a single medieval numeral (Hours + Minutes + Seconds) with **rainbow‑coloured lines**.
+
+- **Cistercian Date Display**:
+  - Year, month, and day displayed as three separate Cistercian numerals below the main clock.
+  - Rainbow-colored strokes with natural spacing.
+
 - **Three‑State Clean View:**
   - **OFF:** All text and images visible.
   - **Text Off:** Info text hidden, images remain.
@@ -31,6 +37,9 @@ Live Demo: [https://jinkaneki.github.io/AnalogClockHost/]
 - **Mechanical Sound Engine:** Web Audio API generated ticks/tocks with adjustable volume and instant mute.
 
 ---
+## 📸 Screenshots
+
+
 
 ## 🛠️ Technical Highlights
 
@@ -51,14 +60,41 @@ UI transitions are synchronized with the system clock, occurring precisely at `0
 - **Freeze Mode:** Halt the minute‑cycle to pin a specific image/quote.
 - **Space Preservation:** When clean view hides images, the layout reserves the exact space – the clock never jumps.
 
+
+### 🧮 Cistercian Numerals – Technical Details
+
+This project uses the [`cistercian-numerals`](https://github.com/hsablonniere/cistercian-numerals) Web Components library.
+
+### Components used
+
+| Component | Purpose |
+|-----------|---------|
+| `<cistercian-clock>` | Displays current time (hours+minutes+seconds) as a single Cistercian symbol. |
+| `<cistercian-number>` | Displays any number from 0 to 9999 as a Cistercian numeral. |
+
+### Custom styling applied
+
+I set the following CSS custom properties to achieve the **rainbow line effect**:
+
+```css
+--cistercian-color-0: #ffffff;   /* centre line */
+--cistercian-color-1: #ff5733;   /* top line */
+--cistercian-color-2: #33ff57;   /* NW‑SE diagonal */
+--cistercian-color-3: #3357ff;   /* bottom line */
+--cistercian-color-4: #f033ff;   /* NE‑SW diagonal */
+--cistercian-color-5: #ffd733;   /* right line */
+--cistercian-width: 3px;          /* line thickness */
 ---
 
 ## 📁 Project Structure
 
 ```
-index.html                     # Core logic, styles, and structure
-/images/                       # Gallery images for the slideshow
-/images/independentBgImages/  # Independent background set (optimized for mobile vertically)
+.
+├── index.html               # Main dashboard (all HTML/CSS/JS)
+├── manifest.json            # PWA manifest
+├── images/                  # Slideshow images (profile, backgrounds, etc.)
+├── images/indepedentBG/     # Independent background images (optimized for mobile vertically)
+└── README.md                # This file
 ```
 
 ---
@@ -89,9 +125,38 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 
 ---
 
+## 🚀 How to Run / Use
+
+1. **Clone the repository**
+   ```bash
+   git clone [https://github.com/JinKaneki/AnalogClockHost.git](https://github.com/JinKaneki/AnalogClockHost.git)
+   cd AnalogClockHost
+
+2.Serve locally (any static server)
+```bash
+    npx serve .
+    # or
+    python -m http.server 8000
+
+3.Open in a browser – all features work offline after first load.
+
+## 🛠️ Dependencies
+cistercian-numerals – loaded via CDN:
+  <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
+
+Web Audio API – no external library
+
+Wake Lock API – modern browsers only (fallback silently)
+
+## 🙏 Credits
+Original Cistercian Web Components by Hubert Sablonnière
+Dashboard Design & Engineering by Jin Kaneki
+Inspiration: Medieval Cistercian monks and the pursuit of compact data visualization.
+
+
 ## 🧠 Philosophy
 > "All things serve the Steam. XD"
 
-This project demonstrates that even a simple utility can be elevated through high‑level engineering and attention to browser‑specific APIs.
+This project demonstrated that even a simple utility—like a clock—can be elevated through high‑level engineering, browser‑specific APIs, and unique historical aesthetics.
 
 **Developed by Jin_Kaneki**
