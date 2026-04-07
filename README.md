@@ -84,15 +84,16 @@ I set the following CSS custom properties to achieve the **rainbow line effect**
 --cistercian-width: 3px;          /* line thickness */
 ---
 
+
 ## 📁 Project Structure
 
 ```
-.
-├── index.html               # Main dashboard (all HTML/CSS/JS)
-├── manifest.json            # PWA manifest
-├── images/                  # Slideshow images (profile, backgrounds, etc.)
-├── images/indepedentBG/     # Independent background images (optimized for mobile vertically)
-└── README.md                # This file
+  index.html                     # Main dashboard (all HTML/CSS/JS)
+  /images/                       # Slideshow images (profile, backgrounds, etc.)
+  manifest.json                  # PWA manifest
+  /images/independentBgImages/   # Independent background images (optimized for mobile vertically)
+  README.md                      # This file
+
 ```
 
 ---
@@ -125,36 +126,37 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 
 ## How to Run / Use
 
-1. **Clone the repository**
-   ```bash
-   git clone [https://github.com/JinKaneki/AnalogClockHost.git](https://github.com/JinKaneki/AnalogClockHost.git)
-   cd AnalogClockHost
+    1. **Clone the repository**
+      ```bash
+      git clone [https://github.com/JinKaneki/AnalogClockHost.git](https://github.com/JinKaneki/AnalogClockHost.git)
+      cd AnalogClockHost
 
-2.Serve locally (any static server)
-```bash
-    npx serve .
-    # or
-    python -m http.server 8000
+    2.Serve locally (any static server)
+    ```bash
+        npx serve .
+        # or
+        python -m http.server 8000
 
-3.Open in a browser – all features work offline after first load.
+    3.Open in a browser – all features work offline after first load.
+
 
 ## 🛠️ Dependencies
-cistercian-numerals – loaded via CDN:
-  <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
+    cistercian-numerals – loaded via CDN:
+      <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
 
-Web Audio API – no external library
+    Web Audio API – no external library
 
-Wake Lock API – modern browsers only (fallback silently)
+    Wake Lock API – modern browsers only (fallback silently)
 
 ## 🙏 Credits
-Original Cistercian Web Components by Hubert Sablonnière
-Dashboard Design & Engineering by Jin Kaneki
-Inspiration: Medieval Cistercian monks and the pursuit of compact data visualization.
+    Original Cistercian Web Components by Hubert Sablonnière
+    Dashboard Design & Engineering by Jin Kaneki
+    Inspiration: Medieval Cistercian monks and the pursuit of compact data visualization.
 
 
 ## 🧠 Philosophy
-> "All things serve the Steam. XD"
+  > "All things serve the Steam. XD"
 
 This project demonstrated that even a simple utility—like a clock—can be elevated through high‑level engineering, browser‑specific APIs, and unique historical aesthetics.
 
-**Developed by Jin_Kaneki**
+- **Developed by Jin_Kaneki**
