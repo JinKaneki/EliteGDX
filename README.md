@@ -1,4 +1,4 @@
-# 🚀 Elite Gems 🕰️ : Persistent Ambient Dashboard Fancy Analog/Digital Clock AOD
+# Elite Gems 🕰️ : Persistent Ambient Dashboard Fancy Analog/Digital Clock AOD
 
 **An "Always-On" productivity clock and personal gallery engineered for professional workspaces.**
 
@@ -123,7 +123,7 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 
 ---
 
-## 🚀 How to Run / Use
+## How to Run / Use
 
 1. **Clone the repository**
    ```bash
