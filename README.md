@@ -74,25 +74,25 @@ This project uses the [`cistercian-numerals`](https://github.com/hsablonniere/ci
 
 I set the following CSS custom properties to achieve the **rainbow line effect**:
 
-css
---cistercian-color-0: #ffffff;   /* centre line */
---cistercian-color-1: #ff5733;   /* top line */
---cistercian-color-2: #33ff57;   /* NW‑SE diagonal */
---cistercian-color-3: #3357ff;   /* bottom line */
---cistercian-color-4: #f033ff;   /* NE‑SW diagonal */
---cistercian-color-5: #ffd733;   /* right line */
---cistercian-width: 3px;          /* line thickness */
+    css
+    --cistercian-color-0: #ffffff;   /* centre line */
+    --cistercian-color-1: #ff5733;   /* top line */
+    --cistercian-color-2: #33ff57;   /* NW‑SE diagonal */
+    --cistercian-color-3: #3357ff;   /* bottom line */
+    --cistercian-color-4: #f033ff;   /* NE‑SW diagonal */
+    --cistercian-color-5: #ffd733;   /* right line */
+    --cistercian-width: 3px;          /* line thickness */
 ---
 
 
 
 ## 📁 Project Structure
 
-  index.html                     # Main dashboard (all HTML/CSS/JS)
-  /images/                       # Slideshow images (profile, backgrounds, etc.)
-  manifest.json                  # PWA manifest
-  /images/independentBgImages/   # Independent background images (optimized for mobile vertically)
-  README.md                      # This file
+    index.html                     # Main dashboard (all HTML/CSS/JS)
+    /images/                       # Slideshow images (profile, backgrounds, etc.)
+    manifest.json                  # PWA manifest
+    /images/independentBgImages/   # Independent background images (optimized for mobile vertically)
+    README.md                      # This file
 ---
 
 ## 📜 Version 2.1 Change Log (March 2026)
