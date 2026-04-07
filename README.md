@@ -1,6 +1,4 @@
-# 🚀 Elite Gems: Persistent Ambient Dashboard Fancy Analog/Digital Clock AOD
-
-# 🕰️ Elite Ambient Dashboard
+# 🚀 Elite Gems 🕰️ : Persistent Ambient Dashboard Fancy Analog/Digital Clock AOD
 
 **An "Always-On" productivity clock and personal gallery engineered for professional workspaces.**
 
