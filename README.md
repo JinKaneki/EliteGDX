@@ -74,7 +74,7 @@ This project uses the [`cistercian-numerals`](https://github.com/hsablonniere/ci
 
 I set the following CSS custom properties to achieve the **rainbow line effect**:
 
-```css
+css
 --cistercian-color-0: #ffffff;   /* centre line */
 --cistercian-color-1: #ff5733;   /* top line */
 --cistercian-color-2: #33ff57;   /* NW‑SE diagonal */
