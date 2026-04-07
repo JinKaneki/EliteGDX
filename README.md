@@ -85,17 +85,14 @@ I set the following CSS custom properties to achieve the **rainbow line effect**
 ---
 
 
+
 ## 📁 Project Structure
 
-```
   index.html                     # Main dashboard (all HTML/CSS/JS)
   /images/                       # Slideshow images (profile, backgrounds, etc.)
   manifest.json                  # PWA manifest
   /images/independentBgImages/   # Independent background images (optimized for mobile vertically)
   README.md                      # This file
-
-```
-
 ---
 
 ## 📜 Version 2.1 Change Log (March 2026)
