@@ -124,16 +124,18 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 ## How to Run / Use
 
 1. **Clone the repository**
-  ```bash:
-  git clone [https://github.com/JinKaneki/AnalogClockHost.git](https://github.com/JinKaneki/AnalogClockHost.git)
-  cd AnalogClockHost
+    ```bash:
+    git clone [https://github.com/JinKaneki/AnalogClockHost.git](https://github.com/JinKaneki/AnalogClockHost.git)
+    cd AnalogClockHost
+---
 
 2. Serve locally (any static server)
    ```bash:
   npx serve .
   # or
   python -m http.server 8000
-    
+---
+
 3. Open in a browser – all features work offline after first load.
 
 
