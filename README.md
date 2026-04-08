@@ -123,30 +123,30 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 
 ## How to Run / Use
 
-    1. **Clone the repository**
-    ```bash:
-    git clone [https://github.com/JinKaneki/AnalogClockHost.git](https://github.com/JinKaneki/AnalogClockHost.git)
-    cd AnalogClockHost
+1. **Clone the repository**
+  ```bash:
+  git clone [https://github.com/JinKaneki/AnalogClockHost.git](https://github.com/JinKaneki/AnalogClockHost.git)
+  cd AnalogClockHost
 
-    2.Serve locally (any static server)
-    ```bash:
-    npx serve .
-    # or
-    python -m http.server 8000
-
-    3.Open in a browser – all features work offline after first load.
+2. Serve locally (any static server)
+   ```bash:
+  npx serve .
+  # or
+  python -m http.server 8000
+    
+3. Open in a browser – all features work offline after first load.
 
 
 ## 🛠️ Dependencies
-    cistercian-numerals – loaded via CDN:
-      <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
-    Web Audio API – no external library
-    Wake Lock API – modern browsers only (fallback silently)
+cistercian-numerals – loaded via CDN:
+  <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
+Web Audio API – no external library
+Wake Lock API – modern browsers only (fallback silently)
 
 ## 🙏 Credits
-    Original Cistercian Web Components by Hubert Sablonnière
-    Dashboard Design & Engineering by Jin Kaneki
-    Inspiration: Medieval Cistercian monks and the pursuit of compact data visualization.
+Original Cistercian Web Components by Hubert Sablonnière
+Dashboard Design & Engineering by Jin Kaneki
+Inspiration: Medieval Cistercian monks and the pursuit of compact data visualization.
 
 
 ## 🧠 Philosophy
