@@ -137,6 +137,7 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 ---
 
 3. Open in a browser – all features work offline after first load.
+---
 
 
 ### 🛠️ Dependencies
