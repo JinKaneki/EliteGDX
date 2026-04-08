@@ -57,7 +57,7 @@
 
 
         html , body {
-            height: 100%;  /* prevent body to grow taller than viewport */
+            min-height: 100%;  /* allows body to grow taller than viewport */
             margin: 0;
             padding: 0;
             overscroll-behavior: none;   /* prevents pull-to-refresh on mobile */
@@ -95,9 +95,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /*center*/
+            justify-content: center;  /*center*/
             padding-top: 20px;
-            padding-bottom: 20px;   /* extra space below footer */
+            padding-bottom: 60px;   /* extra space below footer */
             transition: color 0.5s ease, background-image 0.8s ease-in-out;
             
             /* 1. STARTING STATE: Solid dark background */
@@ -110,6 +110,8 @@
             background-repeat: no-repeat;
             background-attachment: fixed;*/
             position: relative; 
+            overflow-y: auto;           /* explicitly allow vertical scroll */
+            -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
         }
         .fixed-bg {
             position: fixed;
@@ -353,11 +355,13 @@
             text-align: center;
             width: 100%;
             max-width: 800px;
-            min-height: 400px;  /* Adjust based on your tallest image/text combo */
+            min-height: 500px;  /* Adjust based on your tallest image/text combo */
             position: relative;
             margin: 20px auto; /* 40px before */
             padding: 0 20px 80px 20px; /* Top, Right, Bottom (Large for footer space), Left */
             display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
             box-sizing: border-box;    /* Ensures padding is included in width */
         }
@@ -812,8 +816,7 @@
 
         .site-footer {
             width: 100%;
-            padding: 40px 0;
-            padding-top: 20px;
+            padding: 40px 0 100px 0;
             text-align: center;
             font-family: inherit;
             opacity: 0.6;
@@ -947,7 +950,15 @@
             }
             .cistercian-date-row {
                 gap: 4px;
-            }     
+            }
+
+            .site-footer {
+            width: 100%;
+            padding: 40px 0 100px 0; 
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
     }
 
 
@@ -1908,6 +1919,7 @@
                 analogClock.classList.remove('zen-mode');
                 analogClock.style.display = 'flex';
                 digitalClock.style.display = 'none';
+                cistercianClock.style.display ='none';
                 styleBtn.classList.remove('zen-active');
                 styleBtn.style.borderColor = "var(--clock-border)";
                 styleBtn.style.color = "var(--text-color)";
