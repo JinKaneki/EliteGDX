@@ -2,7 +2,7 @@
 
 **An "Always-On" productivity clock and personal gallery engineered for professional workspaces.**
 
-Live Demo at : [https://jinkaneki.github.io/AnalogClockHost/]
+Live at : [https://jinkaneki.github.io/AnalogClockHost/]
 
 ---
 
@@ -140,10 +140,12 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 
 
 ## 🛠️ Dependencies
-  cistercian-numerals – loaded via CDN:
+
+cistercian-numerals – loaded via CDN:
       <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
-  Web Audio API – no external library.
-  Wake Lock API – modern browsers only (fallback silently).
+    Web Audio API – no external library.  
+    Wake Lock API – modern browsers only (fallback silently).
+---
 
 ## 🙏 Credits
 Original Cistercian Web Components by Hubert Sablonnière. 
