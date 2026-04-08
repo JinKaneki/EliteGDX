@@ -2,7 +2,7 @@
 
 **An "Always-On" productivity clock and personal gallery engineered for professional workspaces.**
 
-Live Demo: [https://jinkaneki.github.io/AnalogClockHost/]
+Live Demo at : [https://jinkaneki.github.io/AnalogClockHost/]
 
 ---
 
