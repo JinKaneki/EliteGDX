@@ -11,7 +11,36 @@
 
     <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
 
-    <title>Elite Gems Dashboard </title>
+    <!--BASIC SEO-->
+    <meta name="description" content="Elite Gems Dashboard – an ambient display with Cistercian clock, analog clock, and image slideshow.">
+    <meta name="keywords" content="Cistercian numerals, clock, dashboard, medieval numerals, web components">
+    <meta name="author" content="Jin Kaneki">
+    <meta property="og:title" content="Elite Gems Dashboard">
+    <meta property="og:description" content="Cistercian clock & ambient dashboard">
+    <meta property="og:image" content="https://jinkaneki.github.io/AnalogClockHost/preview.jpg">
+    <meta property="og:url" content="https://jinkaneki.github.io/AnalogClockHost/">
+    <meta name="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">
+        {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Elite Gems Dashboard",
+        "description": "An interactive clock dashboard with Cistercian numerals, analog and digital clocks, and a rotating image gallery.",
+        "author": {
+            "@type": "Person",
+            "name": "JinKaneki "
+        },
+        "applicationCategory": "Multimedia",
+        "operatingSystem": "All",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+        }
+    </script>
+
+    <title>Elite Gems Dashboard</title>
     <style>
         /* Upgraded Color Palettes */
         :root {
@@ -25,18 +54,25 @@
             --shadow-inner: inset 5px 5px 15px rgba(0, 0, 0, 0.5), inset -5px -5px 15px rgba(255, 255, 255, 0.03);
         }
 
-        html, body {
-            overscroll-behavior: none; /* prevents pull-to-refresh and edge glow 
-            touch-action: pan-y;        /* allows vertical scrolling only */
-            touch-action: pan-y pinch-zoom;
-            height: 100%;
-            overflow-x: hidden;
-            /* Prevents text selection on long-press (optional, but feels like an app) 
-            user-select: none;
-            -webkit-user-select: none;
-              Prevents the grey tap-highlight on mobile buttons 
-            -webkit-tap-highlight-color: transparent;*/
+        
+        html {
+            height: 100%;      /* root fills viewport */
         }
+
+        body {
+            min-height: 100%;  /* allows body to grow taller than viewport */
+            margin: 0;
+            padding: 0;
+            overscroll-behavior: none;   /* prevents pull-to-refresh on mobile */
+            touch-action: pan-y pinch-zoom;  /* allows vertical scrolling + pinch zoom */
+            overflow-x: hidden;           /* prevents horizontal scroll */
+            /* Optional: disable text selection and tap highlight */
+            /* user-select: none; */
+            /* -webkit-user-select: none; */
+            /* -webkit-tap-highlight-color: transparent; */
+        }
+
+        
         /* Make sure buttons feel like real hardware */
         button {
             touch-action: manipulation;
@@ -64,6 +100,7 @@
             align-items: center;
             justify-content: center; /*center*/
             padding-top: 20px;
+            padding-bottom: 20px;   /* extra space below footer */
             transition: color 0.5s ease, background-image 0.8s ease-in-out;
             
             /* 1. STARTING STATE: Solid dark background */
@@ -319,10 +356,10 @@
             text-align: center;
             width: 100%;
             max-width: 800px;
-            min-height: 450px; /* Adjust based on your tallest image/text combo */
+            min-height: 420px;  /* Adjust based on your tallest image/text combo */
             position: relative;
             margin: 20px auto; /* 40px before */
-            padding: 0 auto 20px;           /* Prevents content touching screen edges */
+            padding: 0 20px 80px 20px; /* Top, Right, Bottom (Large for footer space), Left */
             display: flex;
             justify-content: center;
             box-sizing: border-box;    /* Ensures padding is included in width */
@@ -445,7 +482,7 @@
         /* Zen button active state (matches your 'frozen' style) */
         #zen-toggle-btn.zen-active {
             background: transparent;
-            color: var(#272627);
+            color: #272627;
             border-color: #272627;
             opacity: 1;
         }
@@ -685,13 +722,6 @@
             /*filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.5)); /* Glow effect */
         }
 
-        /* #cist-clock {
-            display: block;
-            margin: 0 auto;
-            font-size: 10rem;    /* keep your existing size 
-            --cistercian-width: 3px;
-            filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.6));
-        }*/
 
         /* Optional: Light mode override: Light mode adjustment for Cistercian */
         body.light-mode #cist-clock {
@@ -920,26 +950,25 @@
             }
             .cistercian-date-row {
                 gap: 4px;
-            }
-
+            }     
     }
 
 
-    </style>
+</style>
 </head>
 
 <body>
     <!-- Fixed background layer (behind everything) -->
     <div class="fixed-bg"></div>
-
     <div id="ghost-indicator">👻 PAUSED</div>
-    <div class="page">
+
     <div class="theme-switch-wrapper">
         <!--<span class="switch-label">Light/Dark</span> -->
-    <label class="switch" for="theme-toggle">
-      <input type="checkbox" id="theme-toggle">
-      <span class="slider round"></span>
-    </label>
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider round"></span> <!--Dark Mode-->
+        </label>
+        <span id="theme-label"></span>
     </div>
 
     
@@ -963,7 +992,7 @@
             </div>
         </div>
 
-        <!-- Cistercian clock lives on its own, not inside a conflicting ID -->
+        <!-- Cistercian clock lives on its own -->
         <div id="cistercian-wrapper" style="display: none;">
             <cistercian-clock id="cist-clock"></cistercian-clock>
         </div>
@@ -977,18 +1006,8 @@
             <cistercian-number id="cist-day" value="7"></cistercian-number>
         </div>
 
-
-        <!--<div id="digital-date" style="font-size: 0.7rem; font-weight: 100;flex-direction: column;align-items: center;padding-top: 5px; letter-spacing: 1px; color: var(--text-color); opacity: 0.8; margin-bottom: 10px;"></div>-->
     </div> 
 
-    <!--<div id="digital-clock" style="display: none; flex-direction: column; align-items: center; line-height: 0.9;" 
-        <div id="digi-hours">00</div>
-        <div style="display: flex; align-items: center;">
-            <span class="digi-colon" style="font-size: 0.5rem;">:</span>
-            <div id="digi-minutes">00</div>
-        </div>
-        <div id="digital-date" style="font-size: 1.2rem; font-weight: 400; letter-spacing: 2px; color: var(--text-color); opacity: 0.8; margin-top: 10px; text-transform: uppercase;"></div>
-    </div> -->
 
     <!-- MAIN TITLE -->
     <div class="name-plate main-title">
@@ -1014,24 +1033,24 @@
 
     <!--ONGOING DEVELOPMENT SECTION-->
     <div class="controls">
-    <!-- Row 1: Freeze + BG Toggle -->
-    <div class="button-row">
-        <button id="freeze-btn">❄️ FREEZE MOMENT</button>
-        <button id="bg-toggle-btn">🖼️ BG: SYNCED 🌌</button>
-    </div>
+        <!-- Row 1: Freeze + BG Toggle -->
+        <div class="button-row">
+            <button id="freeze-btn">❄️ FREEZE MOMENT</button>
+            <button id="bg-toggle-btn">🖼️ BG: SYNCED 🌌</button>
+        </div>
 
-    <!-- Row 2: Zen/Glass + -->
-    <div class="button-row">
-        <button id="zen-toggle-btn">GLASS: OFF</button>
-        <button id="hide-info-btn">🖥️ CLEAN VIEW: OFF</button>
-    </div>
+        <!-- Row 2: Zen/Glass + -->
+        <div class="button-row">
+            <button id="zen-toggle-btn">GLASS: OFF</button>
+            <button id="hide-info-btn">🖥️ CLEAN VIEW: OFF</button>
+        </div>
 
-    <!-- Row 3: Volume with mute icon -->
-    <div class="volume-container">
-        <span id="mute-btn" class="vol-icon" style="cursor: pointer; user-select: none;">🔊</span>
-        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.06">
+        <!-- Row 3: Volume with mute icon -->
+        <div class="volume-container">
+            <span id="mute-btn" class="vol-icon" style="cursor: pointer; user-select: none;">🔊</span>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.06">
+        </div>
     </div>
-
 
     <div class="content-blocks">
         <div class="block">
@@ -1426,6 +1445,7 @@
 
     </div>
 
+
     <!-- Cistercian clock block (rainbow colours, fully centered) -->
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 60px auto; border-radius: 50px; max-width: 600px;">
         <cistercian-clock id="perm-cist-clock" style="font-size: 8rem;
@@ -1447,29 +1467,30 @@
         </div>
     </div>
 
-    <div class="content-blocks" style="margin-top: 375px; padding-top: 5px;"> <!-- border-top: 1px solid var(--clock-border);-->
-    <div class="block active" style="position: relative; opacity: 1; display: flex; flex-direction: column;">
-        <h3 class="title-accent">Project Intent</h3>
-        <p class="block-text">
-            This dashboard is designed as a <b>Persistent Ambient Display</b>. 
-            The goal is to bridge the gap between a functional timepiece and a personal 
-            gallery, serving as an "Always-On" companion for a professional workspace.
-        </p>
-        
-        <h3 class="title-accent" style="font-size: 1rem; margin-top: 20px;">Technical Architecture</h3>
-        <ul class="block-text">
-            <li><b>Screen Wake Lock API:</b> Prevents the host device from entering sleep mode or dimming the display, ensuring the clock remains visible during long work sessions.</li>
-            <li><b>Fisher-Yates Shuffle:</b> An $O(n)$ complexity algorithm used to ensure an unbiased, non-repeating random sequence for the content rotation.</li>
-            <li><b>Deterministic Minute-Reset:</b> State-management logic that synchronizes UI transitions precisely with the 00-second mark of the system clock.</li>
-            <li><b>Hybrid Background Engine:</b> Supports both Synchronized (mirrored) and Independent background cycling with a deterministic state-management loop.</li>
-            <li><b>Stealth Gesture Layer:</b> Implements a "Ghost UI" using double-click event listeners and Keyboard Hotkeys to toggle state without persistent UI clutter.</li>
-    </div>
+    <div class="content-blocks" style="margin-top: 60px; padding-top: 325px; padding-bottom: 425px;"> <!-- border-top: 1px solid var(--clock-border);-->
+        <div class="block active" style="position: relative; opacity: 1; display: flex; flex-direction: column;">
+            <h3 class="title-accent">Project Intent</h3>
+            <p class="block-text">
+                This dashboard is designed as a <b>Persistent Ambient Display</b>. 
+                The goal is to bridge the gap between a functional timepiece and a personal 
+                gallery, serving as an "Always-On" companion for a professional workspace.
+            </p>
+            
+            <h3 class="title-accent" style="font-size: 1rem; margin-top: 20px;">Technical Architecture</h3>
+            <ul class="block-text">
+                <li><b>Screen Wake Lock API:</b> Prevents the host device from entering sleep mode or dimming the display, ensuring the clock remains visible during long work sessions.</li>
+                <li><b>Fisher-Yates Shuffle:</b> An $O(n)$ complexity algorithm used to ensure an unbiased, non-repeating random sequence for the content rotation.</li>
+                <li><b>Deterministic Minute-Reset:</b> State-management logic that synchronizes UI transitions precisely with the 00-second mark of the system clock.</li>
+                <li><b>Hybrid Background Engine:</b> Supports both Synchronized (mirrored) and Independent background cycling with a deterministic state-management loop.</li>
+                <li><b>Stealth Gesture Layer:</b> Implements a "Ghost UI" using double-click event listeners and Keyboard Hotkeys to toggle state without persistent UI clutter.</li>
+            </ul>
+        </div>
     </div>
     
-    <!-- Cistercian clock block with small date underneath -->
-    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 60px auto; margin-top: 100px; padding: 20px; border-radius: 48px; max-width: 600px;">
+    <!-- Cistercian clock last block with small date underneath -->   
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 60px auto; margin-top: 325px; padding: 20px; border-radius: 48px; max-width: 600px;">
         <h3 class="title-accent" style="padding-top: 100px; margin-bottom: 20px;">Cistercian Clock Date</h3>
-        <cistercian-clock id="perm-cist-clock" style="font-size: 8rem;
+        <cistercian-clock id="perm-cist-clock-last" style="font-size: 8rem;
             --cistercian-width: 3px;
             --cistercian-color-0: #ffffff;
             --cistercian-color-1: #ff5733;
@@ -1483,13 +1504,25 @@
 
         <!-- Small Cistercian date row (no separators) -->
         <div class="small-cist-date" style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 15px;">
-            <cistercian-number id="small-cist-year" value="2026" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
-            <cistercian-number id="small-cist-month" value="4" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
-            <cistercian-number id="small-cist-day" value="7" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
+            <cistercian-number id="small-cist-year-last" value="2026" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
+            <cistercian-number id="small-cist-month-last" value="4" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
+            <cistercian-number id="small-cist-day-last" value="7" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
         </div>
         
-        <p class="block-text" style="margin-top: 20px;">Medieval monk numerals – each symbol represents a number from 0–9999 <br>If you don't know about them, here's the introduction from the <a href="https://en.wikipedia.org/wiki/Cistercian_numerals">Wikipedia page</a> </p>
+        <p class="block-text" style="margin-top: 20px;">Medieval monk numerals – each symbol represents a number from 0–9999 <br>If you don't know about them, here's the introduction from the <a href="https://en.wikipedia.org/wiki/Cistercian_numerals" target="_blank" rel="noopener noreferrer">Wikipedia page</a> </p>
     </div>
+
+
+    <footer class="site-footer">
+        <div class="footer-line"></div>
+        <div style="margin-top: 15px;">
+            <a href="https://github.com/JinKaneki/AnalogClockHost" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">GitHub</a>
+            <a href="https://youtube.com/@jinkaneki01?si=6zFtEGHjjxkAz1kn" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">Youtube</a>
+            <a href="https://linkedin.com/in/yourusername" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">LinkedIn</a>
+        </div>
+        <p class="footer-subtext">All things serve the Beam.</p>
+        <p>&copy; <span id="year"></span> built by Jin Kaneki | All Rights Reserved</p>
+    </footer>
 </body>
 
 <script>
@@ -1653,10 +1686,11 @@
             freezeBtn.innerText = isFrozen ? "🔥 Resume Loop" : "❄️ Freeze Image";
         });
 
+        const themeLabel = document.getElementById('theme-label');
         themeToggle.addEventListener('click', () => {
             body.classList.toggle('light-mode');
-            themeToggle.innerText = body.classList.contains('light-mode') ? '🌙 Dark Mode' : '☀️ Light Mode';
-        });
+            themeLabel.innerText = body.classList.contains('light-mode') ? '' : '';// 'Light Mode' : 'Dark Mode';
+        });        
 
 
 
@@ -1843,68 +1877,72 @@
         });
 
 
-        // Double Click to Freeze/Unfreeze
-        document.body.addEventListener('dblclick', (e) => {
-            // Note: If you have an overlay, e.target might be the body or a div.
-            // This ensures it triggers when clicking the background area.
-            if (e.target === document.body || e.target.tagName === 'BODY') {
-                isBgFrozen = !isBgFrozen;
-                playTick(true); ; // Deeper 'Tock' sound for confirmation
-                triggerGhost(isBgFrozen);
-                if (!isBgFrozen) updateBackground();
-            }
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            // Double Click to Freeze/Unfreeze
+            document.body.addEventListener('dblclick', (e) => {
+                // Note: If you have an overlay, e.target might be the body or a div.
+                // This ensures it triggers when clicking the background area.
+                if (e.target === document.body || e.target.tagName === 'BODY') {
+                    isBgFrozen = !isBgFrozen;
+                    playTick(true);  // Deeper 'Tock' sound for confirmation
+                    triggerGhost(isBgFrozen);
+                    if (!isBgFrozen) updateBackground();
+                }
+            });
 
-        // Key 'B' to Freeze/Unfreeze
-        document.addEventListener('keydown', (e) => {
-            if (e.key.toLowerCase() === 'b') {
-                isBgFrozen = !isBgFrozen;
-                playTick(true);; // Deeper 'Tock' sound for confirmation
-                triggerGhost(isBgFrozen);
-                if (!isBgFrozen) updateBackground();
-            }
+            // Key 'B' to Freeze/Unfreeze
+            document.addEventListener('keydown', (e) => {
+                if (e.key.toLowerCase() === 'b') {
+                    isBgFrozen = !isBgFrozen;
+                    playTick(true); // Deeper 'Tock' sound for confirmation
+                    triggerGhost(isBgFrozen);
+                    if (!isBgFrozen) updateBackground();
+                }
 
-            if (e.key.toLowerCase() === 'z') {
-            e.preventDefault();
-            // Cycle the style mode
-            currentModeIndex = (currentModeIndex + 1) % clockModes.length;
-            const mode = clockModes[currentModeIndex];
+                if (e.key.toLowerCase() === 'z') {
+                e.preventDefault();
+            
+            
+                // Cycle the style mode
+                currentModeIndex = (currentModeIndex + 1) % clockModes.length;
+                const mode = clockModes[currentModeIndex];
 
-            // Manually apply the same changes as the button click (to avoid double sound)
-            analogClock.classList.remove('zen-mode');
-            analogClock.style.display = 'flex';
-            digitalClock.style.display = 'none';
-            styleBtn.classList.remove('zen-active');
-            styleBtn.style.borderColor = "var(--clock-border)";
-            styleBtn.style.color = "var(--text-color)";
-
-            if (mode === 'classic') {
-                styleBtn.innerText = "🕰️ STYLE: CLASSIC";
-            } else if (mode === 'glass') {
-                analogClock.classList.add('zen-mode');
-                styleBtn.innerText = "💎 STYLE: GLASSIC";
-                styleBtn.classList.add('zen-active');
-            } else if (mode === 'digital') {
-                analogClock.style.display = 'none';
-                digitalClock.style.display = 'flex';
-                cistercianClock.style.display = 'none';
-                styleBtn.innerText = "📟 STYLE: DIGITAL";
-                styleBtn.classList.add('zen-active');
-                styleBtn.style.borderColor = "var(--clock-border)";
-            } else if (mode === 'cistercian') {
-                analogClock.style.display = 'none';
+                // Manually apply the same changes as the button click (to avoid double sound)
+                analogClock.classList.remove('zen-mode');
+                analogClock.style.display = 'flex';
                 digitalClock.style.display = 'none';
-                cistercianClock.style.display = 'flex';
-                styleBtn.innerText = "🧮 STYLE: CISTERCIAN";
-                styleBtn.classList.add('zen-active');
+                styleBtn.classList.remove('zen-active');
                 styleBtn.style.borderColor = "var(--clock-border)";
-            }
+                styleBtn.style.color = "var(--text-color)";
 
-            playTick(true);
-            if (typeof triggerGhost === 'function') {
-                triggerGhost(modeMessages[mode]);
+                if (mode === 'classic') {
+                    styleBtn.innerText = "🕰️ STYLE: CLASSIC";
+                } else if (mode === 'glass') {
+                    analogClock.classList.add('zen-mode');
+                    styleBtn.innerText = "💎 STYLE: GLASSIC";
+                    styleBtn.classList.add('zen-active');
+                } else if (mode === 'digital') {
+                    analogClock.style.display = 'none';
+                    digitalClock.style.display = 'flex';
+                    cistercianClock.style.display = 'none';
+                    styleBtn.innerText = "📟 STYLE: DIGITAL";
+                    styleBtn.classList.add('zen-active');
+                    styleBtn.style.borderColor = "var(--clock-border)";
+                } else if (mode === 'cistercian') {
+                    analogClock.style.display = 'none';
+                    digitalClock.style.display = 'none';
+                    cistercianClock.style.display = 'flex';
+                    styleBtn.innerText = "🧮 STYLE: CISTERCIAN";
+                    styleBtn.classList.add('zen-active');
+                    styleBtn.style.borderColor = "var(--clock-border)";
+                }
+
+                playTick(true);
+                if (typeof triggerGhost === 'function') {
+                    triggerGhost(modeMessages[mode]);
+                }
             }
-        }
+            });
         });
 
 
@@ -2028,8 +2066,8 @@
             const hours = now.getHours();
             const minutes = now.getMinutes();
             
-            document.getElementById('digi-hours').innerText = String(now.getHours()).padStart(2, '0');
-            document.getElementById('digi-minutes').innerText = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('digi-hours').innerText = String(hours).padStart(2, '0');
+            document.getElementById('digi-minutes').innerText = String(minutes).padStart(2, '0');
             
             // Update Cistercian date numerals (year, month, day)
             const year = now.getFullYear();
@@ -2052,6 +2090,15 @@
             if (smallYear) smallYear.setAttribute('value', year);
             if (smallMonth) smallMonth.setAttribute('value', month);
             if (smallDay) smallDay.setAttribute('value', day);
+
+            // Update the second (last) Cistercian date block
+            const smallYearLast = document.getElementById('small-cist-year-last');
+            const smallMonthLast = document.getElementById('small-cist-month-last');
+            const smallDayLast = document.getElementById('small-cist-day-last');
+
+            if (smallYearLast) smallYearLast.setAttribute('value', year);
+            if (smallMonthLast) smallMonthLast.setAttribute('value', month);
+            if (smallDayLast) smallDayLast.setAttribute('value', day);
         }
 
         // Start it once
@@ -2089,22 +2136,10 @@
                 requestWakeLock();
             }
         });
-        
+
 
         // Automatically update the copyright year
         document.getElementById('year').textContent = new Date().getFullYear();
 
 </script>
-
-<footer class="site-footer">
-    <div class="footer-line"></div>
-    <div style="margin-top: 15px;">
-        <a href="https://github.com/JinKaneki/AnalogClockHost" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">GitHub</a>
-        <a href="https://youtube.com/@jinkaneki01?si=6zFtEGHjjxkAz1kn" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">Youtube</a>
-        <a href="https://linkedin.com/in/yourusername" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">LinkedIn</a>
-    </div>
-    <p class="footer-subtext">All things serve the Beam.</p>
-    <p>&copy; <span id="year"></span> 2026 built by Jin Kaneki | All Rights Reserved</p>
-    </div>
-</footer>
 </html>
