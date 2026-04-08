@@ -171,12 +171,13 @@
         /* Position the switch wrapper at top-right */
         .theme-switch-wrapper {
         position: absolute;
-        top: 20px;
+        top: 40px;
         right: 20px;
+        padding-top: 60px;
         display: flex;
         align-items: center;
         gap: 8px;
-        z-index: 10;
+        z-index: 1000;
         }
 
         /* The actual switch */
@@ -244,8 +245,8 @@
             justify-content: center;
             align-items: center;
             transition: all 0.5s ease;
-            margin-top: 10px;
-            margin-bottom: 20px;
+            margin-top: 60px;
+            margin-bottom: 40px;
         }
 
         /* Inner Ring */
@@ -358,7 +359,7 @@
             min-height: 500px;  /* Adjust based on your tallest image/text combo */
             position: relative;
             margin: 20px auto; /* 40px before */
-            padding: 0 20px 80px 20px; /* Top, Right, Bottom (Large for footer space), Left */
+            padding: 0 20px 100px 20px; /* Top, Right, Bottom (Large for footer space), Left */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -632,7 +633,7 @@
 
 
 
-        /* Updated Digital Clock for Android Flagship Look */
+        /* Updated Digital Clock As on Android Flagship Look */
         /* #digital-clock {
             font-size: 7rem;               /* Much bigger, like a home screen */
             /*font-weight: 300;               /* 200 Thin/Light weight is the "Elite" look */
@@ -655,6 +656,7 @@
             line-height: 0.85;       /* Tighter stack for that S25 Ultra look */
             width: 100%;
             margin: 0 auto;
+            padding-top: 60px;
         }
 
         #digital-clock #digi-hours, 
@@ -697,6 +699,7 @@
             align-items: center;
             text-align: center;
             width: 100%;
+            padding-top: 60px;
             /*min-height: 520px;   /* matches analog clock height */
             margin: 0 auto; /* Ensures the container itself stays centered */
             overflow: hidden; /* Prevents internal SVG overflow from shifting alignment */
@@ -816,7 +819,7 @@
 
         .site-footer {
             width: 100%;
-            padding: 40px 0 100px 0;
+            padding: 20px 0 140px 0;
             text-align: center;
             font-family: inherit;
             opacity: 0.6;
@@ -851,7 +854,7 @@
         @media (max-width: 600px) {
             /* Move the toggle button down a bit so it doesn't touch the clock */
             #theme-toggle {
-                top: 15px;          /* was 30px – less top space */
+                top: 30px;          /*  top space */
                 padding: 8px 16px;  /* slightly smaller button */
                 font-size: 14px;
             }
@@ -933,7 +936,7 @@
             }
 
             .timepiece-wrapper {
-                margin-top: 20px; /* Tighter gap for mobile */
+                margin-top: 40px; /* 20 Tighter gap for mobile */
             }
             
             #digital-clock #digi-hours, 
@@ -968,8 +971,8 @@
 <body>
     <!-- Fixed background layer (behind everything) -->
     <div class="fixed-bg"></div>
-    <div id="ghost-indicator">👻 PAUSED</div>
 
+    <div id="ghost-indicator">👻 PAUSED</div>
     <div class="theme-switch-wrapper">
         <!--<span class="switch-label">Light/Dark</span> -->
         <label class="switch">
@@ -980,7 +983,7 @@
     </div>
 
     
-    <div class="timepiece-wrapper" style="display: flex; margin-top: 40px; flex-direction: column; justify-content: center; align-items: center; min-height: 200;width: 100%;z-index: 1;"> 
+    <div class="timepiece-wrapper" style="display: flex; margin-top: 60px; flex-direction: column; justify-content: center; align-items: center; min-height: 200px; width: 100%; z-index: 1;"> 
         <div class="clock" id="analog-clock">
             <div class="number num-12">12</div>
             <div class="number num-3">3</div>
@@ -1455,7 +1458,7 @@
 
 
     <!-- Cistercian clock block (rainbow colours, fully centered) -->
-    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 60px auto; border-radius: 50px; max-width: 600px;">
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 60px auto 100px auto; border-radius: 50px; max-width: 600px;">
         <cistercian-clock id="perm-cist-clock" style="font-size: 8rem;
             --cistercian-width: 3px;
             --cistercian-color-0: #ffffff;
@@ -1475,7 +1478,7 @@
         </div>
     </div>
 
-    <div class="content-blocks" style="margin-top: 60px; padding-top: 325px; padding-bottom: 425px;"> <!-- border-top: 1px solid var(--clock-border);-->
+    <div class="content-blocks" style="margin-top: 375px; padding-top: 375px; padding-bottom: 425px;"> <!-- border-top: 1px solid var(--clock-border);-->
         <div class="block active" style="position: relative; opacity: 1; display: flex; flex-direction: column;">
             <h3 class="title-accent">Project Intent</h3>
             <p class="block-text">
