@@ -54,13 +54,10 @@
             --shadow-inner: inset 5px 5px 15px rgba(0, 0, 0, 0.5), inset -5px -5px 15px rgba(255, 255, 255, 0.03);
         }
 
-        
-        html {
-            height: 100%;      /* root fills viewport */
-        }
 
-        body {
-            min-height: 100%;  /* allows body to grow taller than viewport */
+
+        html , body {
+            height: 100%;  /* prevent body to grow taller than viewport */
             margin: 0;
             padding: 0;
             overscroll-behavior: none;   /* prevents pull-to-refresh on mobile */
@@ -356,7 +353,7 @@
             text-align: center;
             width: 100%;
             max-width: 800px;
-            min-height: 420px;  /* Adjust based on your tallest image/text combo */
+            min-height: 400px;  /* Adjust based on your tallest image/text combo */
             position: relative;
             margin: 20px auto; /* 40px before */
             padding: 0 20px 80px 20px; /* Top, Right, Bottom (Large for footer space), Left */
@@ -1509,7 +1506,7 @@
             <cistercian-number id="small-cist-day-last" value="7" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
         </div>
         
-        <p class="block-text" style="margin-top: 20px;">Medieval monk numerals – each symbol represents a number from 0–9999 <br>If you don't know about them, here's the introduction from the <a href="https://en.wikipedia.org/wiki/Cistercian_numerals" target="_blank" rel="noopener noreferrer">Wikipedia page</a></p>
+        <p class="block-text" style="margin-top: 20px;">Medieval monk numerals:<br>each symbol represents a number from 0 to 9999<br>If you don't know about them, here's the introduction from the <a href="https://en.wikipedia.org/wiki/Cistercian_numerals" target="_blank" rel="noopener noreferrer">Wikipedia page</a></p>
     </div>
 
 
