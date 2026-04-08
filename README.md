@@ -139,10 +139,8 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 3. Open in a browser – all features work offline after first load.
 
 
-## 🛠️ Dependencies
-``
-  cistercian-numerals – loaded via CDN:
-      <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
+### 🛠️ Dependencies
+cistercian-numerals – loaded via CDN: <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
     Web Audio API – no external library.  
     Wake Lock API – modern browsers only (fallback silently). 
 ---
