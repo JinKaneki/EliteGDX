@@ -52,7 +52,19 @@ Gallery content is randomized with the **Fisher‑Yates Algorithm** ($O(n)$ time
 ### ⏱️ Deterministic State Management
 UI transitions are synchronized with the system clock, occurring precisely at `00` seconds of every minute, respecting the "Minute Reset" rule regardless of page load timing.
 
-### 🎨 UI/UX Features
+## 🎨 UI/UX Features (Latest Updates)
+
+### 🎮 Hide Controls Toggle
+- A **dedicated button** in the **top‑left corner** (opposite the theme toggle) 
+hides/shows all five control buttons:
+  - FREEZE MOMENT
+  - BG: SYNCED / INDEPENDENT
+  - STYLE (Classic / Glass / Digital / Cistercian)
+  - CLEAN VIEW
+  - Volume slider & mute button
+- When hidden, the buttons **remain in the layout** (space is preserved) – no layout shift.
+- Works independently of the “Clean View” mode.
+- Styled to match the dashboard’s cyber‑cyan theme.
 - **Typewriter Effect:** Terminal‑style name‑plate with custom typing/deletion speeds.
 - **Neumorphic Design:** Hybrid light/dark modes using CSS variables for smooth theme transitions.
 - **Freeze Mode:** Halt the minute‑cycle to pin a specific image/quote.
