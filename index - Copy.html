@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
+
+    <!--BASIC SEO-->
+    <meta name="description" content="Elite Gems Dashboard – an ambient display with Cistercian clock, analog clock, and image slideshow.">
+    <meta name="keywords" content="Cistercian numerals, clock, dashboard, medieval numerals, web components">
+    <meta name="author" content="Jin Kaneki">
+    <meta property="og:title" content="Elite Gems Dashboard">
+    <meta property="og:description" content="Cistercian clock & ambient dashboard">
+    <meta property="og:image" content="https://jinkaneki.github.io/AnalogClockHost/preview.jpg">
+    <meta property="og:url" content="https://jinkaneki.github.io/AnalogClockHost/">
+    <meta name="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">
+        {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Elite Gems Dashboard",
+        "description": "An interactive clock dashboard with Cistercian numerals, analog and digital clocks, and a rotating image gallery.",
+        "author": {
+            "@type": "Person",
+            "name": "JinKaneki "
+        },
+        "applicationCategory": "Multimedia",
+        "operatingSystem": "All",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+        }
+    </script>
+
+    <title>Elite Gems Dashboard</title>
+    <style>
+        /* Upgraded Color Palettes */
+        :root {
+            --bg-color: #121214;
+            --text-color: #ececec;
+            --clock-bg: #1a1a1d;
+            --clock-border: #242428;
+            --hand-color: #ffffff;
+            --accent-color: #00f0ff; /* Electric Cyber-Cyan */
+            --shadow-outer: 10px 10px 30px rgba(0, 0, 0, 0.6), -10px -10px 30px rgba(255, 255, 255, 0.02);
+            --shadow-inner: inset 5px 5px 15px rgba(0, 0, 0, 0.5), inset -5px -5px 15px rgba(255, 255, 255, 0.03);
+        }
+
+
+        html {
+            overflow-x: hidden;            /* prevent horizontal scroll */
+            overscroll-behavior: none;     /* disable pull-to-refresh */
+            touch-action: pan-y pinch-zoom;/* control touch gestures */
+            /* Optional: disable text selection and tap highlight */
+            /* user-select: none; */
+            /* -webkit-user-select: none; */
+            /* -webkit-tap-highlight-color: transparent; */
+        }
+
+        body {
+            margin: 0;
+            padding: 20px 0 60px 0;
+            min-height: 100vh;             /* full viewport height */
+            color: var(--text-color);
+            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.5s ease, background-image 0.8s ease-in-out;
+
+            /* 1. STARTING STATE: Solid dark background */
+            background-color: #000000; 
+    
+            position: relative; 
+            -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+        }
+
+        /* Light mode palette overrides */
+        body.light-mode {
+            --bg-color: #ceced48b;
+            --text-color: #0e0f15;
+            --clock-bg: #e6e7ee;
+            --clock-border: #d1d9e6;
+            --hand-color: #31344b;
+            --accent-color: #005bb5; /* Deep Professional Blue */
+            --shadow-outer: 8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff;
+            --shadow-inner: inset 5px 5px 10px #d1d9e6, inset -5px -5px 10px #ffffff;
+        }
+
+        .fixed-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -2; /* behind the overlay */
+            transition: background-image 0.8s ease-in-out;
+        }
+
+        /* THE OVERLAY: This sits between your wallpaper and your clock/text */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            
+            /* 3. THE MASK: 0.75 opacity for that deep, dark premium look */
+            background-color: rgba(0, 0, 0, 0.75); 
+            
+            /* 4. THE FROST: Blur is subtle (1px) as you requested 
+            backdrop-filter: blur(1px); /* 15px for that sleek look 
+            -webkit-backdrop-filter: blur(1px); /* for safari */
+            
+            z-index: -1; 
+            transition: background-color 0.5s ease;
+        }
+
+        /* Light mode overlay adjustment */
+        body.light-mode::before {
+            background-color: rgba(255, 255, 255, 0.255); 
+        }
+
+        /* Zen mode for your clock (makes background transparent) */
+        .clock.zen-mode {
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* Optional: make numbers glow more in Zen mode */
+        .clock.zen-mode .number {
+            text-shadow: 0 0 15px rgba(255, 0, 255, 0.7);
+        }
+
+        /* Optional: also make hands a bit more subtle */
+        .clock.zen-mode .hand {
+            opacity: 0.8;
+        }
+
+
+        /* Position the switch wrapper at top-right */
+        .theme-switch-wrapper {
+        position: absolute;
+        top: 40px;
+        right: 20px;
+        padding-top: 60px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 1000;
+        }
+
+        /* The actual switch */
+        .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 28px;
+        }
+
+        .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        }
+
+        .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #565353;
+        transition: .4s;
+        border-radius: 34px;
+        }
+
+        .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: rgb(255, 217, 0);
+        transition: .4s;
+        border-radius: 50%;
+        }
+
+        input:checked + .slider {
+        background-color: #2196F3;
+        }
+
+        input:checked + .slider:before {
+        transform: translateX(16px);
+        }
+
+        /* Optional text beside the switch 
+        .switch-label {
+        font-size: 0.9rem;
+        color: #333;
+        }*/
+        
+
+        /* Premium Clock Face */
+        .clock {
+            width: 520px; /* was 320*/
+            height: 520px; /* was 320*/
+            background-color: var(--clock-bg);
+            border-radius: 50%;
+            position: relative;
+            /*box-shadow: var(--shadow-outer);*/
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.5s ease;
+            margin-top: 60px;
+            margin-bottom: 40px;
+        }
+
+        /* Inner Ring */
+        .clock::before {
+            content: '';
+            position: absolute;
+            width: 490px; /* was 290*/
+            height: 490px; /* was 290*/
+            border-radius: 50%;
+            box-shadow: var(--shadow-inner);
+        }
+
+        /* Clock Numbers */
+        .number {
+            position: absolute;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+        .num-12 { top: 25px; }
+        .num-3 { right: 25px; }
+        .num-6 { bottom: 25px; }
+        .num-9 { left: 25px; }
+
+        /* Clock Hands */
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom;
+            background-color: var(--hand-color);
+            border-radius: 10px;
+            transform: translateX(-50%) rotate(0deg); 
+            transition: background-color 0.5s ease;
+        }
+
+        .hour { width: 6px; height: 115px; z-index: 1; border-radius: 6px 6px 0 0; }
+        .minute { width: 4px; height: 150px; z-index: 2; border-radius: 4px 4px 0 0; }
+        
+        .second { 
+            width: 2px; 
+            height: 240px; 
+            background-color: var(--accent-color); 
+            z-index: 3; 
+            box-shadow: 0 0 10px var(--accent-color); /* Glowing effect */
+        }
+
+        /* Center Pin */
+        .center-dot {
+            width: 32px;
+            height: 32px;
+            background-color: var(--bg-color);
+            border: 3px solid var(--accent-color);
+            border-radius: 50%;
+            position: absolute;
+            z-index: 4;
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        /* Typography */
+        /*.name-plate {
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 4px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }*/
+        /* Main title bigger */
+        .name-plate.main-title {
+            text-align: center;
+            font-size: 1.7rem; /* Adjust as you like */
+            letter-spacing: 2px; /* Optional: a bit more spacing for impact */
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Author info (inside #info-section) larger */
+        #info-section .name-plate {
+            text-align: center;
+            font-size: 1.0rem; /* Adjust as you like */
+            letter-spacing: 1px; /* Optional: a bit more spacing for impact */
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .name-accent {
+            color: #ffad16;
+        }
+        .title-accent { 
+            color: #4af600;               /* Bright green */ 
+            text-shadow: 0 0 4px #ff0000, 0 0 8px #4dff00; /* Glow */
+        }
+
+
+
+        /* Container for the slideshow */
+        .content-blocks {
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            min-height: 500px;  /* Adjust based on your tallest image/text combo */
+            position: relative;
+            margin: 20px auto; /* 40px before */
+            padding: 0 20px 100px 20px; /* Top, Right, Bottom (Large for footer space), Left */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;    /* Ensures padding is included in width */
+        }
+
+        /* Individual block: Stacked on top of each other */
+        .block {
+            text-align: center;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            display: none;             /* Hidden by default */
+            flex-direction: column;
+            align-items: center;       /* Centers inline content (images and text) */
+            opacity: 0;
+            transition: opacity 1s ease-in-out; /* Smooth 1-second fade */
+        }
+
+        /* The active block will be shown and faded in */
+        .block.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        
+        /* Unified Controls
+        /* 1. Main Container: Using Flexbox to stack rows */
+        .controls {
+            display: flex;
+            flex-direction: column; 
+            align-items: center;    
+            gap: 20px;              /* Vertical space between Buttons and Slider */
+            margin-top: 5px;
+            margin-bottom: 5px;
+            z-index: 100;
+        }
+
+        /* --- New row layout --- */
+        .button-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;          /* space between items in the row */
+            width: 100%;
+        }
+
+        /* Make sure buttons feel like real hardware */
+        button {
+            touch-action: manipulation;
+        }
+        
+        /* Freeze Button: Electric Cyan Theme */
+        #freeze-btn {
+            background: transparent;
+            color: #00fffb; 
+            border: 2px solid var(--clock-border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        #freeze-btn:hover {
+            opacity: 1;
+            box-shadow: 0 0 15px rgba(0, 255, 251, 0.6);
+            background: rgba(0, 255, 251, 0.05);
+        }
+
+        #freeze-btn.frozen {
+            background: transparent; /* Your specific magenta-tint background */
+            color: #ffff00;        /* Yellow text for high contrast */
+            font-weight: bold;
+            opacity: 1;
+            border-color:#1a1a1d;
+        }
+
+        /* Background Toggle Button: Standard to Magenta Theme */
+        #bg-toggle-btn {
+            background: transparent;
+            color: var(--text-color);
+            border: 2px solid var(--clock-border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        #bg-toggle-btn:hover {
+            opacity: 1;
+            border-color: #ff00ff;
+            box-shadow: 0 0 15px rgba(255, 0, 225, 0.682);
+            color: #ff00ff;
+        }
+
+        #zen-toggle-btn {
+            background: transparent;
+            color: var(--text-color);
+            border: 2px solid var(--clock-border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+            min-width: 140px;   /* gives them a consistent width (adjust if needed) */
+        }
+
+        
+        #zen-toggle-btn:hover {
+            color: #ffb835;
+            border-color: #ffb835;
+            box-shadow: 0 0 15px rgb(255, 200, 0);
+        }
+
+        /* Zen button active state (matches your 'frozen' style) */
+        #zen-toggle-btn.zen-active {
+            background: transparent;
+            color: #272627;
+            border-color: #272627;
+            opacity: 1;
+        }
+
+
+        /* 3. Volume Row: Centered below buttons */
+        .volume-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;            /* space between icon and slider */
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .vol-icon {
+            font-size: 1.2rem;
+            margin-right: 12px;
+            opacity: 0.7;
+            color: var(--text-color);
+        }
+
+        /* The Slider Track */
+        #volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100px;        /* was 150px – makes room for the icon */
+            height: 4px;
+            background: var(--clock-border);
+            border-radius: 5px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Slider Thumb: Electric Cyan Glow */
+        #volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #00fffb;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00fffb;
+            transition: transform 0.2s ease;
+        }
+
+        #volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        #volume-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: #00fffb;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 0 10px #00fffb;
+        }
+
+        #mute-btn:hover {
+            opacity: 1 !important;
+            transform: scale(1.2);
+            transition: transform 0.2s ease;
+        }
+
+        #mute-btn:active {
+            transform: scale(0.9); /* Click "shrink" effect */
+        }
+
+        
+
+
+        /* Typewriter Cursor Animation */
+        .cursor {
+        color: var(--accent-color);
+        font-weight: bold;
+        animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+        }
+
+        /* Typewriter Text Color & Glow */
+        #typewriter {
+        color: #f6ff00; /* ff00ff Solid Magenta/ Solid Yellow */
+        text-shadow: 0 0 5px rgba(255, 0, 255, 0.236);
+        font-weight: bold;
+        }
+
+        /* Matching Cursor */
+        .cursor {
+        color: #ff00ff; /*ff00ff Solid Magenta */
+        font-weight: bold;
+        animation: blink 0.7s infinite;
+        }
+                
+
+        /* Image Block */
+        .image-block {
+            width: 370px;/*180px*/
+            height: 250px;/*180px*/
+            border-radius: 16px; /* Slightly rounded corners look better than sharp squares */
+            overflow: hidden;
+            /*box-shadow: var(--shadow-outer);*/
+            margin: 0 auto 20px;
+            transition: all 0.5s ease;
+        }
+
+        .image-block img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the image fills the square without stretching */
+            display: block;
+        }
+
+
+        /* Optional: style the paragraph text */
+        .block-text {
+            text-align: center;
+            font-size: small;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto 20px;            /* Centers text block */
+            padding: 0 10px;
+        }
+
+
+        #ghost-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 1.5rem;
+            color: #ff00ff; /* Magenta to match your theme */
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+            opacity: 0;
+            pointer-events: none; /* User can't accidentally click it */
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        #ghost-indicator.show {
+            opacity: 0.8;
+        }
+
+
+
+        /* Updated Digital Clock As on Android Flagship Look */
+        /* #digital-clock {
+            font-size: 7rem;               /* Much bigger, like a home screen */
+            /*font-weight: 300;               /* 200 Thin/Light weight is the "Elite" look */
+            /*letter-spacing: -2px;           /* Tighter spacing for modern feel */
+            /*color: #00fffb;                 /* Electric Cyan (match your theme) */
+            /*text-shadow: 0 0 30px rgba(0, 255, 251, 0.504);
+            
+            /* Using system fonts mimics the Android/Motorola OS font */
+            /*font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            
+            margin: 10px 0;
+            line-height: 1;
+        }
+        /* Stacked Digital Look - Perfectly Centered */
+        #digital-clock {
+            display: none; /* Controlled by JS */
+            flex-direction: column;
+            align-items: center;    /* Centers items horizontally */
+            justify-content: center; /* Centers items vertically in the wrapper */
+            line-height: 0.85;       /* Tighter stack for that S25 Ultra look */
+            width: 100%;
+            margin: 0 auto;
+            padding-top: 60px;
+        }
+
+        #digital-clock #digi-hours, 
+        #digital-clock #digi-minutes {
+            font-size: 8rem; 
+            font-weight: 200;
+            /* Using system fonts mimics the Android/Motorola OS font */
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            text-align: center;
+            letter-spacing: -2px;
+        }
+
+        /* Container for Colon + Minutes to keep them centered together */
+        #digital-clock .minutes-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .digi-colon {
+            animation: pulse-colon 2s infinite ease-in-out;
+            font-size: 0.5rem; /*4rem
+            margin-right: 15px;*/
+            position: relative;
+            margin-top: -10px; /* Optical alignment */
+            color: var(--text-color);
+        }
+        @keyframes pulse-colon {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+    
+
+        /* Cistercian clock centering fix */
+        #cistercian-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+            padding-top: 60px;
+            /*min-height: 520px;   /* matches analog clock height */
+            margin: 0 auto; /* Ensures the container itself stays centered */
+            overflow: hidden; /* Prevents internal SVG overflow from shifting alignment */
+        }
+
+        #cist-clock {
+            /* Force horizontal alignment */
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important; /* Prevents stacking on smaller screens */
+            margin: 0 auto; /* Standard horizontal centering */
+            font-size: 10rem; /* Massive, matching your digital font */
+            /* Colourful lines – same as your date row */
+            --cistercian-color-0: #ffffff;   /* centre line – white */
+            --cistercian-color-1: #ff5733;   /* top line – orange-red */
+            --cistercian-color-2: #33ff57;   /* NW‑SE diagonal – green */
+            --cistercian-color-3: #3357ff;   /* bottom line – blue */
+            --cistercian-color-4: #f033ff;   /* NE‑SW diagonal – purple */
+            --cistercian-color-5: #ffd733;   /* right line – yellow */
+            --cistercian-width: 4px;          /* thicker, bolder lines */
+            /*color: var(--accent-color); /* Cyber-Cyan */
+            /*filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.5)); /* Glow effect */
+        }
+
+
+        /* Optional: Light mode override: Light mode adjustment for Cistercian */
+        body.light-mode #cist-clock {
+            color: var(--text-color);
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.2));
+        }
+
+
+        /* Horizontal row for year/month/day */
+        .cistercian-date-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;                /* reduced gap for smaller look */
+            margin: 10px 0 15px 0;
+        }
+
+        /* Adjust size of each Cistercian numeral */
+        .cistercian-date-row cistercian-number {
+            font-size: 2rem;         /* was 2.8rem – smaller */
+            --cistercian-width: 2px;
+            /* Keep your colours or change them */
+            --cistercian-color-0: #ffffff;
+            --cistercian-color-1: #ff5733;
+            --cistercian-color-2: #33ff57;
+            --cistercian-color-3: #3357ff;
+            --cistercian-color-4: #f033ff;
+            --cistercian-color-5: #ffd733;
+            filter: drop-shadow(0 0 4px rgba(0,240,255,0.4));
+        }
+
+        /* Dot separators – smaller and vertically centered */
+        .cist-sep {
+            font-size: 1.2rem;       /* smaller than before */
+            font-weight: bold;
+            color: var(--accent-color);
+            margin: 0;
+            line-height: 1;
+        }
+
+        /* Light mode adjustments */
+        body.light-mode .cistercian-date-row cistercian-number {
+            filter: drop-shadow(0 0 2px rgba(0,0,0,0.2));
+        }
+        body.light-mode .cist-sep {
+            color: var(--text-color);
+        }
+
+        .small-cist-date cistercian-number {
+            font-size: 1.8rem;
+            --cistercian-color-0: #ffffff;
+            --cistercian-color-1: #ff5733;
+            --cistercian-color-2: #04ff00;
+            --cistercian-color-3: #e5ff00;
+            --cistercian-color-4: #ff00ff;
+            --cistercian-color-5: #00ccff;
+        }
+
+
+        #hide-info-btn {
+            background: transparent;
+            color: #f6ff00;
+            border: 2px solid var(--clock-border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        #hide-info-btn:hover {
+            box-shadow: 0 0 15px rgb(53, 255, 56);
+            background: rgba(0, 255, 17, 0.072);
+        }
+    
+        .text-wrapper {
+            height: 220px;                /* Adjust this value to match your text height */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            transition: opacity 0.3s ease;
+            text-align: center;
+        }
+
+        /* When clean view is ON, hide the text but keep the space */
+        .clean-view .text-wrapper {
+            opacity: 0;
+            pointer-events: none;         /* So user can't accidentally click invisible text */
+        }
+
+        .site-footer {
+            width: 100%;
+            padding: 20px 0 40px 0;
+            text-align: center;
+            font-family: inherit;
+            opacity: 0.6;
+            font-size: 0.8rem;
+            transition: all 0.5s ease;
+        }
+
+        .footer-line {
+            width: 50px;
+            height: 1px;
+            background: var(--accent-color); /* Matches your Cyber-Cyan or Magenta */
+            margin: 0 auto 20px;
+            border-radius: 2px;
+        }
+
+        .footer-subtext {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            color:#00d5ff;
+        }
+
+        /* Light mode override to ensure visibility */
+        body.light-mode .site-footer {
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+    
+        /* 1. HUD Toggle Button (Top Left) */
+        #hud-toggle-btn {
+            position: absolute;
+            top: 40px;   /* Matches the top offset of the theme switch */
+            left: 20px;  /* Opposite corner */
+            background: transparent;
+            color: var(--text-color);
+            border: 2px solid var(--clock-border);
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+        }
+
+        #hud-toggle-btn:hover {
+            opacity: 1;
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+        }
+
+        /* 2. The hiding logic (Preserves the empty space!) */
+        body.stealth-mode .controls {
+            opacity: 0;
+            pointer-events: none; /* Prevents clicking the invisible buttons */
+        }
+
+        /* Ensure the controls fade out smoothly */
+        .controls {
+            transition: opacity 0.4s ease-in-out;
+            /* ... keep your existing .controls styles ... */
+        }
+
+
+        /* MOBILE-FRIENDLY TWEAKS */
+        @media (max-width: 600px) {
+
+            /* Theme toggle (right side) */
+            .theme-switch-wrapper {
+                top: 30px;
+                right: 20px;
+            }
+            .switch {
+                width: 36px;
+                height: 24px;
+            }
+            .slider:before {
+                height: 16px;
+                width: 16px;
+                left: 4px;
+                bottom: 4px;
+            }
+            input:checked + .slider:before {
+                transform: translateX(12px);
+            }
+
+            /* Hide Controls toggle (left side) */
+            .hide-controls-toggle-wrapper {
+                top: 30px;
+                left: 20px;
+            }
+            .hide-controls-btn {
+                padding: 6px 12px;
+                font-size: 0.7rem;
+            }
+
+           
+            /* Give the clock some extra top margin to clear the button */
+            .clock {
+                margin-top: 10px;   /* – more space below button */
+                margin-bottom: 10px;
+                width: 280px;       /* slightly smaller on narrow screens */
+                height: 280px;
+            }
+
+            /* Ensure the inner ring scales nicely */
+            .clock::before {
+                width: 250px;
+                height: 250px;
+            }
+
+            /* Adjust hand lengths for smaller clock */
+            .hour { height: 70px; }
+            .minute { height: 95px; }
+            .second { height: 115px; }
+
+            .center-dot {
+            width: 16px;
+            height: 16px;
+            }
+
+            /* Give the name plate and extra text some side padding 
+            .name-plate {
+                padding: 0 auto 20px;     
+                text-align: center;  
+                font-size: 1.1rem;    
+                margin-bottom: 20px;  
+            } */
+
+            /* The paragraph after the name plate 
+            .name-plate + div p {
+                padding: 0 20px;
+                text-align: center;
+                font-size: 1rem;
+            }*/
+            .name-plate.main-title {
+                padding: 0 auto 20px;      /* prevents text touching screen edges */
+                text-align: center;   /* keeps it neat */
+                font-size: 0.9rem;    /* slightly smaller on mobile if needed */
+                margin-bottom: 10px;  /* less bottom margin */
+                letter-spacing: 2px;
+            }
+            #info-section .name-plate {
+                padding: 0 auto 20px;      /* prevents text touching screen edges */
+                text-align: center;   /* keeps it neat */
+                font-size: 0.5rem;    /* slightly smaller if needed */
+                margin-bottom: 5px;  /* less bottom margin */
+            }
+
+            
+
+            .block {
+                text-align: center;
+                margin-bottom: 60px; /* was 10*/
+            }
+            .block-text {
+                text-align: center;
+                font-size: small;
+            }
+
+            /* Optional: make the image block a bit smaller if it's too wide */
+            .image-block {
+                width: 300px;
+                height: 200px;
+            }
+
+            #ghost-indicator {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                font-size: 1.0rem;
+            }
+
+            .timepiece-wrapper {
+                margin-top: 40px; /* 20 Tighter gap for mobile */
+            }
+            
+            #digital-clock #digi-hours, 
+            #digital-clock #digi-minutes {
+                font-size: 6.5rem; /* Slightly smaller so it doesn't wrap on thin phones */
+            }
+
+
+            .cistercian-date-row cistercian-number {
+                font-size: 1.5rem;
+            }
+            .cist-sep {
+                font-size: 1rem;
+            }
+            .cistercian-date-row {
+                gap: 4px;
+            }
+
+            .site-footer {
+            width: 100%;
+            padding: 40px 0 60px 0; 
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+    }
+
+
+</style>
+</head>
+
+<body>
+    
+    <!-- Fixed background layer (behind everything) -->
+    <div class="fixed-bg"></div>
+
+    <div id="ghost-indicator">👻 PAUSED</div>
+    <button id="hud-toggle-btn" title="Toggle Interface">👁️ HUD</button>
+    <div class="theme-switch-wrapper">
+        <!--<span class="switch-label">Light/Dark</span> -->
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider round"></span> <!--Dark Mode-->
+        </label>
+        <span id="theme-label"></span>
+    </div>
+
+    
+    <div class="timepiece-wrapper" style="display: flex; margin-top: 60px; flex-direction: column; justify-content: center; align-items: center; min-height: 500px; width: 100%; z-index: 1;"> 
+        <div class="clock" id="analog-clock">
+            <div class="number num-12">12</div>
+            <div class="number num-3">3</div>
+            <div class="number num-6">6</div>
+            <div class="number num-9">9</div>
+            <div class="hand hour" id="hour"></div>
+            <div class="hand minute" id="minute"></div>
+            <div class="hand second" id="second"></div>
+            <div class="center-dot"></div>
+        </div>
+
+        <div id="digital-clock">
+            <div id="digi-hours">00</div>
+            <div class="minutes-row">
+                <span class="digi-colon">:</span>
+                <div id="digi-minutes">00</div>
+            </div>
+        </div>
+
+        <!-- Cistercian clock lives on its own -->
+        <div id="cistercian-wrapper" style="display: none;">
+            <cistercian-clock id="cist-clock"></cistercian-clock>
+        </div>
+
+        <!-- New Cistercian date row (replaces the old text date) -->
+        <div id="cistercian-date-row" class="cistercian-date-row">
+            <cistercian-number id="cist-year" value="2026"></cistercian-number>
+            <span class="cist-sep">-</span>
+            <cistercian-number id="cist-month" value="4"></cistercian-number>
+            <span class="cist-sep">-</span>
+            <cistercian-number id="cist-day" value="7"></cistercian-number>
+        </div>
+
+    </div> 
+
+
+    <!-- MAIN TITLE -->
+    <div class="name-plate main-title">
+        <span class="title-accent">ELITE GEMS DASHBOARD</span>
+    </div> <br>
+
+    <div class="text-wrapper">
+         <div id="info-section">
+        <div class="name-plate">
+            Engineered by <span class="name-accent">Johan_nlb</span> <br>
+            @_@ AKA @_@  <br>
+            <span id="typewriter" class="name-accent"></span><span class="cursor">|</span>
+        </div>
+        
+        <!-- MAIN QUOTE -->
+        <div>
+            <span style="font-family:Verdana; font-size:small; font-weight:bold;text-align: center;">Time Waits For No One XD</span>
+        </div>
+    </div>
+   
+
+
+
+    <!--ONGOING DEVELOPMENT SECTION-->
+    <div class="controls">
+        <!-- Row 1: Freeze + BG Toggle -->
+        <div class="button-row">
+            <button id="freeze-btn">❄️ FREEZE MOMENT</button>
+            <button id="bg-toggle-btn">🖼️ BG: SYNCED 🌌</button>
+        </div>
+
+        <!-- Row 2: Zen/Glass + -->
+        <div class="button-row">
+            <button id="zen-toggle-btn">GLASS: OFF</button>
+            <button id="hide-info-btn">🖥️ CLEAN VIEW: OFF</button>
+        </div>
+
+        <!-- Row 3: Volume with mute icon -->
+        <div class="volume-container">
+            <span id="mute-btn" class="vol-icon" style="cursor: pointer; user-select: none;">🔊</span>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.06">
+        </div>
+    </div>
+
+    <div class="content-blocks">
+        <div class="block">
+            <p class="block-text">We all look at the same sky</p>
+            <div class="image-block">
+                <img id="profile-img" src="images/IMG_BLUE.jpg" alt="BluJem">
+            </div>
+        </div>
+
+        <!-- Adding as many blocks as I need -->
+         <div class="block">
+            <p class="block-text">Okami Fox Golden Kitsune<br></p>
+            <div class="image-block">
+                <img src="images/OkamiKitsune.jpg" alt="SolarDeityAmaterasu">
+            </div>
+        </div>
+
+        
+        <div class="block">
+            <p class="block-text">The wheel of time turns, Ages come and pass, leaving memories that become legend.<br>
+            Legend fades to myth, and even myth is long forgotten when the Age that gave it birth comes again.</p> 
+            <div class="image-block">
+                <img src="images/WheelOfLifeMandala.jpg" alt="WOLMandala">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Roses are rose, violets are violet.<br>I love you</p>
+            <div class="image-block">
+                <img src="images/OrangeHairedWomen.jpg" alt="OrangeWomen">
+            </div>
+        </div>
+
+
+        <div class="block">
+            <p class="block-text">Eyes</p>
+            <div class="image-block">
+                <img src="images/BuddhaEyes.jpg" alt="">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Self-Reflection</p>
+            <div class="image-block">
+                <img src="images/Vagabond.jpg" alt="miyamoto">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Rainbow Bird</p>
+            <div class="image-block">
+                <img src="images/rainbow_bird.jpg" alt="rainbow_bird">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">TKG</p>
+            <div class="image-block">
+                <img src="images/TKGeyepatch.jpg" alt="">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Chameleon</p>
+            <div class="image-block">
+                <img src="images/Chameleon.jpg" alt="">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The Alchemist</p>
+            <div class="image-block">
+                <img src="images/TheAlchemistofCohelo.jpg" alt="AlchemistOfCohelo">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The Observer/Wanderer</p>
+            <div class="image-block">
+                <img src="images/JohanNlbProfile.jpg" alt="JohanNlbProfile">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Coolitude</p>
+            <div class="image-block">
+                <img src="images/CooL.jpeg" alt="CooL">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The One Piece</p>
+            <div class="image-block">
+                <img src="images/AwokenHat.jpg" alt="AwokenHat">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">A Good Christian</p>
+            <div class="image-block">
+                <img src="images/GoodChristian.jpeg" alt="GoodChristian">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Toranomaki</p>
+            <div class="image-block">
+                <img src="images/ToraNoMaki.jpg" alt="ShotokanKarate">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Member 0</p>
+            <div class="image-block">
+                <img src="images/Chrollo.jpg" alt="ChrolloHxH">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Smile</p>
+            <div class="image-block">
+                <img src="images/Smile.jpeg" alt="Smiley">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The Archetype</p>
+            <div class="image-block">
+                <img src="images/JHNarchetype.jpg" alt="JHNarchetype">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Green leaf</p>
+            <div class="image-block">
+                <img src="images/GreenLeafOnSereneBlueSky.jpeg" alt="GreenLeafOnSereneBlueSky">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Mindfullness</p>
+            <div class="image-block">
+                <img src="images/Mindfullness.jpg" alt="Mindfullness">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">HellsParadise</p>
+            <div class="image-block">
+                <img src="images/HellsParadise.jpg" alt="HellsParadise">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Shadows</p>
+            <div class="image-block">
+                <img src="images/BuddhaShadow.jpg" alt="Buddha">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Aim to the Moon</p>
+            <div class="image-block">
+                <img src="images/BluRoyalArcher.jpg" alt="Archer">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Rising Sun</p>
+            <div class="image-block">
+                <img src="images/BonsaiRisingSun.jpg" alt="Bonsai">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Head of buddha</p>
+            <div class="image-block">
+                <img src="images/HeadOfBuddha.jpg" alt="HeadOfBuddha">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Arch</p>
+            <div class="image-block">
+                <img src="images/BluYellowOnePiece.jpg" alt="Arch">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Ataraxy</p>
+            <div class="image-block">
+                <img src="images/KanJinAtaraxia.jpg" alt="KanJinAtaraxia">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Sakura Tree</p>
+            <div class="image-block">
+                <img src="images/SakuraTree.jpg" alt="SakuraTree">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Blues on purples</p>
+            <div class="image-block">
+                <img src="images/OnTheBlu.jpg" alt="OTB">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Colourful</p>
+            <div class="image-block">
+                <img src="images/Colourful.jpg" alt="Colorful">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Pure Serenity</p>
+            <div class="image-block">
+                <img src="images/JohanSerenity.jpeg" alt="JohanSerenity">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Mechatronics</p>
+            <div class="image-block">
+                <img src="images/Mechatronics-Graph-01.jpeg" alt="Mechatronics">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">John Cohen in High School</p>
+            <div class="image-block">
+                <img src="images/JohnCohenInHSClass.jpg" alt="JohnCohenInHSClass">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Focus Observation</p>
+            <div class="image-block">
+                <img src="images/JHNFcusObserver.jpg" alt="JHNFcusObserver">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Cyber</p>
+            <div class="image-block">
+                <img src="images/CyberFlipper.jpg" alt="CyberFlipper">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Buddhismic flag</p>
+            <div class="image-block">
+                <img src="images/BuddhismFlag.jpeg" alt="BuddhismFlag">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Wallpapers</p>
+            <div class="image-block">
+                <img src="images/KpopWallp.jpg" alt="KpopWallpaper">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Mononoke</p>
+            <div class="image-block">
+                <img src="images/PrincessMononoke.jpg" alt="PrincessMononoke">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Otaku</p>
+            <div class="image-block">
+                <img src="images/SubmissiveOtakuGirl.jpg" alt="Otaku">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The cherry blossom</p>
+            <div class="image-block">
+                <img src="images/sakuyamon_the_cherry_blossom.jpg" alt="sakuyamon_the_cherry_blossom">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Glowing chameleon</p>
+            <div class="image-block">
+                <img src="images/Glowing Chameleon.jpg" alt="GlowingChameleon">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Calisthenics</p>
+            <div class="image-block">
+                <img src="images/Calisthenics.jpeg" alt="Calisthenos">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Beautyfullness</p>
+            <div class="image-block">
+                <img src="images/Beautyfullness.jpg" alt="Beautyfullness">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Peacefully</p>
+            <div class="image-block">
+                <img src="images/Peacefully.jpg" alt="Peacefully">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">SmileyGraffiti</p>
+            <div class="image-block">
+                <img src="images/SmileyGrafitti.jpg" alt="SmileyGraffiti">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Formula 1</p>
+            <div class="image-block">
+                <img src="images/F1.jpg" alt="F1">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The Mask</p>
+            <div class="image-block">
+                <img src="images/OkamiMask.jpg" alt="OkamiMask">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Flower Of Life</p>
+            <div class="image-block">
+                <img src="images/Sacred-Geometry-Flower-of-Life.jpg" alt="SacredGeometry">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Floral</p>
+            <div class="image-block">
+                <img src="images/floralMandala.jpg" alt="floralMandala">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">D_Wheel</p>
+            <div class="image-block">
+                <img src="images/d_wheel.jpg" alt="dharmaWheel">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The Call</p>
+            <div class="image-block">
+                <img src="images/SoulNature.jpg" alt="SoulNature">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Dreamax</p>
+            <div class="image-block">
+                <img src="images/JcohenDreamax.jpeg" alt="JcohenDreamax">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">The Quote</p>
+            <div class="image-block">
+                <img src="images/NelsonMandelaQuote.jpeg" alt="NelsonMandelaQuote">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Gahnk!</p>
+            <div class="image-block">
+                <img src="images/MahoragaWheel.jpeg" alt="MahoragaWheel">
+            </div>
+        </div>
+
+
+        <div class="block">
+            <p class="block-text">And thus was the universe <br> 
+            thus experienced was life <br>
+            Peace And Love
+        </p>
+        </div>
+
+    </div>
+
+
+    <!-- Cistercian clock block (rainbow colours, fully centered) -->
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 60px auto 100px auto; border-radius: 50px; max-width: 600px;">
+        <cistercian-clock id="perm-cist-clock" style="font-size: 8rem;
+            --cistercian-width: 3px;
+            --cistercian-color-0: #ffffff;
+            --cistercian-color-1: #ff5733;
+            --cistercian-color-2: #33ff57;
+            --cistercian-color-3: #3357ff;
+            --cistercian-color-4: #f033ff;
+            --cistercian-color-5: #ffd733;
+            display: inline-block;
+            margin: 0 auto;">
+        </cistercian-clock>
+        <!-- Small Cistercian date row (no separators) -->
+        <div class="small-cist-date" style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 15px;">
+            <cistercian-number id="small-cist-year" value="2026" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
+            <cistercian-number id="small-cist-month" value="4" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
+            <cistercian-number id="small-cist-day" value="7" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
+        </div>
+    </div>
+
+    <div class="content-blocks" style="margin-top: 375px; padding-top: 375px; padding-bottom: 425px;"> <!-- border-top: 1px solid var(--clock-border);-->
+        <div class="block active" style="position: relative; opacity: 1; display: flex; flex-direction: column;">
+            <h3 class="title-accent">Project Intent</h3>
+            <p class="block-text">
+                This dashboard is designed as a <b>Persistent Ambient Display</b>. 
+                The goal is to bridge the gap between a functional timepiece and a personal 
+                gallery, serving as an "Always-On" companion for a professional workspace.
+            </p>
+            
+            <h3 class="title-accent" style="font-size: 1rem; margin-top: 20px;">Technical Architecture</h3>
+            <ul class="block-text">
+                <li><b>Screen Wake Lock API:</b> Prevents the host device from entering sleep mode or dimming the display, ensuring the clock remains visible during long work sessions.</li>
+                <li><b>Fisher-Yates Shuffle:</b> An $O(n)$ complexity algorithm used to ensure an unbiased, non-repeating random sequence for the content rotation.</li>
+                <li><b>Deterministic Minute-Reset:</b> State-management logic that synchronizes UI transitions precisely with the 00-second mark of the system clock.</li>
+                <li><b>Hybrid Background Engine:</b> Supports both Synchronized (mirrored) and Independent background cycling with a deterministic state-management loop.</li>
+                <li><b>Stealth Gesture Layer:</b> Implements a "Ghost UI" using double-click event listeners and Keyboard Hotkeys to toggle state without persistent UI clutter.</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Cistercian clock last block with small date underneath + Footer-->   
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 60px auto; margin-top: 325px; padding: 20px; border-radius: 48px; max-width: 600px;">
+        <h3 class="title-accent" style="padding-top: 100px; margin-bottom: 20px;">Cistercians Clock Project</h3>
+        <cistercian-clock id="perm-cist-clock-last" style="font-size: 8rem;
+            --cistercian-width: 3px;
+            --cistercian-color-0: #ffffff;
+            --cistercian-color-1: #ff5733;
+            --cistercian-color-2: #33ff57;
+            --cistercian-color-3: #3357ff;
+            --cistercian-color-4: #f033ff;
+            --cistercian-color-5: #ffd733;
+            display: inline-block;
+            margin: 0 auto;">
+        </cistercian-clock>
+
+        <!-- Small Cistercian date row (no separators) -->
+        <div class="small-cist-date" style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 15px;">
+            <cistercian-number id="small-cist-year-last" value="2026" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
+            <cistercian-number id="small-cist-month-last" value="4" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
+            <cistercian-number id="small-cist-day-last" value="7" style="font-size: 1.8rem; --cistercian-width: 2px;"></cistercian-number>
+        </div>
+        <p class="block-text" style="margin-top: 20px;">Medieval monk numerals:<br>each symbol represents a number from 0 to 9999<br>If you don't know about them, here's the introduction from the <a href="https://en.wikipedia.org/wiki/Cistercian_numerals" target="_blank" rel="noopener noreferrer">Wikipedia page</a></p>
+        <br>
+
+        <footer class="site-footer">
+            <div class="footer-line"></div>
+            <div style="margin-top: 15px;">
+                <a href="https://github.com/JinKaneki/AnalogClockHost" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">GitHub</a>
+                <a href="https://youtube.com/@jinkaneki01?si=6zFtEGHjjxkAz1kn" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">Youtube</a>
+                <a href="https://linkedin.com/in/yourusername" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">LinkedIn</a>
+            </div>
+            <p class="footer-subtext">All things serve the Beam.</p>
+            <p>&copy; <span id="year"></span> built by Jin Kaneki | All Rights Reserved</p>
+        </footer>
+    </div>
+
+</body>
+
+<script>
+        // --- 1. AUDIO CONTEXT SETUP ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // --- 2. VOLUME & MUTE LOGIC ---
+        const muteBtn = document.getElementById('mute-btn');
+        const volumeSlider = document.getElementById('volume-slider');
+
+        // One single source of truth for volume
+        let currentVolume = parseFloat(volumeSlider.value); 
+        let previousVolume = currentVolume; 
+
+        // Mute Toggle Event
+        muteBtn.addEventListener('click', () => {
+            if (currentVolume > 0) {
+                // Muting: Store current value, set to zero
+                previousVolume = currentVolume;
+                currentVolume = 0;
+                volumeSlider.value = 0;
+                muteBtn.innerText = "🔇";
+                muteBtn.style.opacity = "0.5";
+            } else {
+                // Unmuting: Restore previous or default to 0.06
+                currentVolume = previousVolume > 0 ? previousVolume : 0.06;
+                volumeSlider.value = currentVolume;
+                muteBtn.innerText = "🔊";
+                muteBtn.style.opacity = "0.7";
+            }
+        });
+
+        // Slider Input Event
+        volumeSlider.addEventListener('input', (e) => {
+            currentVolume = parseFloat(e.target.value);
+            
+            // Auto-update icon if user slides to zero
+            if (currentVolume === 0) {
+                muteBtn.innerText = "🔇";
+                muteBtn.style.opacity = "0.5";
+            } else {
+                muteBtn.innerText = "🔊";
+                muteBtn.style.opacity = "0.7";
+            }
+        });
+
+        // --- 3. THE ANALOG TICK GENERATOR ---
+        function playTick(isTock = false) {
+            // Resume context (needed for browser security policies)
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            // Performance Guard: Don't process audio if muted
+            if (currentVolume <= 0) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+
+            // Square wave gives that mechanical "click"
+            osc.type = 'square';
+            
+            // Frequency: Tock (400Hz) is deeper than Tick (800Hz)
+            osc.frequency.setValueAtTime(isTock ? 400 : 800, audioCtx.currentTime);
+
+            // Filter: Lowpass at 7000Hz keeps it crisp but not "buzzy"
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(7000, audioCtx.currentTime); 
+
+            // Volume calculation (Tock is 1.5x louder for emphasis)
+            const volumeLevel = isTock ? currentVolume * 1.5 : currentVolume;
+            
+            // Percussive Envelope: Fast attack, 90ms decay
+            gain.gain.setValueAtTime(volumeLevel, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.09);
+
+            // Routing: Osc -> Filter -> Gain -> Speakers
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.03); // Stop osc after 30ms
+        }
+
+        const typewriterElement = document.getElementById('typewriter');
+        const names = ["JIN KANEKI", "JOHN COHEN","@_@","THE OBSERVER","DARK SAMURAI","THE WANDERER","JIN LEE","KANJIN","How many names have you counted?",":)"];
+        let nameIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typeSpeed = 100;
+
+        function type() {
+            const currentName = names[nameIndex];
+            
+            if (isDeleting) {
+                // Remove characters
+                typewriterElement.textContent = currentName.substring(0, charIndex - 1);
+                charIndex--;
+                typeSpeed = 50; // Deleting is usually faster
+            } else {
+                // Add characters
+                typewriterElement.textContent = currentName.substring(0, charIndex + 1);
+                charIndex++;
+                typeSpeed = 150; // Typing speed
+            }
+
+            // Logic for pausing at the end of a word
+            if (!isDeleting && charIndex === currentName.length) {
+                isDeleting = true;
+                typeSpeed = 5000; // Wait 2 seconds =2000 before starting to delete
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                nameIndex = (nameIndex + 1) % names.length; // Move to next name
+                typeSpeed = 1000; // Small pause before typing next name 100
+            }
+
+            setTimeout(type, typeSpeed);
+        }
+
+        // Start the effect
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(type, 1000); // Wait 1 second after page load to start
+        });
+
+        const hourHand = document.getElementById('hour');
+        const minuteHand = document.getElementById('minute');
+        const secondHand = document.getElementById('second');
+        const themeToggle = document.getElementById('theme-toggle');
+        const freezeBtn = document.getElementById('freeze-btn');
+        const body = document.body;
+
+        // Slideshow Variables
+        let blocks = Array.from(document.querySelectorAll('.block'));
+        let currentBlockIndex = 0;
+        let lastMinute = new Date().getMinutes();
+        let isFrozen = false;
+
+        // Function to Shuffle the Array (Fisher-Yates Algorithm)
+        function shuffleBlocks() {
+            for (let i = blocks.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [blocks[i], blocks[j]] = [blocks[j], blocks[i]];
+            }
+        }
+
+        // Initial Shuffle so it's random every time you refresh
+        shuffleBlocks();
+
+        // Initialize: Show the first random block
+        if(blocks.length > 0) {
+            blocks.forEach(b => b.classList.remove('active')); // Clean slate
+            blocks[0].classList.add('active');
+        }
+
+        // Freeze Toggle Logic
+        freezeBtn.addEventListener('click', () => {
+            isFrozen = !isFrozen;
+            freezeBtn.classList.toggle('frozen');
+            freezeBtn.innerText = isFrozen ? "🔥 Resume Loop" : "❄️ Freeze Image";
+        });
+
+        const themeLabel = document.getElementById('theme-label');
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            themeLabel.innerText = body.classList.contains('light-mode') ? '' : '';// 'Light Mode' : 'Dark Mode';
+        });
+
+
+
+        function updateClock() {
+            const currentDate = new Date();
+            const seconds = currentDate.getSeconds();
+            const minutes = currentDate.getMinutes();
+
+            // Play the ticking sound
+            playTick();
+            // If it's the 0th second, play the 'Tock' (deeper sound)
+            playTick(seconds === 0);
+
+            // Minute Reset Rule
+            if (minutes !== lastMinute) {
+                cycleBlocks();
+                lastMinute = minutes;
+            }
+
+            const secondsRatio = seconds / 60;
+            const minutesRatio = (secondsRatio + minutes) / 60;
+            const hoursRatio = (minutesRatio + currentDate.getHours()) / 12;
+
+            secondHand.style.transform = `translateX(-50%) rotate(${secondsRatio * 360}deg)`;
+            minuteHand.style.transform = `translateX(-50%) rotate(${minutesRatio * 360}deg)`;
+            hourHand.style.transform = `translateX(-50%) rotate(${hoursRatio * 360}deg)`;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+
+
+        function cycleBlocks() {
+            if (isFrozen) return; // Stop right here if frozen;
+
+            // Hide current
+            blocks[currentBlockIndex].classList.remove('active');
+            
+            // Increment index
+            currentBlockIndex++;
+
+            // If we reached the end of the shuffled list, reshuffle and start over
+            if (currentBlockIndex >= blocks.length) {
+                shuffleBlocks();
+                currentBlockIndex = 0;
+            }
+            
+            // Show next
+            blocks[currentBlockIndex].classList.add('active');
+
+            // NEW: Tell the background to update to match the new block! this call the global function
+            updateBackground();
+        }
+
+        // --- 1. GLOBAL VARIABLES ---
+        let isBgFrozen = false;
+        let bgMode = 'off'; // off 'sync' or 'independent'
+        const independentBgImages = [
+            'images/indepedentBG/ORIGINBACKG.jpeg.jpeg',
+            'images/indepedentBG/IMGBACKG.jpeg',
+            'images/indepedentBG/TheAlchemistV2.jpg',
+            'images/indepedentBG/Ataraxia.jpg',
+            'images/indepedentBG/BuddhaMobile.jpg',
+            'images/indepedentBG/CalisMobile.jpeg',
+            'images/indepedentBG/CoolMobileBG.jpeg',
+            'images/indepedentBG/DarkSamurai.jpeg',
+            'images/indepedentBG/HomeJCohen.jpg',
+            'images/indepedentBG/Luffy.jpg',
+            'images/indepedentBG/SteinsGate.jpeg',
+            'images/indepedentBG/Spring.png',
+            'images/indepedentBG/Space.jpg',
+            'images/indepedentBG/GokuSS3.jpeg',
+            'images/indepedentBG/Jungle.png',
+            'images/indepedentBG/SerenityIllustration.jpeg',
+            'images/indepedentBG/IchigoMask.jpeg',
+            'images/indepedentBG/JCohen.jpeg',
+            'images/indepedentBG/Soldiers.jpeg',
+            'images/indepedentBG/PinkGirl.jpeg',
+            'images/indepedentBG/LoveStory.jpg',
+            'images/indepedentBG/ChameleoMobile.jpg',
+            'images/indepedentBG/KidGoku.jpg',
+            'images/indepedentBG/AnAngel.jpg',
+            'images/indepedentBG/LuffyVsCp0.jpg',
+            'images/indepedentBG/Nika.jpg',
+            'images/indepedentBG/DBZ.jpg',
+            'images/indepedentBG/FireForce.jpg',
+            'images/indepedentBG/BluSage.jpg',
+            'images/indepedentBG/Angel.jpg',
+            'images/indepedentBG/EngDrawing.jpg',
+            'images/indepedentBG/FlammingBird.jpeg',
+            'images/indepedentBG/OkamiMobile.jpg',
+            'images/indepedentBG/Sherlock.jpg',
+            'images/indepedentBG/DharmaWheelMobile.jpg',
+            'images/indepedentBG/JJKMODULO.jpg',
+            'images/indepedentBG/daytv3y-Kaneki.jpg',
+            //'images/indepedentBG/',
+            //'images/indepedentBG/',
+        ];
+
+        const ghost = document.getElementById('ghost-indicator');
+        const bgToggleBtn = document.getElementById('bg-toggle-btn');
+
+        // --- 2. THE MASTER UPDATE FUNCTION (Stand-alone) ---
+        function updateBackground() {
+            // 🛑 THE GATEKEEPER: If frozen, we exit immediately
+            if (isBgFrozen) {
+                console.log("Background locked. Ignoring update.");
+                return; 
+            }
+            // 🛑 If the mode is 'off', keep the primary dark background
+            if (bgMode === 'off') return;
+
+            // --- SYNC MODE: use the active block's image ---
+            if (bgMode === 'sync') {
+                const activeBlock = blocks[currentBlockIndex];
+                const img = activeBlock.querySelector('img');
+                if (img) {
+                    document.querySelector('.fixed-bg').style.backgroundImage = `url('${img.src}')`;
+                }
+            }
+            // --- INDEPENDENT MODE: do nothing here (handled by interval & switch) ---
+        }
+
+
+        // --- 3. TIMERS & CYCLES ---
+         let independentInterval = null;
+        function startIndependentInterval() {
+            if (independentInterval) clearInterval(independentInterval);
+            independentInterval = setInterval(() => {
+                if (bgMode === 'independent' && !isBgFrozen) {
+                    setRandomIndependentBg();
+                }
+            }, 30000); // 30 seconds
+        }
+
+        // --- 4. GHOST UI & FEEDBACK ---
+        function triggerGhost(message) {
+            // If message is a boolean, use the original freeze messages
+            if (typeof message === 'boolean') {
+                ghost.innerText = message ? "👻 BG FROZEN" : "▶️ BG RESUMED";
+            } else {
+                // Otherwise, treat it as a custom string
+                ghost.innerText = message;
+            }
+            ghost.classList.add('show');
+            setTimeout(() => ghost.classList.remove('show'), 1200);
+        }
+        
+        // Setting Random independants
+        function setRandomIndependentBg() {
+            if (!independentBgImages || independentBgImages.length === 0) return;
+            const randomIndex = Math.floor(Math.random() * independentBgImages.length);
+            document.querySelector('.fixed-bg').style.backgroundImage = `url('${independentBgImages[randomIndex]}')`;
+        }
+        function stopIndependentInterval() {
+            if (independentInterval) {
+                clearInterval(independentInterval);
+                independentInterval = null;
+            }
+        }
+        // --- 5. EVENT LISTENERS ---
+        bgToggleBtn.addEventListener('click', () => {
+            // If it's off or independent, we switch TO sync
+            if (bgMode === 'off' || bgMode === 'independent') {
+                // 🛑 If coming from independent, stop its interval
+                if (bgMode === 'independent') {
+                    stopIndependentInterval();
+                }
+                bgMode = 'sync';
+                bgToggleBtn.classList.remove('independent');
+                bgToggleBtn.innerText = "🖼️ BG: SYNCED 🌌";
+            } else {
+                // If it was sync, we switch TO independent
+                bgMode = 'independent';
+                bgToggleBtn.classList.add('independent');
+                bgToggleBtn.innerText = " BG: INDEPENDENT";
+
+                setRandomIndependentBg();   // immediate random background
+                startIndependentInterval(); // start 30s random cycle
+            }
+            
+            updateBackground(); // This triggers the fade-in (for sync) or is ignored for independent
+        });
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Double Click to Freeze/Unfreeze
+            document.body.addEventListener('dblclick', (e) => {
+                // Note: If you have an overlay, e.target might be the body or a div.
+                // This ensures it triggers when clicking the background area.
+                if (e.target === document.body || e.target.tagName === 'BODY') {
+                    isBgFrozen = !isBgFrozen;
+                    playTick(true);  // Deeper 'Tock' sound for confirmation
+                    triggerGhost(isBgFrozen);
+                    if (!isBgFrozen) updateBackground();
+                }
+            });
+
+            // Key 'B' to Freeze/Unfreeze
+            document.addEventListener('keydown', (e) => {
+                if (e.key.toLowerCase() === 'b') {
+                    isBgFrozen = !isBgFrozen;
+                    playTick(true); // Deeper 'Tock' sound for confirmation
+                    triggerGhost(isBgFrozen);
+                    if (!isBgFrozen) updateBackground();
+                }
+
+                if (e.key.toLowerCase() === 'z') {
+                e.preventDefault();
+            
+            
+                // Cycle the style mode
+                currentModeIndex = (currentModeIndex + 1) % clockModes.length;
+                const mode = clockModes[currentModeIndex];
+
+                // Manually apply the same changes as the button click (to avoid double sound)
+                analogClock.classList.remove('zen-mode');
+                analogClock.style.display = 'flex';
+                digitalClock.style.display = 'none';
+                cistercianClock.style.display ='none';
+                styleBtn.classList.remove('zen-active');
+                styleBtn.style.borderColor = "var(--clock-border)";
+                styleBtn.style.color = "var(--text-color)";
+
+                if (mode === 'classic') {
+                    styleBtn.innerText = "🕰️ STYLE: CLASSIC";
+                } else if (mode === 'glass') {
+                    analogClock.classList.add('zen-mode');
+                    styleBtn.innerText = "💎 STYLE: GLASSIC";
+                    styleBtn.classList.add('zen-active');
+                } else if (mode === 'digital') {
+                    analogClock.style.display = 'none';
+                    digitalClock.style.display = 'flex';
+                    cistercianClock.style.display = 'none';
+                    styleBtn.innerText = "📟 STYLE: DIGITAL";
+                    styleBtn.classList.add('zen-active');
+                    styleBtn.style.borderColor = "var(--clock-border)";
+                } else if (mode === 'cistercian') {
+                    analogClock.style.display = 'none';
+                    digitalClock.style.display = 'none';
+                    cistercianClock.style.display = 'flex';
+                    styleBtn.innerText = "🧮 STYLE: CISTERCIAN";
+                    styleBtn.classList.add('zen-active');
+                    styleBtn.style.borderColor = "var(--clock-border)";
+                }
+
+                playTick(true);
+                if (typeof triggerGhost === 'function') {
+                    triggerGhost(modeMessages[mode]);
+                }
+            }
+            });
+        });
+
+        // --- HUD / STEALTH MODE TOGGLE ---
+        const hudToggleBtn = document.getElementById('hud-toggle-btn');
+        let isHudVisible = true;
+
+        hudToggleBtn.addEventListener('click', () => {
+            isHudVisible = !isHudVisible;
+            
+            // Toggle the stealth-mode class on the body
+            document.body.classList.toggle('stealth-mode', !isHudVisible);
+            
+            // Update button visual state
+            if (isHudVisible) {
+                hudToggleBtn.innerText = "👁️ HUD";
+                hudToggleBtn.style.opacity = "0.5";
+                hudToggleBtn.style.borderColor = "var(--clock-border)";
+                hudToggleBtn.style.color = "var(--text-color)";
+            } else {
+                hudToggleBtn.innerText = "🙈 HUD";
+                hudToggleBtn.style.opacity = "1";
+                hudToggleBtn.style.borderColor = "var(--accent-color)";
+                hudToggleBtn.style.color = "var(--accent-color)";
+            }
+            
+            playTick(true); // Satisfying mechanical click sound
+            
+            // Optional: Trigger your ghost indicator so the user knows what happened
+            if (typeof triggerGhost === 'function') {
+                triggerGhost(isHudVisible ? "HUD: ONLINE" : "HUD: OFFLINE");
+            }
+        });
+
+
+        // --- ELITE 4-STATE CLOCK TOGGLE (Classic / Glass / Digital / Cistercian) ---
+        const styleBtn = document.getElementById('zen-toggle-btn');
+        const analogClock = document.getElementById('analog-clock');
+        const digitalClock = document.getElementById('digital-clock');
+        const cistercianClock = document.getElementById('cistercian-wrapper');// <-- NEW
+
+        // State: 0 = Classic, 1 = Glass, 2 = Digital , 3 = Cistercian ,
+        const clockModes = ['classic', 'glass', 'digital','cistercian'];
+        let currentModeIndex = 0;
+
+        // Set initial button text
+        styleBtn.innerText = "🕰️ STYLE: CLASSIC";
+
+        // Map mode to ghost message
+        const modeMessages = {
+            'classic': '🕰️ CLASSIC MODE',
+            'glass': '💎 GLASS MODE',
+            'digital': '📟 DIGITAL MODE',
+            'cistercian': '🧮 CISTERCIAN MODE' // <-- NEW
+        };
+
+        styleBtn.addEventListener('click', () => {
+            currentModeIndex = (currentModeIndex + 1) % clockModes.length;
+            const mode = clockModes[currentModeIndex];
+
+            playTick(true); // sound feedback
+
+            // Reset everything
+            analogClock.classList.remove('zen-mode');
+            analogClock.style.display = 'flex';
+            digitalClock.style.display = 'none';
+            cistercianClock.style.display = 'none';
+            styleBtn.classList.remove('zen-active');
+            styleBtn.style.borderColor = "var(--clock-border)";
+            styleBtn.style.color = "var(--text-color)";
+
+            // Apply new mode
+            if (mode === 'classic') {
+                styleBtn.innerText = "🕰️ STYLE: CLASSIC";
+            } else if (mode === 'glass') {
+                analogClock.classList.add('zen-mode');
+                styleBtn.innerText = "💎 STYLE: GLASSIC";
+                styleBtn.classList.add('zen-active');
+            } else if (mode === 'digital') {
+                analogClock.style.display = 'none';
+                digitalClock.style.display = 'flex';
+                cistercianClock.style.display = 'none';
+                styleBtn.innerText = "📟 STYLE: DIGITAL";
+                styleBtn.classList.add('zen-active');
+                styleBtn.style.borderColor = "var(--clock-border)";
+            } else if (mode === 'cistercian') {
+                analogClock.style.display = 'none';
+                digitalClock.style.display = 'none';
+                cistercianClock.style.display = 'flex'; // block //
+                styleBtn.innerText = "🧮 STYLE: CISTERCIAN";
+                styleBtn.classList.add('zen-active');
+                styleBtn.style.borderColor = "var(--clock-border)";
+            }
+
+            // Show ghost message
+            if (typeof triggerGhost === 'function') {
+                triggerGhost(modeMessages[mode]);
+            }
+        });
+
+
+
+        // 2. Hide Info Logic
+        // --- CLEAN VIEW 3‑STATE CYCLE (with space preservation) ---
+        const hideBtn = document.getElementById('hide-info-btn');
+        const infoSection = document.getElementById('info-section');
+        const contentBlocks = document.querySelectorAll('.content-blocks'); // both slideshow and the extra one
+        let cleanViewMode = 0; // 0 = all visible, 1 = info hidden, 2 = both hidden
+
+        function updateCleanView() {
+            if (cleanViewMode === 0) {
+                // All visible
+                infoSection.style.display = ''; // restore default
+                contentBlocks.forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.pointerEvents = 'auto';
+                });
+                hideBtn.innerText = '🖥️ CLEAN VIEW: OFF';
+                hideBtn.style.color = '#f6ff00'; // Solid Yellow/Magenta
+            } else if (cleanViewMode === 1) {
+                // Info hidden, images visible
+                infoSection.style.display = 'none';
+                contentBlocks.forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.pointerEvents = 'auto';
+                });
+                hideBtn.innerText = '🖥️ CLEAN VIEW:(text off)';
+                hideBtn.style.color = '#ffb835'; // Orange
+            } else { // mode 2
+                // Everything hidden (info + images)
+                infoSection.style.display = 'none';
+                contentBlocks.forEach(el => {
+                    el.style.opacity = '0';
+                    el.style.pointerEvents = 'none';
+                });
+                hideBtn.innerText = '🖥️ CLEAN VIEW: ON(full)';
+                hideBtn.style.color = '#00fffb'; // Cyber Cyan
+            }
+        }
+
+        hideBtn.addEventListener('click', () => {
+            cleanViewMode = (cleanViewMode + 1) % 3;
+            updateCleanView();
+            playTick(true); // sound feedback
+        });
+
+
+        // --- DIGITAL CLOCK TIME ENGINE ---
+        // You likely already have an interval running for your analog hands.
+        // You can just drop this function in and call it on an interval.
+        function updateDigitalTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            
+            document.getElementById('digi-hours').innerText = String(hours).padStart(2, '0');
+            document.getElementById('digi-minutes').innerText = String(minutes).padStart(2, '0');
+            
+            // Update Cistercian date numerals (year, month, day)
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;  // months are 0-indexed
+            const day = now.getDate();
+            
+            const yearElem = document.getElementById('cist-year');
+            const monthElem = document.getElementById('cist-month');
+            const dayElem = document.getElementById('cist-day');
+            
+            if (yearElem) yearElem.setAttribute('value', year);
+            if (monthElem) monthElem.setAttribute('value', month);
+            if (dayElem) dayElem.setAttribute('value', day);
+
+            // Update the small date inside the Cistercian clock block
+            const smallYear = document.getElementById('small-cist-year');
+            const smallMonth = document.getElementById('small-cist-month');
+            const smallDay = document.getElementById('small-cist-day');
+
+            if (smallYear) smallYear.setAttribute('value', year);
+            if (smallMonth) smallMonth.setAttribute('value', month);
+            if (smallDay) smallDay.setAttribute('value', day);
+
+            // Update the second (last) Cistercian date block
+            const smallYearLast = document.getElementById('small-cist-year-last');
+            const smallMonthLast = document.getElementById('small-cist-month-last');
+            const smallDayLast = document.getElementById('small-cist-day-last');
+
+            if (smallYearLast) smallYearLast.setAttribute('value', year);
+            if (smallMonthLast) smallMonthLast.setAttribute('value', month);
+            if (smallDayLast) smallDayLast.setAttribute('value', day);
+        }
+
+        // Start it once
+        updateDigitalTime();
+        setInterval(updateDigitalTime, 1000);
+
+
+
+        // --- SCREEN WAKE LOCK API ---
+        let wakeLock = null;
+
+        // Function to request the screen to stay awake
+        const requestWakeLock = async () => {
+            try {
+                // Requesting the 'screen' wake lock
+                wakeLock = await navigator.wakeLock.request('screen');
+                console.log('Wake Lock is active! Screen will stay on. 💡');
+                
+                // If the system forces it to release (like low battery), log it
+                wakeLock.addEventListener('release', () => {
+                    console.log('Wake Lock was released.');
+                });
+            } catch (err) {
+                // If the browser doesn't support it or blocks it
+                console.error(`Wake Lock error: ${err.name}, ${err.message}`);
+            }
+        };
+
+        // 1. Request it as soon as the page loads
+        requestWakeLock();
+
+        // 2. Re-request it if the user switches tabs and comes back
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                requestWakeLock();
+            }
+        });
+
+
+        // Automatically update the copyright year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+</script>
+</html>
