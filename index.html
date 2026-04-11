@@ -878,8 +878,92 @@
             transition: opacity 0.3s ease;
         }
 
+        /* --- CYBER-FETCH TERMINAL --- */
+        #cyber-fetch-terminal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
+            width: 85%;
+            max-width: 800px;
+            background: rgba(10, 10, 15, 0.504);
+            backdrop-filter: blur(2px);
+            border: 1px solid var(--accent-color);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
+            border-radius: 12px;
+            z-index: 10000;
+            color: #ececec;
+            font-family: 'Courier New', Courier, monospace;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s ease;
+            overflow: hidden;
+        }
+
+        #cyber-fetch-terminal.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .terminal-header {
+            background: rgba(0, 240, 255, 0.1);
+            border-bottom: 1px solid var(--accent-color);
+            padding: 8px 15px;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            color: var(--accent-color);
+        }
+
+        #fetch-content {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .fetch-logo {
+            color: #ff00ff;
+            text-shadow: 0 0 8px #ff00ff;
+            font-weight: bold;
+            white-space: pre;
+        }
+
+        .fetch-key {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .fetch-value {
+            color: #ececec;
+        }
 
 
+        /* Fastfetch button style */
+        .action-btn {
+            background: transparent;
+            color: var(--accent-color);
+            border: 2px solid var(--clock-border);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+            backdrop-filter: blur(4px);
+        }
+        .action-btn:hover {
+            opacity: 1;
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        
         /* MOBILE-FRIENDLY TWEAKS */
         @media (max-width: 600px) {
             /* Theme toggle (right side) */
@@ -999,6 +1083,37 @@
                 gap: 4px;
             }
 
+
+            #fetch-content {
+                flex-direction: column;
+                font-size: 0.6rem;
+                gap: 15px;
+            }
+
+            /* Mobile adjustments for the fetch container */
+            /* Make the fetch container fit without overflow */
+            #fastfetch-container {
+                flex-wrap: nowrap !important;
+                padding: 8px;
+                gap: 10px;
+            }
+
+            /* Shrink the ASCII art */
+            #fastfetch-container pre {
+                font-size: 5px !important;   /* very small, but still readable */
+                line-height: 1.1;
+                margin: 0;
+                white-space: pre;            /* keep ASCII shape, no wrapping */
+            }
+
+            /* Shrink the system info text */
+            #system-info {
+                font-size: 4px !important;
+                padding-left: 6px !important;
+                line-height: 1.3;
+            }
+
+
             .site-footer {
             width: 100%;
             padding: 40px 0 120px 0; 
@@ -1013,15 +1128,14 @@
 </head>
 
 <body>
-    
     <!-- Fixed background layer (behind everything) -->
     <div class="fixed-bg"></div>
+
     <!-- Toggle for hiding controls (top-left) -->
     <div class="hide-controls-toggle-wrapper">
         <button id="hide-controls-btn" class="hide-controls-btn">🎮 Hide Controls</button>
     </div>
     <div id="ghost-indicator">👻 PAUSED</div>
-
     <div class="theme-switch-wrapper">
         <!--<span class="switch-label">Light/Dark</span> -->
         <label class="switch">
@@ -1030,8 +1144,16 @@
         </label>
         <span id="theme-label"></span>
     </div>
+    <!-- CYBER-FETCH TERMINAL -->
+    <div id="cyber-fetch-terminal">
+        <div class="terminal-header">
+            <span>user@elite-gems:~</span>
+            <span id="close-fetch" style="cursor: pointer; color: #ff0055;">[X]</span>
+        </div>
+        <div id="fetch-content"></div>
+    </div>
+    <button id="open-fetch-btn" class="hide-controls-btn" style="margin-left: 10px;">🖥️ System Info</button>
 
-    
     <div class="timepiece-wrapper" style="display: flex; margin-top: 120px; flex-direction: column; justify-content: center; align-items: center; min-height: 500px; width: 100%; z-index: 1;"> 
         <div class="clock" id="analog-clock">
             <div class="number num-12">12</div>
@@ -1571,6 +1693,27 @@
         <p class="block-text" style="margin-top: 20px;padding-bottom: 60px;">Medieval monk numerals:<br>each symbol represents a number from 0 to 9999<br>If you don't know about them, here's the introduction from the <a href="https://en.wikipedia.org/wiki/Cistercian_numerals" target="_blank" rel="noopener noreferrer">Wikipedia page</a></p>
     </div>
 
+    
+    <!-- Fastfetch‑style system info panel -->
+    <div style="text-align: center; margin: 20px auto;">
+        <button id="toggle-fetch-btn" class="action-btn">🖥️ RUN JOHAN_OS</button>
+    </div>
+
+    <div id="fastfetch-container" style="visibility: hidden; font-family: 'Courier New', monospace; background: rgba(0, 0, 0, 0.502); backdrop-filter: blur(px); border: 1px solid var(--accent-color); border-radius: 16px; padding: 20px; width: fit-content; max-width: 95%; margin: 0 auto; display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.5);">
+        <pre id="ascii-art" style="margin: 10px;padding: 10px; color: #ff00ff; font-size: 16px; line-height: 1.4; white-space: pre;">
+     _  ____  _   _   _   _   _    ____  ____      \   /
+       | |/ __ \| | | | / \ | \ | |  / __ \/ ___|  --  \ /  --
+    _  | | |  | | |_| |/ _ \|  \| |  ||  | \___ \  (  \ | /  )
+  | |_| | |__| |  _  / ___ \ |\  |__||__| |___)|   \  \|/  /
+  \____/\____/|_| |__/  \__\  \_|_______/____/     -- | --
+        
+        </pre>
+        <p style="font-family: 'Segoe UI'; font-size: 10px; color: rgb(255, 255, 0);white-space: nowrap;">[@ @]<br> -</p>
+        <div id="system-info" style="border-left: 1px solid var(--accent-color); padding-left: 20px; font-size: 0.85rem; line-height: 1.4;">
+            <!-- data will be inserted here -->
+        </div>
+    </div>
+
     <footer class="site-footer">
             <div class="footer-line"></div>
             <div style="margin-top: 15px;">
@@ -1666,6 +1809,196 @@
 
             osc.start();
             osc.stop(audioCtx.currentTime + 0.03); // Stop osc after 30ms
+        }
+
+        // --- CYBER-FETCH ENGINE (Bulletproof, with button & S/I keys) ---
+        const fetchTerminal = document.getElementById('cyber-fetch-terminal');
+        const fetchContent = document.getElementById('fetch-content');
+        const closeFetchBtn = document.getElementById('close-fetch');
+        const openFetchBtn = document.getElementById('open-fetch-btn');
+
+        // Properly aligned ASCII Logo (Gem shape)
+        const asciiLogo = `<pre class="fetch-logo">
+             /\\
+            /  \\
+           /____\\
+          /\\    /\\
+         /  \\  /  \\
+        /____\\/____\\
+        \\    /\\    /
+         \\  /  \\  /
+          \\/____\\/
+           \\    /
+            \\  /
+             \\/
+        </pre>`;
+
+        function generateFetchData() {
+            // --- Safe OS detection with fallback ---
+            let os = 'Unknown';
+            try {
+                if (navigator.userAgentData && navigator.userAgentData.platform) {
+                    os = navigator.userAgentData.platform;
+                } else if (navigator.platform) {
+                    os = navigator.platform;
+                }
+            } catch(e) { os = 'Unknown'; }
+
+            // --- Safe hardware info ---
+            const cores = navigator.hardwareConcurrency || '?';
+            const ram = navigator.deviceMemory ? `~${navigator.deviceMemory} GB` : '? GB';
+            const resolution = `${window.screen.width}×${window.screen.height}`;
+
+            // --- Safe browser detection ---
+            let browser = 'Unknown';
+            try {
+                const ua = navigator.userAgent;
+                if (ua.includes('Chrome')) browser = 'Chrome';
+                else if (ua.includes('Firefox')) browser = 'Firefox';
+                else if (ua.includes('Safari')) browser = 'Safari';
+                else browser = ua.split(' ').pop() || 'Unknown';
+            } catch(e) { browser = 'Unknown'; }
+
+            // --- Safe network info ---
+            let conn = 'Unknown';
+            try {
+                conn = navigator.connection ? navigator.connection.effectiveType : 'Unknown';
+            } catch(e) { conn = 'Unknown'; }
+
+            // --- Uptime (always works) ---
+            const uptimeSec = Math.floor(performance.now() / 1000);
+            const uptimeMin = Math.floor(uptimeSec / 60);
+            const uptimeHours = Math.floor(uptimeMin / 60);
+            const uptimeStr = uptimeHours > 0 ? `${uptimeHours}h ${uptimeMin % 60}m` : `${uptimeMin}m ${uptimeSec % 60}s`;
+
+            const themeMode = document.body.classList.contains('light-mode') ? 'Light Mode' : 'Cyber-Dark';
+
+            const systemInfo = `
+        <span class="fetch-key">OS:</span>         <span class="fetch-value">${os}</span>
+        <span class="fetch-key">Host:</span>       <span class="fetch-value">Elite Gems Web Engine</span>
+        <span class="fetch-key">Kernel:</span>     <span class="fetch-value">Browser Sandbox (V8)</span>
+        <span class="fetch-key">Uptime:</span>     <span class="fetch-value">${uptimeStr}</span>
+        <span class="fetch-key">Packages:</span>   <span class="fetch-value">cistercian-numerals, custom CSS/JS</span>
+        <span class="fetch-key">Resolution:</span> <span class="fetch-value">${resolution}</span>
+        <span class="fetch-key">DE/WM:</span>      <span class="fetch-value">HTML5 / CSS3 Flex</span>
+        <span class="fetch-key">Theme:</span>      <span class="fetch-value">${themeMode}</span>
+        <span class="fetch-key">Terminal:</span>   <span class="fetch-value">${browser}</span>
+        <span class="fetch-key">CPU:</span>        <span class="fetch-value">${cores} Logical Cores</span>
+        <span class="fetch-key">Memory:</span>     <span class="fetch-value">${ram}</span>
+        <span class="fetch-key">Network:</span>    <span class="fetch-value">${conn}</span>
+
+        <span style="color:#ff5733;">███</span><span style="color:#ffd733;">███</span><span style="color:#33ff57;">███</span><span style="color:#00f0ff;">███</span><span style="color:#3357ff;">███</span><span style="color:#f033ff;">███</span>
+            `;
+
+            fetchContent.innerHTML = asciiLogo + `<div>${systemInfo}</div>`;
+        }
+
+        function toggleFetch() {
+            const isActive = fetchTerminal.classList.contains('active');
+            if (!isActive) {
+                generateFetchData();   // refresh data each time
+                if (typeof playTick === 'function') playTick(true);
+            }
+            fetchTerminal.classList.toggle('active');
+        }
+
+        // --- Open button(Top Sytem Info) ---
+        if (openFetchBtn) {
+            openFetchBtn.addEventListener('click',toggleFetch)
+        }
+        // --- Close button (X) ---
+        if (closeFetchBtn) {
+            closeFetchBtn.addEventListener('click', toggleFetch);
+        }
+
+        // --- Keyboard shortcuts: 'S' or 'I' to toggle, 'Escape' to close ---
+        document.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+            if (key === 's' || key === 'i') {
+                e.preventDefault();   // prevent typing the character
+                toggleFetch();
+            }
+            if (key === 'escape' && fetchTerminal.classList.contains('active')) {
+                toggleFetch();
+            }
+        });
+
+        // --- JOHAN_OS SYSTEM INFO (FASTFETCH STYLE) ---
+        const fetchContainer = document.getElementById('fastfetch-container');
+        const toggleBtn = document.getElementById('toggle-fetch-btn');
+        let dataFetched = false;
+
+        async function fetchSystemInfo() {
+            const infoDiv = document.getElementById('system-info');
+
+            // --- Basic info (synchronous) with fallbacks ---
+            const os = getOS();                      // helper below
+            const browser = getBrowser();            // helper below
+            const resolution = `${window.screen.width}×${window.screen.height}`;
+            const ram = navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'Protected';
+            const cores = navigator.hardwareConcurrency || 'N/A';
+            const online = navigator.onLine ? 'Yes' : 'No';
+
+            // --- Advanced info (async, with try/catch) ---
+            let battery = 'Unknown';
+            let storage = 'Hidden';
+
+            try {
+                if ('getBattery' in navigator) {
+                    const b = await navigator.getBattery();
+                    battery = `${(b.level * 100).toFixed(0)}%`;
+                }
+            } catch (err) {
+                console.warn('Some hardware APIs were blocked or failed:', err);
+            }
+
+            // --- Render the data ---
+            infoDiv.innerHTML = `
+                <div style="color: var(--accent-color); font-weight: bold;">root@johan_os</div>
+                <div style="color: #555; margin-bottom: 8px;">---------------</div>
+                <div><span style="color: var(--accent-color);">OS:</span> ${os}</div>
+                <div><span style="color: var(--accent-color);">Browser:</span> ${browser}</div>
+                <div><span style="color: var(--accent-color);">Resolution:</span> ${resolution}</div>
+                <div><span style="color: var(--accent-color);">Battery:</span> ${battery}</div>
+                <div><span style="color: var(--accent-color);">RAM:</span> ${ram}</div>
+                <div><span style="color: var(--accent-color);">CPU threads:</span> ${cores}</div>
+                <div><span style="color: var(--accent-color);">Online:</span> ${online}</div>
+            `;
+            dataFetched = true;
+        }
+
+        // Helper: detect OS from userAgent
+        function getOS() {
+            const ua = navigator.userAgent;
+            if (ua.includes('Win')) return 'Windows';
+            if (ua.includes('Mac')) return 'macOS';
+            if (ua.includes('Linux')) return 'Linux / Pi';
+            if (ua.includes('Android')) return 'Android';
+            return 'Unknown OS','webOS';
+        }
+
+        // Helper: detect browser
+        function getBrowser() {
+            const ua = navigator.userAgent;
+            if (ua.includes('Chrome')) return 'Chrome';
+            if (ua.includes('Brave')) return 'Brave';
+            if (ua.includes('Firefox')) return 'Firefox';
+            if (ua.includes('Safari')) return 'Safari';
+            return 'Other';
+        }
+
+        // Toggle visibility on button click
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', async () => {
+                if (fetchContainer.style.visibility === 'hidden') {
+                    if (!dataFetched) await fetchSystemInfo();
+                    fetchContainer.style.visibility = 'visible';
+                    playTick(true);   // optional sound feedback (uses your existing playTick)
+                } else {
+                    fetchContainer.style.visibility = 'hidden';
+                    playTick(true);
+                }
+            });
         }
 
         const typewriterElement = document.getElementById('typewriter');
@@ -2132,8 +2465,6 @@
 
 
         // --- DIGITAL CLOCK TIME ENGINE ---
-        // You likely already have an interval running for your analog hands.
-        // You can just drop this function in and call it on an interval.
         function updateDigitalTime() {
             const now = new Date();
             const hours = now.getHours();

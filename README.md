@@ -53,6 +53,14 @@ Gallery content is randomized with the **Fisher‑Yates Algorithm** ($O(n)$ time
 UI transitions are synchronized with the system clock, occurring precisely at `00` seconds of every minute, respecting the "Minute Reset" rule regardless of page load timing.
 
 ## 🎨 UI/UX Features (Latest Updates)
+### 🖥️ Cyber‑Fetch Terminal (JOHAN_OS)
+- A **hacker‑style system information panel** inspired by `fastfetch` / `neofetch`.
+- **Custom ASCII art** – displays a bold **JOHAN_OS** banner with a **maple leaf** for a unique, personal touch.
+- **Real system data** – shows OS, browser, resolution, uptime, CPU cores, approximate RAM, network type, and theme mode.
+- **Privacy‑safe fallbacks** – if a browser blocks any API (e.g., `deviceMemory`, `connection`), the terminal shows `"Unknown"` or `"Protected"` – **no crashes**.
+- **Toggle with button or keyboard** – press `S` or `I` (or click the `🖥️ System Info` button) to open/close the terminal. `Escape` closes it.
+- **Glass‑morphic design** – semi‑transparent background with backdrop‑blur, matching the dashboard’s cyber aesthetic.
+- **Responsive** – on mobile, the ASCII art shrinks and the panel uses horizontal scrolling (or wraps gracefully) to fit small screens.
 
 ### 🎮 Hide Controls Toggle
 - A **dedicated button** in the **top‑left corner** (opposite the theme toggle) 
@@ -70,6 +78,10 @@ hides/shows all five control buttons:
 - **Freeze Mode:** Halt the minute‑cycle to pin a specific image/quote.
 - **Space Preservation:** When clean view hides images, the layout reserves the exact space – the clock never jumps.
 
+
+#### Cycle Clock Styles
+- Use the `STYLE` button or press `Z` to cycle through **Classic → Glass → Digital → Cistercian**.
+- PRESS `B` to freeze or pause Background Image or on Android double TAP on your screen on an empty space on the webpage, AVOID any element on the webpage while doing it.
 
 ### 🧮 Cistercian Numerals – Technical Details
 
@@ -122,6 +134,18 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 | **Pyramid UI Layout** | Re‑architected 2x2 Control Deck for visual balance. | `.controls` Flexbox |
 | **Instant Mute** | One‑touch audio kill with volume memory. | `🔊` Icon Click |
 | **Ambient Landing** | Site starts with deep charcoal `#121214` solid background. | Automatic on Load |
+
+## version 4.0 Change Log (April 2026)
+| Date | Change |
+|------|--------|
+| 2026‑04‑11 | Added Cyber‑Fetch terminal with JOHAN_OS ASCII + maple leaf |
+| 2026‑04‑11 | Added `S` / `I` keyboard shortcuts to toggle terminal |
+| 2026‑04‑11 | Made terminal bulletproof with try/catch and fallbacks |
+| 2026‑04‑11 | Fixed mobile overflow – horizontal scrolling or size reduction |
+| 2026‑04‑10 | Added Hide Controls button (top‑left) |
+| 2026‑04‑10 | Improved sticky footer and removed double scrollbars |
+| 2026‑04‑09 | Added responsive Cistercian clock sizes |
+| 2026‑04‑08 | Integrated rainbow colours for Cistercian numerals |
 
 ---
 
