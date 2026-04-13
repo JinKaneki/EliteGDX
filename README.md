@@ -1,4 +1,4 @@
-# 🕰️ Elite Gems Dashboard: Persistent Ambient Dashboard Fancy Analog/Digital/Cistercian Clock AOD
+# Elite Gems Dashboard: Persistent Ambient Dashboard Fancy Analog/Digital/Cistercian Clock AOD 🕰️
 
 **An "Always-On" productivity clock and personal gallery engineered for professional workspaces.**
 
@@ -186,13 +186,15 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 
 ## 🙏 Credits
 Original Cistercian Web Components by Hubert Sablonnière. 
+
 Dashboard Design & Engineering by Jin Kaneki. 
+
 Inspiration: Medieval Cistercian monks and the pursuit of compact data visualization.
 
 
 ## 🧠 Philosophy
   > "All things serve the Steam. XD"
 
-This project demonstrated that even a simple utility—like a clock—can be elevated through high‑level engineering, browser‑specific APIs, and unique historical aesthetics.
+This project demonstrated that even a simple utility like a clock can be elevated through high‑level engineering, browser‑specific APIs, and unique historical aesthetics.
 
 - **Developed by Jin_Kaneki**
