@@ -52,6 +52,7 @@
             --accent-color: #00f0ff; /* Electric Cyber-Cyan */
             --shadow-outer: 10px 10px 30px rgba(0, 0, 0, 0.6), -10px -10px 30px rgba(255, 255, 255, 0.02);
             --shadow-inner: inset 5px 5px 15px rgba(0, 0, 0, 0.5), inset -5px -5px 15px rgba(255, 255, 255, 0.03);
+            --digital-clock-color: #00f0ff;
         }
 
 
@@ -659,6 +660,7 @@
 
         /* Container for Colon + Minutes to keep them centered together */
         #digital-clock .minutes-row {
+            color: var(--digital-clock-color);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -969,6 +971,95 @@
         }
 
         
+        #tty-boot-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #050505;
+            color: #00ff00; /* Classic Terminal Green */
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            padding: 20px;
+            z-index: 999999; /* Above absolutely everything */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* flex-end Text scrolls up from bottom */
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        /* --- CYBER THEME SELECTOR --- */
+        .theme-selector-wrapper {
+            position: absolute;
+            top: 20px;
+            z-index: 1000;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        .cyber-select {
+            background: rgba(10, 10, 15, 0.6);
+            color: var(--accent-color);
+            border: 1px solid var(--clock-border);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            outline: none;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .cyber-select:hover, .cyber-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(var(--accent-color), 0.3);
+        }
+
+        /* Style the dropdown options */
+        .cyber-select option {
+            background: #121214;
+            color: #ececec;
+            font-family: monospace;
+        }
+
+        /* Hide during Stealth Mode / Clean View */
+        body.stealth-mode .theme-selector-wrapper,
+        .clean-view .theme-selector-wrapper {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Magic Mirror specific styles */
+        body.mirror-mode .timepiece-wrapper {
+            margin-bottom: 300px;   /* creates big free space under the clock */
+        }
+
+        body.mirror-mode #tao-quote-container {
+            display: block !important;   /* ensure it's visible */
+            margin-top: 0;               /* optional – adjust spacing */
+        }
+
+
+        /* Magic Mirror exit button – fixed at bottom-right */
+        #exit-mirror-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999999;
+            display: none;
+        }
+        #exit-mirror-btn .action-btn {
+            background: rgba(0,0,0,0.8);
+            color: #ffaa00;
+            border: 2px solid #ffaa00;
+            padding: 12px 24px;
+            font-size: 1rem;
+        }
+
+
+        
+
+
         /* MOBILE-FRIENDLY TWEAKS */
         @media (max-width: 600px) {
             /* Theme toggle (right side) */
@@ -1135,7 +1226,18 @@
 <body>
     <!-- Fixed background layer (behind everything) -->
     <div class="fixed-bg"></div>
+    <div id="tty-boot-screen">
+            <div id="tty-text"></div>
+    </div>
 
+    <div class="theme-selector-wrapper">
+        <select id="color-theme-select" class="cyber-select" title="Change Color Profile">
+            <option value="cyan">Cyan Night</option>
+            <option value="magenta">Magenta Dream</option>
+            <option value="amber">Amber Glow</option>
+            <option value="matrix">Matrix Green</option>
+        </select>
+    </div>
     <!-- Toggle for hiding controls (top-left) -->
     <div class="hide-controls-toggle-wrapper">
         <button id="hide-controls-btn" class="hide-controls-btn">🎮 Hide Controls</button>
@@ -1149,6 +1251,7 @@
         </label>
         <span id="theme-label"></span>
     </div>
+
     <!-- CYBER-FETCH TERMINAL -->
     <div id="cyber-fetch-terminal">
         <div class="terminal-header">
@@ -1157,9 +1260,31 @@
         </div>
         <div id="fetch-content"></div>
     </div>
-    <div>
-        <button id="open-fetch-btn" class="hide-controls-btn" style="margin-left: 10px;">🖥️ System Info</button>
+    <!-- Alarm panel -->
+    <div id="alarm-panel">
+        <h3 style="color: var(--accent-color);text-align: center; padding-top: 30px;">⏰ Cistercian Alarm</h3>
+        <button id="set-alarm" class="hide-controls-btn">Set Alarm</button>
+        <input type="time" id="alarm-time" value="08:00">
+        <button id="stop-alarm" class="hide-controls-btn" disabled>Stop Alarm</button>
+        <div id="alarm-status" style="text-align: center;"></div>
     </div>
+
+    <div>
+        <button id="open-fetch-btn" class="hide-controls-btn" style="margin-top: 30px;">🖥️ System Info</button>
+    </div>
+    <!-- Online Fetched Quote (API) -->
+    <div id="online-quote-container" style="text-align: center; max-width: 600px; margin: 20px auto; padding-top: 30px;">
+        <p id="online-quote-text" style="font-family: Verdana; font-size: small; font-weight: bold;">Loading core philosophies...</p>
+        <p id="online-quote-author" style="font-size: 0.7rem; color: var(--accent-color);"></p>
+    </div>
+
+    <!-- TTC Random Chapter Widget -->
+    <div id="tao-quote-container" style="text-align: center; max-width: 600px; margin: 20px auto; padding-top: 10px; padding-bottom: 20px;">
+        <p id="tao-quote-text" style="font-family: Verdana; font-size: small; font-weight: bold;">Loading Tao Te Ching...</p>
+        <p id="tao-quote-author" style="font-size: 0.7rem; color: var(--accent-color);">Lao Tzu</p>
+        <button id="new-chapter-btn" class="hide-controls-btn" style="margin-top: 8px;">New Chapter</button>
+    </div>
+
     <div class="timepiece-wrapper" style="display: flex; margin-top: 120px; flex-direction: column; justify-content: center; align-items: center; min-height: 500px; width: 100%; z-index: 1;"> 
         <div class="clock" id="analog-clock">
             <div class="number num-12">12</div>
@@ -1193,7 +1318,10 @@
             <span class="cist-sep">-</span>
             <cistercian-number id="cist-day" value="7"></cistercian-number>
         </div>
-
+        <!-- Spacer that pushes the exit Mirror button down -->
+        <div style="flex: 1; min-height: 1000px;"></div>
+        <!-- Exit Mirror Mode button (hidden by default) -->
+        <button id="mirror-exit-btn" class="action-btn" style="display: none; margin-top: 60px;">Exit Mirror Mode</button>
     </div> 
 
 
@@ -1749,9 +1877,9 @@
     </div>
 
     <div style="text-align: center; margin: 20px auto;">
-        <button id="open-botfetch-btn" class="hide-controls-btn" style="margin: 10px;">FETCH</button>
+        <button id="magic-mirror-btn" class="action-btn">Magic Mirror</button>
     </div>
-     
+    
     <!-- Fastfetch‑style system info panel -->
     <div style="text-align: center; margin: 20px auto;">
         <button id="toggle-fetch-btn" class="action-btn">🖥️ RUN JOHAN_OS</button>
@@ -1771,6 +1899,17 @@
             <!-- data will be inserted here -->
         </div>
     </div>
+    <!-- Command runner -->
+    <div id="command-runner" style="display: none;">
+        <h3 style="color: var(--accent-color);">Terminal Command Runner</h3>
+        <div id="cmd-output"></div>
+        <div style="display: flex;">
+            <span style="color: var(--accent-color);">$&nbsp;</span>
+            <input type="text" id="cmd-input" style="background: transparent; border: none; color: #fff; flex:1; outline: none; font-family: monospace;">
+        </div>
+        <button id="close-cmd-runner" class="hide-controls-btn" style="margin-top: 8px;">Close</button>
+    </div>
+    <button id="open-cmd-runner" class="action-btn">💻 Command Runner</button>
 
     <footer class="site-footer">
             <div class="footer-line"></div>
@@ -1785,7 +1924,7 @@
 
 </body>
 
-<script>
+    <script>
         // --- 1. AUDIO CONTEXT SETUP ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -1874,9 +2013,6 @@
         const fetchContent = document.getElementById('fetch-content');
         const closeFetchBtn = document.getElementById('close-fetch');
         const openFetchBtn = document.getElementById('open-fetch-btn');
-        
-        // --- Bottom button also toggles the cyber-fetch terminal ---
-        const bottomFetchBtn = document.getElementById('open-botfetch-btn');
 
         // Properly aligned ASCII Logo (Gem shape)
         const asciiLogo = `<pre class="fetch-logo">
@@ -1971,15 +2107,12 @@
         if (closeFetchBtn) {
             closeFetchBtn.addEventListener('click', toggleFetch);
         }
-        // --- Open button() Bottom System Info)
-        if (bottomFetchBtn) {
-            bottomFetchBtn.addEventListener('click', toggleFetch);
-        }
+        
 
         // --- Keyboard shortcuts: 'S' or 'I' to toggle, 'Escape' to close ---
         document.addEventListener('keydown', (e) => {
             const key = e.key.toLowerCase();
-            if (key === 's' || key === 'i') {
+            if (key === 'q') {
                 e.preventDefault();   // prevent typing the character
                 toggleFetch();
             }
@@ -2417,6 +2550,77 @@
         }
 
 
+        // --- ONLINE QUOTE ENGINE ---
+        const localQuotes = [
+            { q: "Time Waits For No One XD", a: "Jin" },
+            { q: "The wheel of time turns, Ages come and pass.", a: "Robert Jordan" },
+            { q: "Talk is cheap. Show me the code.", a: "Linus Torvalds" }
+        ];
+
+        async function fetchDailyQuote() {
+            const quoteText = document.getElementById('online-quote-text');
+            const quoteAuthor = document.getElementById('online-quote-author');
+            try {
+                const response = await fetch('https://dummyjson.com/quotes/random');
+                const data = await response.json();
+                quoteText.innerText = `"${data.quote}"`;
+                quoteAuthor.innerText = `- ${data.author}`;
+            } catch (error) {
+                console.log("API offline. Engaging local cache.");
+                const fallback = localQuotes[Math.floor(Math.random() * localQuotes.length)];
+                quoteText.innerText = `"${fallback.q}"`;
+                quoteAuthor.innerText = `- ${fallback.a}`;
+            }
+        }
+
+        fetchDailyQuote();
+        // Optional: refresh every 10 minutes
+        setInterval(fetchDailyQuote, 600000);
+
+        // --- TAO TE CHING RANDOM CHAPTER (local JSON) ---
+        let taoChapters = [];
+        let taoLoaded = false;
+
+        async function loadTaoTeChing() {
+            try {
+                const response = await fetch('./TTC/tao-te-ching.json');
+                if (!response.ok) throw new Error('JSON not found');
+                taoChapters = await response.json();
+                taoLoaded = true;
+                displayRandomChapter();
+            } catch (error) {
+                console.error('Failed to load Tao Te Ching:', error);
+                const taoText = document.getElementById('tao-quote-text');
+                if (taoText) taoText.innerText = 'The Tao that can be fetched is not the eternal Tao.';
+            }
+        }
+
+        function displayRandomChapter() {
+            if (!taoLoaded || taoChapters.length === 0) return;
+            const randomIndex = Math.floor(Math.random() * taoChapters.length);
+            const chapter = taoChapters[randomIndex];
+            const textElement = document.getElementById('tao-quote-text');
+            const authorElement = document.getElementById('tao-quote-author');
+            if (textElement) {
+                textElement.innerHTML = chapter.text.replace(/\n/g, '<br>');
+            }
+            if (authorElement) {
+                authorElement.innerHTML = `— Chapter ${chapter.chapter}, Tao Te Ching`;
+            }
+        }
+    
+
+        // Attach event listener to the Tao button
+        const newChapterBtn = document.getElementById('new-chapter-btn');
+        if (newChapterBtn) {
+            newChapterBtn.addEventListener('click', displayRandomChapter);
+        }
+
+        // Load the JSON and show first random chapter
+        loadTaoTeChing();
+       
+
+
         // --- ELITE 4-STATE CLOCK TOGGLE (Classic / Glass / Digital / Cistercian) ---
         const styleBtn = document.getElementById('zen-toggle-btn');
         const analogClock = document.getElementById('analog-clock');
@@ -2529,6 +2733,7 @@
         });
 
 
+
         // --- DIGITAL CLOCK TIME ENGINE ---
         function updateDigitalTime() {
             const now = new Date();
@@ -2575,6 +2780,500 @@
         setInterval(updateDigitalTime, 1000);
 
 
+        // --- TTY BOOT ENGINE ---
+        const bootScreen = document.getElementById('tty-boot-screen');
+        const ttyText = document.getElementById('tty-text');
+        
+        const bootLogs = [
+            "[0.000000] Linux version 6.8.9-elite-gems (jin@kaneki) (gcc version 13.2.1)",
+            "[0.012304] Command line: BOOT_IMAGE=/boot/vmlinuz root=UUID=1a2b3c ro quiet splash",
+            "[0.045012] x86/cpu: Initializing logical cores...",
+            "[0.089123] Memory: 16384K/16384K available (Kernel code, data)",
+            "[0.102344] Mount-cache hash table entries: 32768",
+            "[0.340112] systemd[1]: Starting Elite Gems Environment...",
+            "[0.501233] clock: Synchronizing Cistercian temporal engine... OK",
+            "[0.612344] audio: Initializing Web Audio API context... OK",
+            "[0.801233] display: Loading glassmorphic UI drivers...",
+            "[1.000000] INIT: Welcome to Elite Gems based Johan_OS."
+        ];
+
+        let bootIndex = 0;
+
+        function runBootSequence() {
+            if (bootIndex < bootLogs.length) {
+                const p = document.createElement('div');
+                p.innerText = bootLogs[bootIndex];
+                ttyText.appendChild(p);
+                bootIndex++;
+                // Randomize typing speed for realism (20ms to 100ms)
+                setTimeout(runBootSequence, Math.random() * 80 + 20);
+            } else {
+                // Boot complete, fade out
+                setTimeout(() => {
+                    bootScreen.style.opacity = '0';
+                    setTimeout(() => bootScreen.remove(), 800); // Remove from DOM entirely
+                }, 500);
+            }
+        }
+        
+        // Start boot sequence immediately
+        window.onload = runBootSequence;
+
+
+        // --- CUSTOM COLOR THEME ENGINE ---
+        const themeSelect = document.getElementById('color-theme-select');
+
+        // Define the exact CSS variable replacements for each theme
+        const colorThemes = {
+            cyan: { 
+                bg: '#121214', 
+                text: '#ececec', 
+                clockBg: '#1a1a1d', 
+                border: '#242428', 
+                accent: '#00f0ff',
+                digital: '#00f0ff' // Adding a specific digital clock color
+            },
+            magenta: { 
+                bg: '#1a0515', 
+                text: '#fce8f5', 
+                clockBg: '#2a0822', 
+                border: '#3d0c32', 
+                accent: '#ff00ff',
+                digital: '#ff00ff'
+            },
+            amber: { 
+                bg: '#171205', 
+                text: '#fcf6e8', 
+                clockBg: '#261d08', 
+                border: '#382a0b', 
+                accent: '#ffaa00',
+                digital: '#ffaa00'
+            },
+            matrix: { 
+                bg: '#051005', 
+                text: '#e8fce8', 
+                clockBg: '#081a08', 
+                border: '#0c2e0c', 
+                accent: '#00ff00',
+                digital: '#0dff00' 
+            }
+        };
+       
+
+        function applyColorTheme(themeName) {
+            const t = colorThemes[themeName];
+            if (!t) return; // Failsafe
+
+            // Target the root HTML element to override CSS variables
+            const root = document.documentElement;
+            
+            root.style.setProperty('--bg-color', t.bg);
+            root.style.setProperty('--text-color', t.text);
+            root.style.setProperty('--clock-bg', t.clockBg);
+            root.style.setProperty('--clock-border', t.border);
+            root.style.setProperty('--accent-color', t.accent);
+            root.style.setProperty('--digital-clock-color', t.digital);
+
+            // Save to LocalStorage
+            localStorage.setItem('elite-color-profile', themeName);
+        }
+
+        // 1. Listen for user changes
+        themeSelect.addEventListener('change', (e) => {
+            applyColorTheme(e.target.value);
+            
+            // Optional: Play your mechanical sound and trigger the ghost notification
+            if (typeof playTick === 'function') playTick(true);
+            if (typeof triggerGhost === 'function') triggerGhost(`THEME: ${e.target.value.toUpperCase()}`);
+        });
+
+        // 2. Load saved theme on page startup
+        function loadSavedTheme() {
+            const savedTheme = localStorage.getItem('elite-color-profile') || 'cyan'; // Default to cyan
+            themeSelect.value = savedTheme; // Update the dropdown UI
+            applyColorTheme(savedTheme);    // Apply the colors
+        }
+
+        // Run the loader immediately
+        loadSavedTheme();
+
+        // 3. Command runner
+        let cmdVisible = false;
+        const cmdRunnerDiv = document.getElementById('command-runner');
+        const openCmdBtn = document.getElementById('open-cmd-runner');
+        const closeCmdBtn = document.getElementById('close-cmd-runner');
+        const cmdInput = document.getElementById('cmd-input');
+        const cmdOutput = document.getElementById('cmd-output');
+        function appendCommandOutput(text, isError = false) {
+            const line = document.createElement('div');
+            line.style.color = isError ? '#ff5555' : '#0f0';
+            line.innerText = text;
+            cmdOutput.appendChild(line);
+            cmdOutput.scrollTop = cmdOutput.scrollHeight;
+        }
+        openCmdBtn.addEventListener('click', () => {
+        cmdRunnerDiv.style.display = 'block';
+        cmdVisible = true;
+        cmdInput.focus();
+         // Add hint only if it doesn't already exist and if not already removed (check by class)
+        if (cmdOutput.children.length === 0 && !document.querySelector('.cmd-hint')) {
+            const hintLine = document.createElement('div');
+            hintLine.className = 'cmd-hint';   // add a class for easy removal
+            hintLine.style.color = '#888';
+            hintLine.innerText = '[Type \'help\' for available commands]';
+            cmdOutput.appendChild(hintLine);
+        }
+        });
+
+        function processCommand(cmd) {
+        const args = cmd.trim().toLowerCase().split(' ');
+        const main = args[0];
+        switch (main) {
+            case 'help':
+            // Remove the hint if it exists
+            const hint = document.querySelector('.cmd-hint');
+            if (hint) hint.remove();
+            // Then output the help text
+            appendCommandOutput('Available: help, theme [cyan|magenta|amber|matrix], fortune, clear, sudo, fetch, freeze');
+            break;
+            case 'theme':
+                //colorThemes object (cyan, magenta, amber, matrix)
+                if (args[1] && colorThemes[args[1]]) {
+                    applyColorTheme(args[1]);    // your existing function
+                    // Update the dropdown if it exists (your select has id="color-theme-select")
+                    const themeSelect = document.getElementById('color-theme-select');
+                    if (themeSelect) themeSelect.value = args[1];
+                    appendCommandOutput(`Theme changed to ${args[1]}`);
+                } else {
+                    appendCommandOutput(`Usage: theme [cyan|magenta|amber|matrix]`, true);
+                }
+                break;
+            case 'fortune':
+                const fortunes = ['The early bird gets the worm.', 'You will find a hidden gem.', 'Keep ricing!', 'Time is an illusion.', 'sudo makes everything possible.'];
+                const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+                appendCommandOutput(randomFortune);
+                break;
+            case 'clear':
+                const cmdOutput = document.getElementById('cmd-output');
+                if (cmdOutput) cmdOutput.innerHTML = '';
+                break;
+            case 'sudo':
+                if (args[1] === 'make' && args[2] === 'me' && args[3] === 'a' && args[4] === 'sandwich') {
+                    appendCommandOutput('Okay, but you didn\'t say the magic word.');
+                } else {
+                    appendCommandOutput('Permission denied. You are not in the sudoers file.', true);
+                }
+                break;
+                // NEW: fetch command – shows system info terminal
+            case 'fetch':
+                if (typeof toggleFetch === 'function') {
+                    const terminal = document.getElementById('cyber-fetch-terminal');
+                    if (terminal && !terminal.classList.contains('active')) {
+                        toggleFetch();
+                    } else if (terminal && terminal.classList.contains('active')) {
+                        // Optionally refresh data without closing
+                        if (typeof generateFetchData === 'function') generateFetchData();
+                        appendCommandOutput('System info refreshed.');
+                    } else {
+                        toggleFetch(); // fallback
+                    }
+                } else {
+                    appendCommandOutput('Fetch command not available (missing toggleFetch).', true);
+                }
+                break;
+            case 'pause':
+            // Toggle background freeze (same logic as key 'b')
+            if (typeof isBgFrozen !== 'undefined') {
+                isBgFrozen = !isBgFrozen;
+                if (typeof playTick === 'function') playTick(true);
+                if (typeof triggerGhost === 'function') triggerGhost(isBgFrozen);
+                if (!isBgFrozen && typeof updateBackground === 'function') updateBackground();
+                appendCommandOutput(isBgFrozen ? 'Background frozen.' : 'Background unfrozen.');
+            } else {
+                appendCommandOutput('Freeze command not available (missing background freeze logic).', true);
+            }
+            break;
+            default:
+                appendCommandOutput(`Command not found: ${cmd}`, true);
+            }
+        }
+        openCmdBtn.addEventListener('click', () => { cmdRunnerDiv.style.display = 'block'; cmdVisible = true; cmdInput.focus(); });
+        closeCmdBtn.addEventListener('click', () => { cmdRunnerDiv.style.display = 'none'; cmdVisible = false; });
+        cmdInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { const command = cmdInput.value; if (command.trim() !== '') { appendCommandOutput(`$ ${command}`); processCommand(command); cmdInput.value = ''; } } });
+
+
+
+        // --- CISTERCIAN ALARM (continuous tone until dismissed) ---
+        // 1. Global variables for the alarm
+        let alarmCheckInterval = null;      // stores the setInterval ID that checks the time every second
+        let alarmToneNodes = null;          // stores the oscillator and gain nodes for the continuous tone
+        let alarmTime = null;               // the time set by user (e.g., "14:30")
+        let currentAlarmDiv = null;         // reference to the full‑screen overlay (so we can remove it later)
+
+        // 2. DOM elements
+        const alarmInput = document.getElementById('alarm-time');
+        const setAlarmBtn = document.getElementById('set-alarm');
+        const stopAlarmBtn = document.getElementById('stop-alarm');
+        const alarmStatusDiv = document.getElementById('alarm-status');
+
+        // 3. Function to start a continuous (looping) beep – never stops on its own
+        function startContinuousTone() {
+            // If a tone is already playing, stop it first (cleanup)
+            stopContinuousTone();
+            
+            // Resume the AudioContext if it's suspended (required for browsers that block autoplay)
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            
+            // Create an oscillator (sound source) and a gain node (volume control)
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            // Set oscillator to sine wave (smooth, non‑harsh tone)
+            osc.type = 'sine';
+            osc.frequency.value = 880;   // frequency in Hz (A5 note – change to 440 for lower pitch)
+            
+            // Set volume to 30% of maximum (0.3)
+            gain.gain.value = 0.3;
+            
+            // Connect the nodes: oscillator -> gain -> speakers
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            // Start the oscillator immediately
+            osc.start();
+            // Do NOT call osc.stop() here – the tone will play forever until we stop it manually
+            
+            // Store the nodes so we can stop them later
+            alarmToneNodes = { osc, gain };
+        }
+
+        // 4. Function to stop the continuous tone
+        function stopContinuousTone() {
+            if (alarmToneNodes) {
+                try {
+                    // Stop the oscillator (this ends the sound)
+                    alarmToneNodes.osc.stop();
+                    // Disconnect nodes to free resources
+                    alarmToneNodes.osc.disconnect();
+                    alarmToneNodes.gain.disconnect();
+                } catch(e) {
+                    // If the oscillator was already stopped, ignore the error
+                }
+                alarmToneNodes = null;
+            }
+        }
+
+        // 5. Function to show the full‑screen alarm overlay with the Cistercian numeral
+        function showAlarmOverlay() {
+            // Remove any existing overlay to avoid duplicates
+            if (currentAlarmDiv) currentAlarmDiv.remove();
+            
+            // Create the overlay container
+            const alarmDiv = document.createElement('div');
+            alarmDiv.style.position = 'fixed';
+            alarmDiv.style.top = 0;
+            alarmDiv.style.left = 0;
+            alarmDiv.style.width = '100%';
+            alarmDiv.style.height = '100%';
+            alarmDiv.style.backgroundColor = 'rgba(0,0,0,0.9)';
+            alarmDiv.style.display = 'flex';
+            alarmDiv.style.flexDirection = 'column';
+            alarmDiv.style.justifyContent = 'center';
+            alarmDiv.style.alignItems = 'center';
+            alarmDiv.style.zIndex = 30000;   // very high to stay on top of everything
+            
+            // Add the Cistercian numeral representing the alarm time (HHMM)
+            const cistNum = document.createElement('cistercian-number');
+            cistNum.setAttribute('value', alarmTime.replace(':', '')); // e.g., "14:30" becomes "1430"
+            cistNum.style.fontSize = '15rem';
+            alarmDiv.appendChild(cistNum);
+            
+            // Add the Dismiss button
+            const dismissBtn = document.createElement('button');
+            dismissBtn.innerText = 'Dismiss';
+            dismissBtn.className = 'action-btn';
+            dismissBtn.style.marginTop = '30px';
+            
+            // What happens when Dismiss is clicked:
+            dismissBtn.onclick = () => {
+                stopContinuousTone();        // stop the beeeeeep
+                alarmDiv.remove();           // remove the overlay from the page
+                currentAlarmDiv = null;      // clear the reference
+                
+                // Reset the alarm state completely
+                if (alarmCheckInterval) clearInterval(alarmCheckInterval);
+                alarmCheckInterval = null;
+                alarmTime = null;
+                setAlarmBtn.disabled = false;
+                stopAlarmBtn.disabled = true;
+                alarmStatusDiv.innerText = 'Alarm dismissed.';
+            };
+            alarmDiv.appendChild(dismissBtn);
+            
+            // Add the overlay to the page body
+            document.body.appendChild(alarmDiv);
+            currentAlarmDiv = alarmDiv;
+        }
+
+        // 6. Function that runs every second to check if the current time matches the alarm time
+        function checkAlarm() {
+            if (!alarmTime) return;   // no alarm set, do nothing
+            
+            const now = new Date();
+            const currentTimeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+            
+            if (currentTimeStr === alarmTime) {
+                // ALARM TRIGGERED!
+                alarmStatusDiv.innerText = '🔔 ALARM!';
+                
+                startContinuousTone();      // start the steady beeeeeeeep
+                showAlarmOverlay();         // show the full‑screen overlay with Dismiss button
+                
+                // Stop the checking interval – the alarm only triggers once
+                if (alarmCheckInterval) clearInterval(alarmCheckInterval);
+                alarmCheckInterval = null;
+                alarmTime = null;           // prevent re‑triggering
+                
+                // Re‑enable the Set Alarm button and disable Stop (since alarm is already triggered)
+                setAlarmBtn.disabled = false;
+                stopAlarmBtn.disabled = true;
+            }
+        }
+
+        // 7. Event listener for the "Set Alarm" button
+        setAlarmBtn.addEventListener('click', () => {
+            alarmTime = alarmInput.value;
+            if (!alarmTime) return;   // no time selected, do nothing
+            
+            // Clear any existing interval to avoid multiple timers
+            if (alarmCheckInterval) clearInterval(alarmCheckInterval);
+            
+            // Start checking every second
+            alarmCheckInterval = setInterval(checkAlarm, 1000);
+            
+            alarmStatusDiv.innerText = `Alarm set for ${alarmTime}`;
+            setAlarmBtn.disabled = true;
+            stopAlarmBtn.disabled = false;
+        });
+
+        // 8. Event listener for the "Stop Alarm" button (cancels a pending alarm)
+        stopAlarmBtn.addEventListener('click', () => {
+            if (alarmCheckInterval) clearInterval(alarmCheckInterval);
+            alarmCheckInterval = null;
+            alarmTime = null;
+            stopContinuousTone();            // just in case a tone is playing (though unlikely)
+            alarmStatusDiv.innerText = 'Alarm stopped.';
+            setAlarmBtn.disabled = false;
+            stopAlarmBtn.disabled = true;
+        });
+        
+
+
+        // --- MAGIC MIRROR MODE (Tao widget only with exit button inside timepiece wrapper) ---
+        let magicMirrorActive = false;
+        let originalDisplayValues = new Map();
+
+        const magicMirrorBtn = document.getElementById('magic-mirror-btn');
+        const mirrorExitBtn = document.getElementById('mirror-exit-btn');
+
+        // Elements to hide (online quote is included, Tao widget is NOT)
+        const elementsToHide = [
+            '.content-blocks', '.controls', '.site-footer', '#command-runner', '#btop-panel',
+            '.action-btn:not(#magic-mirror-btn):not(#mirror-exit-btn)',
+            '#quote-widget', '#dynamic-quote-container',   // hides the online quote
+            '#xterm-modal', '.hide-controls-toggle-wrapper',
+            '.theme-switch-wrapper', '.text-wrapper', '#fastfetch-container',
+            '.timepiece-wrapper .clock', '#digital-clock', '#cistercian-wrapper',
+            '#cistercian-date-row', '.small-cist-date', '#perm-cist-clock',
+            '#open-fetch-btn', '#toggle-fetch-btn', '#edit-ascii-btn', '#open-xterm',
+            '#open-btop', '#theme-select', '#color-theme-select', '#alarm-panel'
+        ];
+
+        function enterMagicMirror() {
+            if (magicMirrorActive) return;
+
+            // Determine which clock is currently visible
+            const analog = document.getElementById('analog-clock');
+            const digital = document.getElementById('digital-clock');
+            const cistercian = document.getElementById('cistercian-wrapper');
+            let activeClock = null;
+            let activeDisplay = null;
+
+            if (analog && getComputedStyle(analog).display !== 'none') {
+                activeClock = analog;
+                activeDisplay = 'flex';
+            } else if (digital && getComputedStyle(digital).display !== 'none') {
+                activeClock = digital;
+                activeDisplay = 'flex';
+            } else if (cistercian && getComputedStyle(cistercian).display !== 'none') {
+                activeClock = cistercian;
+                activeDisplay = 'flex';
+            }
+
+            // Store original display values and hide elements
+            elementsToHide.forEach(selector => {
+                const el = document.querySelector(selector);
+                if (el && el !== magicMirrorBtn && el !== mirrorExitBtn) {
+                    originalDisplayValues.set(selector, el.style.display || getComputedStyle(el).display);
+                    el.style.display = 'none';
+                }
+            });
+
+            // Show the active clock
+            if (activeClock) {
+                activeClock.style.display = activeDisplay;
+            } else {
+                const fallbackClock = document.getElementById('analog-clock');
+                if (fallbackClock) fallbackClock.style.display = 'flex';
+            }
+
+            // Hide main title
+            const mainTitle = document.querySelector('.name-plate.main-title');
+            if (mainTitle) {
+                originalDisplayValues.set('main-title', mainTitle.style.display || getComputedStyle(mainTitle).display);
+                mainTitle.style.display = 'none';
+            }
+
+            // Show the exit button (inside timepiece wrapper)
+            if (mirrorExitBtn) mirrorExitBtn.style.display = 'block';
+
+            // Add mirror-mode class for extra spacing (optional)
+            document.body.classList.add('mirror-mode');
+
+            magicMirrorActive = true;
+            magicMirrorBtn.style.display = 'none';
+        }
+
+        function exitMagicMirror() {
+            if (!magicMirrorActive) return;
+
+            // Restore all hidden elements
+            elementsToHide.forEach(selector => {
+                const el = document.querySelector(selector);
+                if (el && originalDisplayValues.has(selector)) {
+                    el.style.display = originalDisplayValues.get(selector);
+                }
+            });
+            const mainTitle = document.querySelector('.name-plate.main-title');
+            if (mainTitle && originalDisplayValues.has('main-title')) {
+                mainTitle.style.display = originalDisplayValues.get('main-title');
+            }
+
+            // Hide the exit button
+            if (mirrorExitBtn) mirrorExitBtn.style.display = 'none';
+
+            document.body.classList.remove('mirror-mode');
+
+            magicMirrorActive = false;
+            magicMirrorBtn.style.display = 'inline-block';
+            originalDisplayValues.clear();
+        }
+
+        // Attach event listeners
+        if (magicMirrorBtn) magicMirrorBtn.addEventListener('click', enterMagicMirror);
+        if (mirrorExitBtn) mirrorExitBtn.addEventListener('click', exitMagicMirror);
 
         // --- SCREEN WAKE LOCK API ---
         let wakeLock = null;
@@ -2610,5 +3309,11 @@
         // Automatically update the copyright year
         document.getElementById('year').textContent = new Date().getFullYear();
 
-</script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('SW registered', reg))
+            .catch(err => console.log('SW failed', err));
+        }
+        
+    </script>
 </html>
