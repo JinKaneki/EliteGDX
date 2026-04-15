@@ -3077,9 +3077,8 @@
                 case 'tao':
                     if (typeof taoChapters !== 'undefined' && taoChapters.length > 0) {
                         const randomChapter = taoChapters[Math.floor(Math.random() * taoChapters.length)];
-                        // Use replace(/\n/g, '<br>') to preserve line breaks
-                        const formattedText = randomChapter.text.replace(/\n/g, '<br>');
-                        appendCommandOutput(`Chapter ${randomChapter.chapter}:<br>${formattedText}`);
+                        const formattedText = randomChapter.text;
+                        appendCommandOutput(`Chapter ${randomChapter.chapter}:\n${formattedText}`);
                     } else {
                         appendCommandOutput('Tao Te Ching not loaded.', true);
                     }
