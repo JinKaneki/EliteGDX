@@ -12,7 +12,7 @@
     <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
 
     <!--BASIC SEO-->
-    <meta name="description" content="Elite Gems Dashboard – an ambient display with Cistercian clock, analog clock, and image slideshow.">
+    <meta name="description" content="Elite Gems Dashboard : an ambient display with Cistercian clock, analog clock, and image slideshow.">
     <meta name="keywords" content="Cistercian numerals, clock, dashboard, medieval numerals, web components">
     <meta name="author" content="Jin Kaneki">
     <meta property="og:title" content="Elite Gems Dashboard">
@@ -1056,7 +1056,92 @@
             font-size: 1rem;
         }
 
+        /* Command Runner Terminal Styling */
+        #command-runner {
+            background: rgba(0, 0, 0, 0.555);
+            backdrop-filter: blur(2px);
+            border: 1px solid var(--accent-color);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 650px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+        }
 
+        #cmd-output {
+            height: 200px;                /* increased for better visibility */
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            color: #0f0;
+            background: #0a0a0a7a;
+            border: 1px solid var(--clock-border);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) #222;
+        }
+
+        #cmd-output::-webkit-scrollbar {
+            width: 6px;
+        }
+        #cmd-output::-webkit-scrollbar-track {
+            background: #222;
+            border-radius: 4px;
+        }
+        #cmd-output::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 4px;
+        }
+
+        #cmd-input {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid var(--clock-border);
+            border-radius: 48px;
+            color: #0f0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            padding: 8px 10px;
+            flex: 1;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        #cmd-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 7px var(--accent-color);
+            background: #0a0a0a;
+        }
+
+        #command-runner .hide-controls-btn {
+            margin-top: 10px;
+            background: transparent;
+            border: 1px solid var(--clock-border);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        #command-runner .hide-controls-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            box-shadow: 0 0 5px var(--accent-color);
+        }
+
+        .matrix-glitch {
+            animation: glitch 0.2s infinite;
+        }
+        @keyframes glitch {
+            0% { text-shadow: -2px 0 red, 2px 0 blue; }
+            50% { text-shadow: 2px 0 red, -2px 0 blue; }
+            100% { text-shadow: -2px 0 blue, 2px 0 red; }
+        }
         
 
 
@@ -1274,13 +1359,13 @@
     </div>
     <!-- Online Fetched Quote (API) -->
     <div id="online-quote-container" style="text-align: center; max-width: 600px; margin: 20px auto; padding-top: 30px;">
-        <p id="online-quote-text" style="font-family: Verdana; font-size: small; font-weight: bold;">Loading core philosophies...</p>
+        <p id="online-quote-text" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ; font-size: small; font-weight: bold;">Loading core philosophies...</p>
         <p id="online-quote-author" style="font-size: 0.7rem; color: var(--accent-color);"></p>
     </div>
 
     <!-- TTC Random Chapter Widget -->
     <div id="tao-quote-container" style="text-align: center; max-width: 600px; margin: 20px auto; padding-top: 10px; padding-bottom: 20px;">
-        <p id="tao-quote-text" style="font-family: Verdana; font-size: small; font-weight: bold;">Loading Tao Te Ching...</p>
+        <p id="tao-quote-text" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: small; font-weight: bold;">Loading Tao Te Ching...</p>
         <p id="tao-quote-author" style="font-size: 0.7rem; color: var(--accent-color);">Lao Tzu</p>
         <button id="new-chapter-btn" class="hide-controls-btn" style="margin-top: 8px;">New Chapter</button>
     </div>
@@ -1319,7 +1404,7 @@
             <cistercian-number id="cist-day" value="7"></cistercian-number>
         </div>
         <!-- Spacer that pushes the exit Mirror button down -->
-        <div style="flex: 1; min-height: 1000px;"></div>
+        <div id="mirror-spacer" style="flex: 1; min-height: 1000px; display: none;"></div>
         <!-- Exit Mirror Mode button (hidden by default) -->
         <button id="mirror-exit-btn" class="action-btn" style="display: none; margin-top: 60px;">Exit Mirror Mode</button>
     </div> 
@@ -1654,7 +1739,7 @@
         </div>
 
         <div class="block">
-            <p class="block-text">Buddhismic flag</p>
+            <p class="block-text">flag</p>
             <div class="image-block">
                 <img src="images/BuddhismFlag.jpeg" alt="BuddhismFlag">
             </div>
@@ -1877,7 +1962,7 @@
     </div>
 
     <div style="text-align: center; margin: 20px auto;">
-        <button id="magic-mirror-btn" class="action-btn">Magic Mirror</button>
+        <button id="magic-mirror-btn" class="action-btn">Enter Magic Mirror</button>
     </div>
     
     <!-- Fastfetch‑style system info panel -->
@@ -1919,7 +2004,7 @@
                 <a href="https://linkedin.com/in/" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">LinkedIn</a>
             </div>
             <p class="footer-subtext">All things serve the Beam.</p>
-            <p>Copyright &copy; <span id="year"></span> built by Jin Kaneki | All Rights Reserved</p>
+            <p>Copyright &copy; <span id="year"></span> Jin Kaneki | All Rights Reserved</p>
     </footer>
 
 </body>
@@ -2107,13 +2192,13 @@
         if (closeFetchBtn) {
             closeFetchBtn.addEventListener('click', toggleFetch);
         }
-        
+
 
         // --- Keyboard shortcuts: 'S' or 'I' to toggle, 'Escape' to close ---
         document.addEventListener('keydown', (e) => {
             const key = e.key.toLowerCase();
             if (key === 'q') {
-                e.preventDefault();   // prevent typing the character
+                // e.preventDefault();    prevent typing the character
                 toggleFetch();
             }
             if (key === 'escape' && fetchTerminal.classList.contains('active')) {
@@ -2340,7 +2425,7 @@
         let isBgFrozen = false;
         let bgMode = 'off'; // off 'sync' or 'independent'
         const independentBgImages = [
-            'images/indepedentBG/ORIGINBACKG.jpeg.jpeg',
+            'images/indepedentBG/ORIGINBACKG.jpeg',
             'images/indepedentBG/IMGBACKG.jpeg',
             'images/indepedentBG/TheAlchemistV2.jpg',
             'images/indepedentBG/Ataraxia.jpg',
@@ -2490,7 +2575,7 @@
                 }
 
                 if (e.key.toLowerCase() === 'z') {
-                e.preventDefault();
+                //e.preventDefault();
             
             
                 // Cycle the style mode
@@ -2897,13 +2982,15 @@
         // Run the loader immediately
         loadSavedTheme();
 
-        // 3. Command runner
+        
+        // 3. COMMAND RUNNER
         let cmdVisible = false;
         const cmdRunnerDiv = document.getElementById('command-runner');
         const openCmdBtn = document.getElementById('open-cmd-runner');
         const closeCmdBtn = document.getElementById('close-cmd-runner');
         const cmdInput = document.getElementById('cmd-input');
         const cmdOutput = document.getElementById('cmd-output');
+
         function appendCommandOutput(text, isError = false) {
             const line = document.createElement('div');
             line.style.color = isError ? '#ff5555' : '#0f0';
@@ -2911,88 +2998,219 @@
             cmdOutput.appendChild(line);
             cmdOutput.scrollTop = cmdOutput.scrollHeight;
         }
+
         openCmdBtn.addEventListener('click', () => {
-        cmdRunnerDiv.style.display = 'block';
-        cmdVisible = true;
-        cmdInput.focus();
-         // Add hint only if it doesn't already exist and if not already removed (check by class)
-        if (cmdOutput.children.length === 0 && !document.querySelector('.cmd-hint')) {
-            const hintLine = document.createElement('div');
-            hintLine.className = 'cmd-hint';   // add a class for easy removal
-            hintLine.style.color = '#888';
-            hintLine.innerText = '[Type \'help\' for available commands]';
-            cmdOutput.appendChild(hintLine);
-        }
+            cmdRunnerDiv.style.display = 'block';
+            cmdVisible = true;
+            cmdInput.focus();
         });
 
+        if (cmdOutput.children.length === 0 && !document.querySelector('.cmd-hint')) {
+            const hintLine = document.createElement('div');
+            hintLine.className = 'cmd-hint';
+            hintLine.style.color = '#888';
+            hintLine.innerText = '[Type \'help\' for a list of commands]';
+            cmdOutput.appendChild(hintLine);
+        }
+
+        // Global command history array
+        let commandHistory = [];
+
         function processCommand(cmd) {
-        const args = cmd.trim().toLowerCase().split(' ');
-        const main = args[0];
-        switch (main) {
-            case 'help':
-            // Remove the hint if it exists
-            const hint = document.querySelector('.cmd-hint');
-            if (hint) hint.remove();
-            // Then output the help text
-            appendCommandOutput('Available: help, theme [cyan|magenta|amber|matrix], fortune, clear, sudo, fetch, freeze');
-            break;
-            case 'theme':
-                //colorThemes object (cyan, magenta, amber, matrix)
-                if (args[1] && colorThemes[args[1]]) {
-                    applyColorTheme(args[1]);    // your existing function
-                    // Update the dropdown if it exists (your select has id="color-theme-select")
-                    const themeSelect = document.getElementById('color-theme-select');
-                    if (themeSelect) themeSelect.value = args[1];
-                    appendCommandOutput(`Theme changed to ${args[1]}`);
-                } else {
-                    appendCommandOutput(`Usage: theme [cyan|magenta|amber|matrix]`, true);
-                }
-                break;
-            case 'fortune':
-                const fortunes = ['The early bird gets the worm.', 'You will find a hidden gem.', 'Keep ricing!', 'Time is an illusion.', 'sudo makes everything possible.'];
-                const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
-                appendCommandOutput(randomFortune);
-                break;
-            case 'clear':
-                const cmdOutput = document.getElementById('cmd-output');
-                if (cmdOutput) cmdOutput.innerHTML = '';
-                break;
+            const args = cmd.trim().toLowerCase().split(' ');
+            const main = args[0];
+            
+            // Push command to history (ignore empty lines)
+            if (cmd.trim() !== '') commandHistory.push(cmd);
+            
+            switch (main) {
+                // --- existing commands (help, theme, fortune, clear, sudo, fetch, freeze) ---
+                case 'help':
+                    const hint = document.querySelector('.cmd-hint');
+                    if (hint) hint.remove();
+                    appendCommandOutput('AVAILABLE CMD: help, theme [cyan|magenta|amber|matrix], fortune, clear, sudo, fetch, neofetch, tao, matrix, whoami, ls, echo, shutdown, exit, history, pause,wisdom');
+                    break;
+            
+                case 'theme':
+                    if (args[1] && colorThemes[args[1]]) {
+                        applyColorTheme(args[1]);
+                        const themeSelect = document.getElementById('color-theme-select');
+                        if (themeSelect) themeSelect.value = args[1];
+                        appendCommandOutput(`Theme changed to ${args[1]}`);
+                    } else {
+                        appendCommandOutput(`Usage: theme [cyan|magenta|amber|matrix]`, true);
+                    }
+                    break;
+
+                case 'clear':
+                    const cmdOutput = document.getElementById('cmd-output');
+                    if (cmdOutput) cmdOutput.innerHTML = '';
+                    break;
+
+                case 'fetch':
+                    if (typeof toggleFetch === 'function') {
+                        const terminal = document.getElementById('cyber-fetch-terminal');
+                        if (terminal && !terminal.classList.contains('active')) {
+                            toggleFetch();
+                        } else if (terminal && terminal.classList.contains('active')) {
+                            if (typeof generateFetchData === 'function') generateFetchData();
+                            appendCommandOutput('System info refreshed.');
+                        } else {
+                            toggleFetch();
+                        }
+                    } else {
+                        appendCommandOutput('Fetch command not available.', true);
+                    }
+                    break;
+                // --- NEW COMMANDS ---
+                case 'neofetch':
+                    const fetchContainer = document.getElementById('fastfetch-container');
+                    if (fetchContainer) {
+                        fetchContainer.style.visibility = 'visible';
+                        fetchContainer.style.display = 'flex';
+                        appendCommandOutput('Fetching system information...');
+                    } else {
+                        appendCommandOutput('Neofetch container not found.', true);
+                    }
+                    break;
+
+                case 'tao':
+                    if (typeof taoChapters !== 'undefined' && taoChapters.length > 0) {
+                        const randomChapter = taoChapters[Math.floor(Math.random() * taoChapters.length)];
+                        // Use replace(/\n/g, '<br>') to preserve line breaks
+                        const formattedText = randomChapter.text.replace(/\n/g, '<br>');
+                        appendCommandOutput(`Chapter ${randomChapter.chapter}:<br>${formattedText}`);
+                    } else {
+                        appendCommandOutput('Tao Te Ching not loaded.', true);
+                    }
+                    break;
+
+                case 'wisdom':
+                    appendCommandOutput('Fetching a random quote...');
+                    fetch('https://dummyjson.com/quotes/random')
+                        .then(response => response.json())
+                        .then(data => {
+                            appendCommandOutput(`“${data.quote}” — ${data.author}`);
+                        })
+                        .catch(error => {
+                            console.error('Quote fetch failed:', error);
+                            appendCommandOutput('Failed to fetch quote. Check your internet connection.', true);
+                        });
+                    break;
+
+                case 'matrix':
+                    appendCommandOutput('Entering the Matrix...');
+                    document.body.classList.add('matrix-glitch');
+                    setTimeout(() => {
+                        document.body.classList.remove('matrix-glitch');
+                        appendCommandOutput('Back to reality.');
+                    }, 10000);
+                    break;
+                case 'fortune':
+                    const fortunes = [
+                        // Unix & System Admin Wisdom
+                        'To err is human, but to really foul things up requires root privileges.',
+                        'There is no place like 127.0.0.1.',
+                        'chmod 777 is a temporary fix, not a solution.',
+                        'Uptime is a badge of honor.',
+                        'A day without Linux is like a day without a segmentation fault.',
+                        'Have you tried turning it off and on again?',
+                        'RTFM: Read The Fine Manual.',
+                        'Unix is user-friendly. It just isn\'t promiscuous about which users it\'s friendly with.',
+
+                        // Programming & Coding
+                        'It is not a bug, it is an undocumented feature.',
+                        'There are 10 types of people: those who understand binary, and those who don\'t.',
+                        'Weeks of programming can save you hours of planning.',
+                        'Code is read much more often than it is written.',
+                        'git push --force and pray.',
+                        'while(true) { keep_learning(); }',
+                        'A computer lets you make more mistakes faster than any invention in human history.',
+
+                        // Cyberpunk & Sci-Fi
+                        'The net is vast and infinite.',
+                        'Information wants to be free.',
+                        'Never trust a computer you can\'t throw out a window.',
+                        'Wake up, Neo...',
+                        'I know kung fu.',
+                        'The cake is a lie.',
+
+                        // Ricing & Aesthetic
+                        'Your dotfiles are looking exceptionally sharp today.',
+                        'Bloat is the mind-killer. Bloat is the little-death that brings total obliteration.',
+                        'Another day, another color scheme.',
+                        'Tiling window managers build character.',
+                        'Less GUI, more CLI.',
+                        'A clean terminal is the sign of a sick mind.',
+
+                        // Existential Tech
+                        'Time is an illusion. Ping is a reality.',
+                        'Hardware: The parts of a computer system that can be kicked.',
+                        'Software: The parts of a computer system that can only be cursed at.',
+                        'You are the CSS to my HTML.',
+                        'Every keystroke shapes the matrix.',
+                        'The early bird gets the worm.',
+                        'You will find a hidden gem.',
+                        'Reality is an illusion',
+                        'sudo makes everything possible.'
+                    ];
+                    const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+                    appendCommandOutput(randomFortune);
+                break;   
             case 'sudo':
-                if (args[1] === 'make' && args[2] === 'me' && args[3] === 'a' && args[4] === 'sandwich') {
+                const fullCommand = args.join(' ');
+                if (fullCommand.includes('please')) {
+                    appendCommandOutput('Access granted. Creating sandwich... 🥪');
+                } else if (fullCommand === 'sudo make me a sandwich') {
                     appendCommandOutput('Okay, but you didn\'t say the magic word.');
                 } else {
-                    appendCommandOutput('Permission denied. You are not in the sudoers file.', true);
+                    appendCommandOutput('Permission denied. This incident will be reported.', true);
                 }
                 break;
-                // NEW: fetch command – shows system info terminal
-            case 'fetch':
-                if (typeof toggleFetch === 'function') {
-                    const terminal = document.getElementById('cyber-fetch-terminal');
-                    if (terminal && !terminal.classList.contains('active')) {
-                        toggleFetch();
-                    } else if (terminal && terminal.classList.contains('active')) {
-                        // Optionally refresh data without closing
-                        if (typeof generateFetchData === 'function') generateFetchData();
-                        appendCommandOutput('System info refreshed.');
+
+            case 'ls':
+                appendCommandOutput('Documents/  Downloads/  Secret_Project/  tao_te_ching.txt  system_core.bin');
+                break;
+
+            case 'echo':
+                const message = args.slice(1).join(' ');
+                appendCommandOutput(message || 'Usage: echo [text]');
+                break;
+
+            case 'shutdown':
+            case 'exit':
+                appendCommandOutput('System shutting down... Entering Mirror Mode.');
+                setTimeout(() => {
+                    if (typeof enterMagicMirror === 'function') {
+                        enterMagicMirror();   
                     } else {
-                        toggleFetch(); // fallback
+                        appendCommandOutput('Mirror mode not available.', true);
                     }
+                }, 1500);
+                break;
+
+            case 'whoami':
+                appendCommandOutput('User: Johan\nRole: Architect of the Void\nStatus: Online/offline\n Phygital ID: OneOfNone');
+                break;
+            case 'history':
+                if (commandHistory.length === 0) {
+                    appendCommandOutput('No commands in history.');
                 } else {
-                    appendCommandOutput('Fetch command not available (missing toggleFetch).', true);
+                    appendCommandOutput(commandHistory.join('\n'));
                 }
                 break;
             case 'pause':
-            // Toggle background freeze (same logic as key 'b')
-            if (typeof isBgFrozen !== 'undefined') {
-                isBgFrozen = !isBgFrozen;
-                if (typeof playTick === 'function') playTick(true);
-                if (typeof triggerGhost === 'function') triggerGhost(isBgFrozen);
-                if (!isBgFrozen && typeof updateBackground === 'function') updateBackground();
-                appendCommandOutput(isBgFrozen ? 'Background frozen.' : 'Background unfrozen.');
-            } else {
-                appendCommandOutput('Freeze command not available (missing background freeze logic).', true);
-            }
-            break;
+                // Toggle background freeze (same logic as key 'b')
+                if (typeof isBgFrozen !== 'undefined') {
+                    isBgFrozen = !isBgFrozen;
+                    if (typeof playTick === 'function') playTick(true);
+                    if (typeof triggerGhost === 'function') triggerGhost(isBgFrozen);
+                    if (!isBgFrozen && typeof updateBackground === 'function') updateBackground();
+                    appendCommandOutput(isBgFrozen ? 'Background frozen.' : 'Background unfrozen.');
+                } else {
+                    appendCommandOutput('Freeze command not available (missing background freeze logic).', true);
+                }
+                break;
             default:
                 appendCommandOutput(`Command not found: ${cmd}`, true);
             }
@@ -3000,8 +3218,8 @@
         openCmdBtn.addEventListener('click', () => { cmdRunnerDiv.style.display = 'block'; cmdVisible = true; cmdInput.focus(); });
         closeCmdBtn.addEventListener('click', () => { cmdRunnerDiv.style.display = 'none'; cmdVisible = false; });
         cmdInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { const command = cmdInput.value; if (command.trim() !== '') { appendCommandOutput(`$ ${command}`); processCommand(command); cmdInput.value = ''; } } });
-
-
+    
+            
 
         // --- CISTERCIAN ALARM (continuous tone until dismissed) ---
         // 1. Global variables for the alarm
@@ -3171,30 +3389,30 @@
         
 
 
-        // --- MAGIC MIRROR MODE (Tao widget only with exit button inside timepiece wrapper) ---
+       // --- MAGIC MIRROR MODE (with spacer & full restoration) ---
         let magicMirrorActive = false;
-        let originalDisplayValues = new Map();
+        let originalStyles = new Map(); // stores { display, visibility } for each element
 
         const magicMirrorBtn = document.getElementById('magic-mirror-btn');
         const mirrorExitBtn = document.getElementById('mirror-exit-btn');
 
-        // Elements to hide (online quote is included, Tao widget is NOT)
+        // Elements to hide (Tao widget stays visible)
         const elementsToHide = [
             '.content-blocks', '.controls', '.site-footer', '#command-runner', '#btop-panel',
             '.action-btn:not(#magic-mirror-btn):not(#mirror-exit-btn)',
-            '#quote-widget', '#dynamic-quote-container',   // hides the online quote
+            '#quote-widget', '#dynamic-quote-container',   // online quote
             '#xterm-modal', '.hide-controls-toggle-wrapper',
             '.theme-switch-wrapper', '.text-wrapper', '#fastfetch-container',
             '.timepiece-wrapper .clock', '#digital-clock', '#cistercian-wrapper',
             '#cistercian-date-row', '.small-cist-date', '#perm-cist-clock',
-            '#open-fetch-btn', '#toggle-fetch-btn', '#edit-ascii-btn', '#open-xterm',
+            '#open-fetch-btn', '#edit-ascii-btn', '#open-xterm',
             '#open-btop', '#theme-select', '#color-theme-select', '#alarm-panel'
         ];
 
         function enterMagicMirror() {
             if (magicMirrorActive) return;
 
-            // Determine which clock is currently visible
+            // Determine active clock
             const analog = document.getElementById('analog-clock');
             const digital = document.getElementById('digital-clock');
             const cistercian = document.getElementById('cistercian-wrapper');
@@ -3212,12 +3430,18 @@
                 activeDisplay = 'flex';
             }
 
-            // Store original display values and hide elements
+            // Store original styles and hide each element
             elementsToHide.forEach(selector => {
                 const el = document.querySelector(selector);
                 if (el && el !== magicMirrorBtn && el !== mirrorExitBtn) {
-                    originalDisplayValues.set(selector, el.style.display || getComputedStyle(el).display);
+                    const computed = getComputedStyle(el);
+                    originalStyles.set(selector, {
+                        display: el.style.display || computed.display,
+                        visibility: el.style.visibility || computed.visibility
+                    });
+                    // Hide the element (set display to 'none' for most; for visibility-based, also set visibility)
                     el.style.display = 'none';
+                    if (computed.visibility === 'hidden') el.style.visibility = 'hidden';
                 }
             });
 
@@ -3225,22 +3449,34 @@
             if (activeClock) {
                 activeClock.style.display = activeDisplay;
             } else {
-                const fallbackClock = document.getElementById('analog-clock');
-                if (fallbackClock) fallbackClock.style.display = 'flex';
+                const fallback = document.getElementById('analog-clock');
+                if (fallback) fallback.style.display = 'flex';
             }
 
             // Hide main title
             const mainTitle = document.querySelector('.name-plate.main-title');
             if (mainTitle) {
-                originalDisplayValues.set('main-title', mainTitle.style.display || getComputedStyle(mainTitle).display);
+                const computedTitle = getComputedStyle(mainTitle);
+                originalStyles.set('main-title', {
+                    display: mainTitle.style.display || computedTitle.display,
+                    visibility: mainTitle.style.visibility || computedTitle.visibility
+                });
                 mainTitle.style.display = 'none';
             }
 
-            // Show the exit button (inside timepiece wrapper)
-            if (mirrorExitBtn) mirrorExitBtn.style.display = 'block';
-
-            // Add mirror-mode class for extra spacing (optional)
+            // Add mirror-mode class
             document.body.classList.add('mirror-mode');
+            // Show the exit button and the 1000px spacer
+            document.getElementById('mirror-exit-btn').style.display = 'inline-block'; // or 'block'
+            document.getElementById('mirror-spacer').style.display = 'block';
+
+            // Hide the JOHAN_OS button (targeting its parent div to hide the margin too)
+            document.getElementById('toggle-fetch-btn').parentElement.style.display = 'none';
+
+            // Hide the fastfetch container completely
+            document.getElementById('fastfetch-container').style.display = 'none';
+            // Show exit button
+            if (mirrorExitBtn) mirrorExitBtn.style.display = 'block';
 
             magicMirrorActive = true;
             magicMirrorBtn.style.display = 'none';
@@ -3252,23 +3488,37 @@
             // Restore all hidden elements
             elementsToHide.forEach(selector => {
                 const el = document.querySelector(selector);
-                if (el && originalDisplayValues.has(selector)) {
-                    el.style.display = originalDisplayValues.get(selector);
+                const styles = originalStyles.get(selector);
+                if (el && styles) {
+                    el.style.display = styles.display;
+                    el.style.visibility = styles.visibility;
                 }
             });
             const mainTitle = document.querySelector('.name-plate.main-title');
-            if (mainTitle && originalDisplayValues.has('main-title')) {
-                mainTitle.style.display = originalDisplayValues.get('main-title');
+            const titleStyles = originalStyles.get('main-title');
+            if (mainTitle && titleStyles) {
+                mainTitle.style.display = titleStyles.display;
+                mainTitle.style.visibility = titleStyles.visibility;
             }
 
-            // Hide the exit button
-            if (mirrorExitBtn) mirrorExitBtn.style.display = 'none';
-
+            // Remove mirror-mode class (removes spacer min-height)
             document.body.classList.remove('mirror-mode');
+
+            // Hide exit button
+            if (mirrorExitBtn) mirrorExitBtn.style.display = 'none';
 
             magicMirrorActive = false;
             magicMirrorBtn.style.display = 'inline-block';
-            originalDisplayValues.clear();
+            originalStyles.clear();
+            // Hide the exit button and the 1000px spacer
+            document.getElementById('mirror-exit-btn').style.display = 'none';
+            document.getElementById('mirror-spacer').style.display = 'none';
+
+            // Bring back the JOHAN_OS button
+            document.getElementById('toggle-fetch-btn').parentElement.style.display = 'block';
+
+            // Bring back the fastfetch container (MUST be 'flex' to preserve your layout!)
+            document.getElementById('fastfetch-container').style.display = 'flex';
         }
 
         // Attach event listeners
