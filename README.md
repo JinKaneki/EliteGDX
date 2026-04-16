@@ -167,7 +167,6 @@ An in‑browser terminal that supports both instant and async commands.
 | `wisdom`          | Random inspirational quote (DummyJSON) |
 | `hackernews` / `hn` | Top 5 Hacker News stories |
 | `news`            | BBC World News headlines |
-| `trends`          | Google daily trending searches (US) |
 | `define [word]`   | Full dictionary entry with phonetics, definitions, synonyms, antonyms |
 | `image`           | Display a random Picsum photo |
 | `walls`           | Fetch a random wallpaper from the [0xnotkyo/walls](https://github.com/0xnotkyo/walls) repository |
@@ -177,8 +176,6 @@ An in‑browser terminal that supports both instant and async commands.
 | `qr [text]`       | Generate a scannable QR code |
 | `anime`           | Top 10 anime from MyAnimeList (Jikan API) |
 | `technology`      | Curated tech news (The Verge, Ars Technica, TechCrunch, Wired) |
-| `lobsters`        | Hottest stories from Lobste.rs |
-| `zen`             | Random quote from ZenQuotes |
 
 
 ## 📜 Version 2.1 Change Log (March 2026)
@@ -224,8 +221,6 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 3. **Colors:** Modify `:root` variables in the CSS to change the Cyan/Magenta neon theme.
 
 ---
-## 📜 License
-MIT – free to use, modify, and distribute.
 
 ## How to Run / Use
 

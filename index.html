@@ -2982,7 +2982,7 @@
         const commands = {
             // ----- SYNC (return string/HTML instantly) -----
             'help': () => {
-                return `AVAILABLE CMD: help, theme [cyan|magenta|amber|matrix], fortune, clear, sudo, fetch, neofetch, whoami, ls, echo, shutdown, history, pause, matrix, tao, wisdom, hackernews (hn), news, trends, define [word], image, walls, weather [city], joke, fact, qr [text], anime, technology, lobsters, zen`;
+                return `AVAILABLE CMD: help, theme [cyan|magenta|amber|matrix], fortune, clear, sudo, fetch, neofetch, whoami, ls, echo, shutdown, history, pause, matrix, tao, wisdom, hackernews (hn), news, define [word], image, walls, weather [city], joke, fact, qr [text], anime, technology`;
             },
             'clear': () => {
                 cmdOutput.innerHTML = '';
@@ -3151,29 +3151,6 @@
                     return output;
                 } catch (e) {
                     return '⚠️ Could not reach Hacker News.';
-                }
-            },
-            // GOOGLE TRENDS - US
-            'trends': async () => {
-                try {
-                    appendCommandHTML('<span style="color: #888;">🔥 Fetching Google Trends (US)...</span>');
-                    const api = 'https://api.rss2json.com/v1/api.json?rss_url=';
-                    const feed = 'https://trends.google.com/trends/trendingsearches/daily/rss?geo=US';
-                    const resp = await fetch(api + encodeURIComponent(feed));
-                    const data = await resp.json();
-                    if (data.status === 'ok' && data.items) {
-                        let output = '🔥 Google Trends (US):<br>';
-                        data.items.slice(0, 8).forEach((item, i) => {
-                            const clean = item.title.replace(/,.*$/, '');
-                            output += `${i+1}. ${clean}<br>`;
-                        });
-                        return output;
-                    }
-                    throw new Error('Invalid RSS');
-                } catch (e) {
-                    // Fallback in case of network issues (or CORS)
-                    const fallback = ['Election 2024', 'Bitcoin price', 'ChatGPT', 'Climate change', 'AI tools', 'SpaceX launch', 'Olympics', 'Taylor Swift'];
-                    return '⚠️ Live trends unavailable. Showing recent topics:<br>' + fallback.map((t,i) => `${i+1}. ${t}`).join('<br>');
                 }
             },
             'define': async (args) => {
@@ -3410,43 +3387,6 @@
                 } catch (e) {
                     console.warn('Tech news fetch failed:', e);
                     return '⚠️ Could not fetch technology news. Check your connection.';
-                }
-            },
-            'lobsters': async () => {
-                try {
-                    appendCommandHTML('<span style="color: #888;">🦞 Fetching from Lobste.rs...</span>');
-                    const resp = await fetch('https://lobste.rs/hottest.json');
-                    const data = await resp.json();
-                    
-                    let output = '<strong style="color: #boston-blue;">🦞 LOBSTE.RS - HOTTEST STORIES</strong><br>';
-                    data.slice(0, 10).forEach((story, i) => {
-                        output += `[${i+1}] ${story.title} <span style="color: #888;">(${story.score} pts, by ${story.submitter_user.username})</span><br>`;
-                    });
-                    return output;
-                } catch (e) {
-                    console.warn('Lobste.rs fetch failed:', e);
-                    return `⚠️ Could not reach Lobste.rs (${e.message}). Try again later.`;
-                }
-            },
-            'zen': async () => {
-                const loadId = 'zen-load-' + Date.now();
-                appendCommandHTML(`<span id="${loadId}" style="color: #888;">🧘 Finding a moment of calm...</span>`);
-
-                try {
-                    const resp = await fetch('https://zenquotes.io/api/random');
-                    const data = await resp.json();
-                    const quote = data[0];
-                    
-                    const loadEl = document.getElementById(loadId);
-                    if (loadEl) loadEl.remove();
-                    
-                    return `🧘 <strong>"${quote.q}"</strong><br><span style="color: #888;">— ${quote.a}</span>`;
-                    
-                } catch (e) {
-                    console.warn('Zen quote fetch failed:', e);
-                    const loadEl = document.getElementById(loadId);
-                    if (loadEl) loadEl.remove();
-                    return '<span style="color: #ff5555;">⚠️ The mind is clouded. Could not fetch a quote.</span>';
                 }
             },
             'wisdom': async () => {
