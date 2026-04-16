@@ -971,21 +971,6 @@
         }
 
         
-        #tty-boot-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #050505;
-            color: #00ff00; /* Classic Terminal Green */
-            font-family: 'Courier New', monospace;
-            font-size: 0.95rem;
-            padding: 20px;
-            z-index: 999999; /* Above absolutely everything */
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start; /* flex-end Text scrolls up from bottom */
-            transition: opacity 0.8s ease-in-out;
-        }
 
         /* --- CYBER THEME SELECTOR --- */
         .theme-selector-wrapper {
@@ -1311,9 +1296,6 @@
 <body>
     <!-- Fixed background layer (behind everything) -->
     <div class="fixed-bg"></div>
-    <div id="tty-boot-screen">
-            <div id="tty-text"></div>
-    </div>
 
     <div class="theme-selector-wrapper">
         <select id="color-theme-select" class="cyber-select" title="Change Color Profile">
@@ -1323,6 +1305,7 @@
             <option value="matrix">Matrix Green</option>
         </select>
     </div>
+
     <!-- Toggle for hiding controls (top-left) -->
     <div class="hide-controls-toggle-wrapper">
         <button id="hide-controls-btn" class="hide-controls-btn">🎮 Hide Controls</button>
@@ -1404,7 +1387,7 @@
             <cistercian-number id="cist-day" value="7"></cistercian-number>
         </div>
         <!-- Spacer that pushes the exit Mirror button down -->
-        <div id="mirror-spacer" style="flex: 1; min-height: 1000px; display: none;"></div>
+        <div id="mirror-spacer" style="flex: 1; min-height: 1200px; display: none;"></div>
         <!-- Exit Mirror Mode button (hidden by default) -->
         <button id="mirror-exit-btn" class="action-btn" style="display: none; margin-top: 60px;">Exit Mirror Mode</button>
     </div> 
@@ -2865,45 +2848,6 @@
         setInterval(updateDigitalTime, 1000);
 
 
-        // --- TTY BOOT ENGINE ---
-        const bootScreen = document.getElementById('tty-boot-screen');
-        const ttyText = document.getElementById('tty-text');
-        
-        const bootLogs = [
-            "[0.000000] Linux version 6.8.9-elite-gems (jin@kaneki) (gcc version 13.2.1)",
-            "[0.012304] Command line: BOOT_IMAGE=/boot/vmlinuz root=UUID=1a2b3c ro quiet splash",
-            "[0.045012] x86/cpu: Initializing logical cores...",
-            "[0.089123] Memory: 16384K/16384K available (Kernel code, data)",
-            "[0.102344] Mount-cache hash table entries: 32768",
-            "[0.340112] systemd[1]: Starting Elite Gems Environment...",
-            "[0.501233] clock: Synchronizing Cistercian temporal engine... OK",
-            "[0.612344] audio: Initializing Web Audio API context... OK",
-            "[0.801233] display: Loading glassmorphic UI drivers...",
-            "[1.000000] INIT: Welcome to Elite Gems based Johan_OS."
-        ];
-
-        let bootIndex = 0;
-
-        function runBootSequence() {
-            if (bootIndex < bootLogs.length) {
-                const p = document.createElement('div');
-                p.innerText = bootLogs[bootIndex];
-                ttyText.appendChild(p);
-                bootIndex++;
-                // Randomize typing speed for realism (20ms to 100ms)
-                setTimeout(runBootSequence, Math.random() * 80 + 20);
-            } else {
-                // Boot complete, fade out
-                setTimeout(() => {
-                    bootScreen.style.opacity = '0';
-                    setTimeout(() => bootScreen.remove(), 800); // Remove from DOM entirely
-                }, 500);
-            }
-        }
-        
-        // Start boot sequence immediately
-        window.onload = runBootSequence;
-
 
         // --- CUSTOM COLOR THEME ENGINE ---
         const themeSelect = document.getElementById('color-theme-select');
@@ -3028,7 +2972,7 @@
                 case 'help':
                     const hint = document.querySelector('.cmd-hint');
                     if (hint) hint.remove();
-                    appendCommandOutput('AVAILABLE CMD: help, theme [cyan|magenta|amber|matrix], fortune, clear, sudo, fetch, neofetch, tao, matrix, whoami, ls, echo, shutdown, exit, history, pause,wisdom');
+                    appendCommandOutput('AVAILABLE CMD: help, theme [cyan|magenta|amber|matrix], fortune, clear, sudo, fetch, neofetch, tao, whoami, ls, echo, shutdown, exit, history, pause, matrix, wisdom');
                     break;
             
                 case 'theme':
