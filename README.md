@@ -1,6 +1,7 @@
 # Elite Gems Dashboard: Persistent Ambient Dashboard Fancy Analog/Digital/Cistercian Clock AOD 🕰️
 
 **An "Always-On" productivity clock and personal gallery engineered for professional workspaces.**
+**An ambient, cyber‑punk inspired dashboard with multiple clock faces, a rotating image gallery, and a powerful built‑in terminal command runner.**
 
 Live at : [https://jinkaneki.github.io/AnalogClockHost/]
 
@@ -50,6 +51,10 @@ Gallery content is randomized with the **Fisher‑Yates Algorithm** ($O(n)$ time
 
 ### ⏱️ Deterministic State Management
 UI transitions are synchronized with the system clock, occurring precisely at `00` seconds of every minute, respecting the "Minute Reset" rule regardless of page load timing.
+
+**Router‑Pattern Command Parser** – Executes sync commands instantly, async commands with loading indicators.
+- **CORS‑Aware APIs** – Uses `rss2json` proxy for RSS feeds, direct fetch for CORS‑enabled services.
+
 
 ## 🎨 UI/UX Features (Latest Updates)
 ### 🖥️ Cyber‑Fetch Terminal (JOHAN_OS)
@@ -139,24 +144,41 @@ I set the following CSS custom properties to achieve the **rainbow line effect**
 
 The **Johan_OS Terminal Command Runner** isn't just for show. Below are the currently supported commands:
 
-| Command     | Arguments                                      | Description                                                                 |
-|-------------|------------------------------------------------|-----------------------------------------------------------------------------|
-| `help`      | N/A                                            | Displays the list of available commands.                           |
-| `theme`     | `cyan`, `magenta`, `amber`, `matrix`           | Instantly updates the UI color palette and effects.                            |
-| `fetch`     | N/                                             | Manually triggers the System Info panel.|
-| `neofetch`     | N/A                                         | Manually triggers the RUN JOHAN_OS .                          |
-| `fortune`   | N/A                                            | Generates a random piece of hacker wisdom or Unix philosophy.                    |
-| `tao`       | N/A                                            | Pulls a random chapter from the Tao Te Ching.                              |
-| `wisdom`    | N/A                                            |  Fetches a random inspirational quote from an online API.                         |
-| `pause`     | N/A                                            | Toggles the background image freeze (same as `freeze`).                           |
-| `sudo`      | `make me a sandwich`                           | Executes with root privileges (if you know the magic word (`please`)).          |
-| `clear`     | N/A                                            | Wipes the terminal buffer for a fresh start.                               |
-| `matrix`    | N/A                                            | Activates a temporary glitch effect for 10 seconds.                             |
-| `echo`      | text                                           | Prints the given text back to the terminal. |
-| `ls`        | N/A                                            | Lists virtual files and directories.                         |
-| `shutdown`  | N/A                                            | Shuts down the interface and enters Magic Mirror mode.                         |
-| `exit`      | N/A                                            | Shuts down the interface and enters Magic Mirror mode.                         |
-| `whoami`    | N/A                                            | Displays current user identity and system role.                                |
+### 💻 Terminal Command Runner
+An in‑browser terminal that supports both instant and async commands.
+
+| Command           | Description |
+|-------------------|-------------|
+| `help`            | List all available commands |
+| `theme [name]`    | Switch color profile (cyan, magenta, amber, matrix) |
+| `fortune`         | Random Unix / coding fortune |
+| `clear`           | Clear terminal output |
+| `sudo`            | Try to make a sandwich |
+| `fetch`           | Display system info panel 
+| `neofetch`        | Manually triggers the RUN JOHAN_OS .|
+| `whoami`          | Show user identity |
+| `ls`              | List fake directories |
+| `echo [text]`     | Print text |
+| `shutdown`        | Enter Magic Mirror mode |
+| `history`         | Show command history |
+| `pause`           | Freeze/unfreeze background |
+| `matrix`          | Activate glitch effect for 10 seconds |
+| `tao`             | Random chapter from Tao Te Ching |
+| `wisdom`          | Random inspirational quote (DummyJSON) |
+| `hackernews` / `hn` | Top 5 Hacker News stories |
+| `news`            | BBC World News headlines |
+| `trends`          | Google daily trending searches (US) |
+| `define [word]`   | Full dictionary entry with phonetics, definitions, synonyms, antonyms |
+| `image`           | Display a random Picsum photo |
+| `walls`           | Fetch a random wallpaper from the [0xnotkyo/walls](https://github.com/0xnotkyo/walls) repository |
+| `weather [city]`  | Terminal‑style forecast from wttr.in |
+| `joke`            | Random dad joke |
+| `fact`            | Random useless fact |
+| `qr [text]`       | Generate a scannable QR code |
+| `anime`           | Top 10 anime from MyAnimeList (Jikan API) |
+| `technology`      | Curated tech news (The Verge, Ars Technica, TechCrunch, Wired) |
+| `lobsters`        | Hottest stories from Lobste.rs |
+| `zen`             | Random quote from ZenQuotes |
 
 
 ## 📜 Version 2.1 Change Log (March 2026)
@@ -226,20 +248,35 @@ MIT – free to use, modify, and distribute.
 
 ### 🛠️ Dependencies
 
-    cistercian-numerals – loaded via CDN: 
-        <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
-      Web Audio API – no external library.  
-      Wake Lock API – modern browsers only (fallback silently). 
----
+- [Cistercian Numerals](https://www.npmjs.com/package/cistercian-numerals) (Web Component)
+- [QRCode Generator](https://github.com/kazuhikoarase/qrcode-generator) (via CDN)
+- Web Audio API – no external library.  
+- Wake Lock API – modern browsers only (fallback silently).
 
-## 🙏 Credits
-Dashboard Design & Engineering by **Jin Kaneki**. 
+### Public APIs (no keys required)
 
-Original Cistercian Web Components by **Hubert Sablonnière**.
+| API | Endpoint / Documentation |
+|-----|--------------------------|
+| Hacker News | [firebaseio.com/v0](https://github.com/HackerNews/API) |
+| Lobste.rs | [lobste.rs/hottest.json](https://lobste.rs/api) |
+| ZenQuotes | [zenquotes.io/api](https://zenquotes.io/) |
+| Dictionary API | [api.dictionaryapi.dev](https://dictionaryapi.dev/) |
+| wttr.in | [wttr.in/:help](https://github.com/chubin/wttr.in) |
+| Jikan (MyAnimeList) | [api.jikan.moe/v4](https://jikan.moe/) |
+| DummyJSON | [dummyjson.com/quotes](https://dummyjson.com/docs/quotes) |
+| rss2json | [rss2json.com](https://rss2json.com/) |
+| Picsum | [picsum.photos](https://picsum.photos/) |
 
-Inspired by Linux ricing communities, Medieval Cistercian monks and the pursuit of compact data visualization.
+## 🤝 Credits & Inspiration
+- Original Cistercian Web Components by **Hubert Sablonnière**.
+- **Engineered by** [Johan_nlb](https://github.com/JinKaneki) (Jin Kaneki)
+- Inspired by Linux ricing communities, Medieval Cistercian monks and the pursuit of compact data visualization and the TTC.
+- Wallpaper collection sourced from [0xnotkyo/walls](https://github.com/0xnotkyo/walls)
+- Tao Te Ching text (public domain) translated by **Stephen Mitchell**.
 
-Tao Te Ching text (public domain) translated by **Stephen Mitchell**.
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
 
 ## 🧠 Philosophy
   > "All things serve the Steam. XD"
