@@ -3988,12 +3988,23 @@
                 overlay.id = 'intersect-overlay';
                 document.body.appendChild(overlay);
 
+                // Start the continuous tone for the neural upload
+                if (typeof startContinuousTone === 'function') {
+                    startContinuousTone();
+                }
+
                 let count = 0;
-                const maxFlashes = 20;
+                const maxFlashes = 450; // 45 seconds at 100ms per frame
 
                 const interval = setInterval(() => {
                     if (count >= maxFlashes) {
                         clearInterval(interval);
+                        
+                        // Stop the continuous tone
+                        if (typeof stopContinuousTone === 'function') {
+                            stopContinuousTone();
+                        }
+                        
                         overlay.remove();
                         if (typeof triggerGhost === 'function') {
                             triggerGhost('🧠 INTERSECT DOWNLOAD COMPLETE');
@@ -4002,7 +4013,6 @@
                     }
 
                     if (count % 2 === 0) {
-                        // Use a random image from your own gallery
                         const randomImg = galleryImages[Math.floor(Math.random() * galleryImages.length)];
                         overlay.innerHTML = `<img src="${randomImg}" style="width:100%; height:100%; object-fit:cover;">`;
                     } else {
@@ -4014,11 +4024,11 @@
                     count++;
                 }, 100);
 
-                return '⚡ Initiating neural link... [STAY STILL]';
+                return '⚡ Initiating neural link... [45 SECOND UPLOAD – STAY STILL]';
             },
         }
 
-
+        
         // ----- COMMAND EXECUTION (Router Pattern) -----
         cmdInput.addEventListener('keypress', async (e) => {
             if (e.key !== 'Enter') return;
