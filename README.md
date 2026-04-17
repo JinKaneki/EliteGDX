@@ -145,37 +145,52 @@ I set the following CSS custom properties to achieve the **rainbow line effect**
 The **Johan_OS Terminal Command Runner** isn't just for show. Below are the currently supported commands:
 
 ### 💻 Terminal Command Runner
-An in‑browser terminal that supports both instant and async commands.
+An in‑browser terminal that supports both instant and async commands. Type `help` to see the full list.
 
-| Command           | Description |
-|-------------------|-------------|
-| `help`            | List all available commands |
-| `theme [name]`    | Switch color profile (cyan, magenta, amber, matrix) |
-| `fortune`         | Random Unix / coding fortune |
-| `clear`           | Clear terminal output |
-| `sudo`            | Try to make a sandwich |
-| `fetch`           | Display system info panel 
-| `neofetch`        | Manually triggers the RUN JOHAN_OS .|
-| `whoami`          | Show user identity |
-| `ls`              | List fake directories |
-| `echo [text]`     | Print text |
-| `shutdown`        | Enter Magic Mirror mode |
-| `history`         | Show command history |
-| `pause`           | Freeze/unfreeze background |
-| `matrix`          | Activate glitch effect for 10 seconds |
-| `tao`             | Random chapter from Tao Te Ching |
-| `wisdom`          | Random inspirational quote (DummyJSON) |
-| `hackernews` / `hn` | Top 5 Hacker News stories |
-| `news`            | BBC World News headlines |
-| `define [word]`   | Full dictionary entry with phonetics, definitions, synonyms, antonyms |
-| `image`           | Display a random Picsum photo |
-| `walls`           | Fetch a random wallpaper from the [0xnotkyo/walls](https://github.com/0xnotkyo/walls) repository |
-| `weather [city]`  | Terminal‑style forecast from wttr.in |
-| `joke`            | Random dad joke |
-| `fact`            | Random useless fact |
-| `qr [text]`       | Generate a scannable QR code |
-| `anime`           | Top 10 anime from MyAnimeList (Jikan API) |
-| `technology`      | Curated tech news (The Verge, Ars Technica, TechCrunch, Wired) |
+| Command               | Description |
+|-----------------------|-------------|
+| `help`                | List all available commands |
+| `theme [name]`        | Switch color profile (cyan, magenta, amber, matrix) |
+| `fortune`             | Random Unix / coding fortune |
+| `clear`               | Clear terminal output |
+| `sudo`                | Try to make a sandwich |
+| `fetch`               | Display system info panel (cyber‑fetch terminal) |
+| `neofetch`            | Manually trigger the RUN JOHAN_OS system info panel |
+| `whoami`              | Show user identity |
+| `ls`                  | List fake directories |
+| `echo [text]`         | Print text |
+| `shutdown`            | Enter Magic Mirror mode |
+| `history`             | Show command history |
+| `pause`               | Freeze/unfreeze background |
+| `matrix`              | Activate glitch effect for 10 seconds |
+| `tao`                 | Random chapter from Tao Te Ching |
+| `wisdom`              | Random inspirational quote (DummyJSON) |
+| `hackernews`          | Top 5 Hacker News stories |
+| `news`                | BBC World News headlines |
+| `define [word]`       | Full dictionary entry with phonetics, definitions, synonyms, antonyms |
+| `image`               | Display a random Picsum photo |
+| `walls`               | Fetch a random wallpaper from [0xnotkyo/walls](https://github.com/0xnotkyo/walls) |
+| `weather [city]`      | Terminal‑style forecast from wttr.in |
+| `joke`                | Random dad joke |
+| `learn`               | Random educational fact / "Did you know?" |
+| `qr [text]`           | Generate a scannable QR code |
+| `anime`               | Top 10 anime + currently airing (Jikan API) |
+| `technology`          | Curated tech news (The Verge, Ars Technica, TechCrunch, Wired) |
+| `poem`                | Random classic poem with title and author |
+| `poetry`              | Short poetry excerpt (first 6 lines) |
+| `bible`               | Random Bible verse (labs.bible.org) |
+| `verse`               | Same as `bible` – random sacred verse |
+| `physics`             | Random physics or math formula with explanation |
+| `scroll`              | Bouncy terminal scroll animation |
+| `intersect`           | Neural‑link flash sequence (Chuck‑style Intersect) |
+| `biology`             | Fascinating biology facts |
+| `space`               | Random astronomy / space fact |
+| `cstip`               | Computer science tip or historical fact |
+| `koan`                | Random Zen koan |
+| `stoic`               | Stoic wisdom quote (Marcus Aurelius, Seneca, Epictetus) |
+| `buddha`              | Buddhist wisdom quote (Buddha, Dogen, Thich Nhat Hanh, Dalai Lama) |
+| `sutra`               | Authentic teaching from the Pali Canon (Dhammapada, Suttas) |
+| `electronics`         | Electronics formulas, laws, and fascinating hardware facts |
 
 
 ## 📜 Version 2.1 Change Log (March 2026)
@@ -261,6 +276,14 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 | DummyJSON | [dummyjson.com/quotes](https://dummyjson.com/docs/quotes) |
 | rss2json | [rss2json.com](https://rss2json.com/) |
 | Picsum | [picsum.photos](https://picsum.photos/) |
+| PoetryDB | [poetrydb.org](https://poetrydb.org/) |
+| Bible API | [labs.bible.org/api](https://labs.bible.org/api/) |
+| Stoic Quotes | [stoic-quotes.com/api](https://stoic-quotes.com/api/quote) |
+| Buddha API | [buddha-api.com/api](https://buddha-api.com/api/random) |
+| Bootprint (Space) | [bootprint.space/api](https://bootprint.space/api/fact) |
+| icanhazdadjoke | [icanhazdadjoke.com](https://icanhazdadjoke.com/) |
+| Useless Facts | [uselessfacts.jsph.pl](https://uselessfacts.jsph.pl/) |
+
 
 ## 🤝 Credits & Inspiration
 - Original Cistercian Web Components by **Hubert Sablonnière**.

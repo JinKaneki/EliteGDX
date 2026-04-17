@@ -1129,6 +1129,29 @@
             100% { text-shadow: -2px 0 blue, 2px 0 red; }
         }
         
+        #intersect-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999999;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .intersect-text {
+            color: #00ff00;
+            font-size: 2rem;
+            font-family: 'Courier New', monospace;
+            padding: 40px;
+            text-align: center;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px #00ff00;
+            line-height: 1.4;
+        }
 
 
         /* MOBILE-FRIENDLY TWEAKS */
@@ -1331,7 +1354,7 @@
     </div>
     <!-- Alarm panel -->
     <div id="alarm-panel">
-        <h3 style="color: var(--accent-color);text-align: center; padding-top: 30px;">⏰ Cistercian Alarm</h3>
+        <h3 style="color: var(--accent-color);text-align: center; padding-top: 30px;">Cistercian Alarm ⏰</h3>
         <button id="set-alarm" class="hide-controls-btn">Set Alarm</button>
         <input type="time" id="alarm-time" value="08:00">
         <button id="stop-alarm" class="hide-controls-btn" disabled>Stop Alarm</button>
@@ -2450,6 +2473,72 @@
             //'images/indepedentBG/',
         ];
 
+        // Gallery images for Intersect flash (from your slideshow blocks)
+        const galleryImages = [
+            'images/IMG_BLUE.jpg',
+            'images/OkamiKitsune.jpg',
+            'images/WheelOfLifeMandala.jpg',
+            'images/OrangeHairedWomen.jpg',
+            'images/BuddhaEyes.jpg',
+            'images/Vagabond.jpg',
+            'images/rainbow_bird.jpg',
+            'images/TKGeyepatch.jpg',
+            'images/Chameleon.jpg',
+            'images/TheAlchemistofCohelo.jpg',
+            'images/JohanNlbProfile.jpg',
+            'images/CooL.jpeg',
+            'images/AwokenHat.jpg',
+            'images/fisherman.jpg',
+            'images/GoodChristian.jpeg',
+            'images/MarsaAlam.jpeg',
+            'images/Midnight_sun.jpg',
+            'images/ToraNoMaki.jpg',
+            'images/Chrollo.jpg',
+            'images/Smile.jpeg',
+            'images/JHNarchetype.jpg',
+            'images/boat.jpg',
+            'images/GreenLeafOnSereneBlueSky.jpeg',
+            'images/Mindfullness.jpg',
+            'images/HellsParadise.jpg',
+            'images/BuddhaShadow.jpg',
+            'images/BluRoyalArcher.jpg',
+            'images/kanenori-mount-fuji.jpg',
+            'images/BonsaiRisingSun.jpg',
+            'images/HeadOfBuddha.jpg',
+            'images/BluYellowOnePiece.jpg',
+            'images/KanJinAtaraxia.jpg',
+            'images/SakuraTree.jpg',
+            'images/OnTheBlu.jpg',
+            'images/Colourful.jpg',
+            'images/JohanSerenity.jpeg',
+            'images/Mechatronics-Graph-01.jpeg',
+            'images/JohnCohenInHSClass.jpg',
+            'images/JHNFcusObserver.jpg',
+            'images/CyberFlipper.jpg',
+            'images/BuddhismFlag.jpeg',
+            'images/KpopWallp.jpg',
+            'images/Full_cycle_of_a_Sunset.jpg',
+            'images/Comet.jpg',
+            'images/PrincessMononoke.jpg',
+            'images/SubmissiveOtakuGirl.jpg',
+            'images/sakuyamon_the_cherry_blossom.jpg',
+            'images/Glowing Chameleon.jpg',
+            'images/Calisthenics.jpeg',
+            'images/Beautyfullness.jpg',
+            'images/Peacefully.jpg',
+            'images/SmileyGrafitti.jpg',
+            'images/F1.jpg',
+            'images/OkamiMask.jpg',
+            'images/Sacred-Geometry-Flower-of-Life.jpg',
+            'images/floralMandala.jpg',
+            'images/d_wheel.jpg',
+            'images/SoulNature.jpg',
+            'images/JcohenDreamax.jpeg',
+            'images/NelsonMandelaQuote.jpeg',
+            'images/MahoragaWheel.jpeg'
+        ];
+
+
         const ghost = document.getElementById('ghost-indicator');
         const bgToggleBtn = document.getElementById('bg-toggle-btn');
 
@@ -2982,7 +3071,7 @@
         const commands = {
             // ----- SYNC (return string/HTML instantly) -----
             'help': () => {
-                return `AVAILABLE CMD: help, theme [cyan|magenta|amber|matrix], fortune, clear, sudo, fetch, neofetch, whoami, ls, echo, shutdown, history, pause, matrix, tao, wisdom, hackernews (hn), news, define [word], image, walls, weather [city], joke, fact, qr [text], anime, technology`;
+                return `AVAILABLE COMMANDS:<br> help, theme [cyan|magenta|amber|matrix], fortune, clear, sudo, fetch, neofetch, whoami, ls, echo, shutdown, history, pause, matrix, tao, wisdom, hackernews, news, define [word], image, walls, weather [city], joke, learn, qr [text], anime, technology, poem, poetry, bible, verse, physics, scroll, intersect, biology, space, cstip, koan, stoic, buddha, sutra, electronics`;
             },
             'clear': () => {
                 cmdOutput.innerHTML = '';
@@ -3078,7 +3167,7 @@
             'tao': () => {
                 if (typeof taoChapters !== 'undefined' && taoChapters.length > 0) {
                     const chapter = taoChapters[Math.floor(Math.random() * taoChapters.length)];
-                    return `Chapter ${chapter.chapter}:\n${chapter.text}`;
+                    return `<span style="color: #ffffff;">Chapter ${chapter.chapter}:</span><br><span style="color: #4a9eff;">${chapter.text.replace(/\n/g, '<br>')}</span>`;
                 }
                 return 'Tao Te Ching not loaded.';
             },
@@ -3091,7 +3180,7 @@
             },
             'history': () => {
                 if (commandHistory.length === 0) return 'No commands in history.';
-                return commandHistory.join('\n');
+                return commandHistory.map(cmd => `<span style="color: #ffffff;">${cmd}</span>`).join('<br>');
             },
             'pause': () => {
                 if (typeof isBgFrozen !== 'undefined') {
@@ -3127,7 +3216,7 @@
                     const data = await resp.json();
                     if (data.status === 'ok' && data.items) {
                         data.items.slice(0, 5).forEach((item, i) => {
-                            output += `[${i+1}] ${item.title}<br>`;
+                            output += `<span style="color: #ffffff;">[${i+1}] ${item.title}</span><br>`;
                         });
                         return output;
                     }
@@ -3143,11 +3232,16 @@
                     const res = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');
                     const ids = await res.json();
                     const top5 = ids.slice(0, 5);
-                    for (let i = 0; i < top5.length; i++) {
-                        const storyRes = await fetch(`https://hacker-news.firebaseio.com/v0/item/${top5[i]}.json`);
-                        const story = await storyRes.json();
+                    
+                    // Fetch all 5 stories simultaneously
+                    const storyPromises = top5.map(id => 
+                        fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(r => r.json())
+                    );
+                    const stories = await Promise.all(storyPromises);
+                    
+                    stories.forEach((story, i) => {
                         output += `[${i+1}] ${story.title} <span style="color: #888;">(${story.score} pts)</span><br>`;
-                    }
+                    });
                     return output;
                 } catch (e) {
                     return '⚠️ Could not reach Hacker News.';
@@ -3304,18 +3398,25 @@
                         headers: { 'Accept': 'application/json' }
                     });
                     const data = await resp.json();
-                    return `😂 ${data.joke}`;
+                    return `😂 ${data.joke} 😂`;
                 } catch (e) {
-                    return 'Why did the joke API fail? It had too many punchlines to handle.';
+                    return 'Why did the joke API fail? It had too many punchlines to handle.😂';
                 }
             },
-            'fact': async () => {
+            'learn': async () => {
+                const loadId = 'learn-load-' + Date.now();
+                appendCommandHTML(`<span id="${loadId}" style="color: #888;">🧠 Accessing global knowledge base...</span>`);
                 try {
-                    const resp = await fetch('https://uselessfacts.jsph.pl/api/v2/facts/random?language=en');
-                    const data = await resp.json();
-                    return `💡 ${data.text}`;
+                    const res = await fetch('https://uselessfacts.jsph.pl/api/v2/facts/random');
+                    const data = await res.json();
+                    const loadEl = document.getElementById(loadId);
+                    if (loadEl) loadEl.remove();
+                    
+                    return `💡 <strong>DID YOU KNOW:</strong> <span style="color: #ccc;">${data.text}</span>`;
                 } catch (e) {
-                    return 'Fact: This API sometimes fails. That is your fact.';
+                    const loadEl = document.getElementById(loadId);
+                    if (loadEl) loadEl.remove();
+                    return '<span style="color: #ff5555;">⚠️ Global knowledge base offline.</span>';
                 }
             },
             'qr': (args) => {
@@ -3336,20 +3437,31 @@
             },
             'anime': async () => {
                 try {
-                    const resp = await fetch('https://api.jikan.moe/v4/top/anime');
-                    const data = await resp.json();
+                    // Top Anime (10 items)
+                    const topResp = await fetch('https://api.jikan.moe/v4/top/anime');
+                    const topData = await topResp.json();
                     
                     let output = '<strong style="color: #2e51a2;">🎌 Top Anime (MyAnimeList)</strong><br>';
-                    data.data.slice(0, 10).forEach((item, i) => {
-                        output += `${i+1}. ${item.title} (⭐ ${item.score})<br>`;
+                    topData.data.slice(0, 10).forEach((item, i) => {
+                        output += `${i+1}. ${item.title} <span style="color: #ffaa00;">(⭐ ${item.score})</span><br>`;
                     });
+                    
+                    // Currently Airing (10 items)
+                    const airingResp = await fetch('https://api.jikan.moe/v4/seasons/now?sfw');
+                    const airingData = await airingResp.json();
+                    
+                    output += '<br><strong style="color: #ff5733;">📺 Currently Airing</strong><br>';
+                    airingData.data.slice(0, 10).forEach((item, i) => {
+                        output += `${i+1}. ${item.title} <span style="color: #888;">(${item.type})</span><br>`;
+                    });
+                    
                     return output;
                 } catch (e) {
                     return '⚠️ Jikan API unavailable. Try again later.';
                 }
             },
             'technology': async () => {
-                appendCommandHTML('<span style="color: #888;">🖥️ Fetching curated tech news...</span>');
+                appendCommandHTML('<span style="color: #888;">Fetching curated tech news...</span>');
 
                 // Define sources and their desired weight (number of articles to aim for)
                 const feeds = [
@@ -3389,19 +3501,523 @@
                     return '⚠️ Could not fetch technology news. Check your connection.';
                 }
             },
+            'poem': async () => {
+                try {
+                    const resp = await fetch('https://poetrydb.org/random');
+                    const data = await resp.json();
+                    const poem = data[0];
+                    // Format the poem text with line breaks
+                    const poemText = poem.lines.join('<br>');
+                    return `<span style="color: #9370db;">✍️ ${poem.title} by ${poem.author}</span><br><span style="color: #ffffff;">${poemText}</span>`;
+                } catch (e) {
+                    return '⚠️ The muses are silent. Could not fetch a poem.';
+                }
+            },
+            'bible': async () => {
+                try {
+                    const resp = await fetch('https://labs.bible.org/api/?passage=random&type=json');
+                    const data = await resp.json();
+                    return `<span style="color: #gold;">✝️ ${data[0].bookname} ${data[0].chapter}:${data[0].verse}</span><br><span style="color: #ffffff;">${data[0].text}</span>`;
+                } catch (e) {
+                    return '⚠️ Could not fetch a verse. The heavens are quiet.';
+                }
+            },
+            // 📜 POETRY: Fetches classic poetry from PoetryDB
+            'poetry': async () => {
+                const loadId = 'poetry-load-' + Date.now();
+                appendCommandHTML(`<span id="${loadId}" style="color: #888;">📜 Searching the archives of humanity...</span>`);
+                try {
+                    const res = await fetch('https://poetrydb.org/random/1');
+                    const data = await res.json();
+                    const poem = data[0];
+                    
+                    const loadEl = document.getElementById(loadId);
+                    if (loadEl) loadEl.remove();
+                    
+                    // Slice the first 6 lines so we don't flood the terminal with a 100-line epic
+                    const lines = poem.lines.slice(0, 6).join('<br>');
+                    const hasMore = poem.lines.length > 6 ? '<br><span style="color:#555;">[...]</span>' : '';
+                    
+                    return `<strong style="color: #ffaa00;">${poem.title.toUpperCase()}</strong><br><span style="color: #888;">by ${poem.author}</span><br><br><span style="color: #ccc;">${lines}${hasMore}</span>`;
+                } catch (e) {
+                    const loadEl = document.getElementById(loadId);
+                    if (loadEl) loadEl.remove();
+                    return '<span style="color: #ff5555;">⚠️ Archives unreachable.</span>';
+                }
+            },
+            // 📖 BIBLE: Fetches a random verse via Bible.org API
+            'verse': async () => {
+                const loadId = 'bible-load-' + Date.now();
+                appendCommandHTML(`<span id="${loadId}" style="color: #888;">📖 Opening the sacred texts...</span>`);
+                try {
+                    const res = await fetch('https://labs.bible.org/api/?passage=random&type=json');
+                    const data = await res.json();
+                    
+                    const loadEl = document.getElementById(loadId);
+                    if (loadEl) loadEl.remove();
+                    
+                    return `🕊️ <strong style="color: #fff;">${data[0].bookname} ${data[0].chapter}:${data[0].verse}</strong><br><span style="color: #ffaa00;">"${data[0].text}"</span>`;
+                } catch (e) {
+                    const loadEl = document.getElementById(loadId);
+                    if (loadEl) loadEl.remove();
+                    return '<span style="color: #ff5555;">⚠️ Texts unavailable.</span>';
+                }
+            },
+            // 🪷 SUTRA: Authentic translations from the Pali Canon (Dhammapada/Suttas)
+            'sutra': () => {
+                const sutras = [
+                    "Mind precedes all mental states. Mind is their chief; they are all mind-wrought.\n— Dhammapada 1",
+                    "Just as a solid rock is not shaken by the storm, even so the wise are not affected by praise or blame.\n— Dhammapada 81",
+                    "Radiate boundless love towards the entire world.\n— Metta Sutta (Sn 1.8)",
+                    "Drop by drop is the water pot filled. Likewise, the wise man, gathering it little by little, fills himself with good.\n— Dhammapada 122",
+                    "There is no fear for one whose mind is not filled with desires.\n— Dhammapada 39",
+                    "Let none find fault with others; let none see the omissions and commissions of others. But let one see one's own acts, done and undone.\n— Dhammapada 50",
+                    "Hatred does not cease by hatred, but only by love; this is the eternal rule.\n— Dhammapada 5",
+                    "Better than a thousand useless words is one useful word, hearing which one attains peace.\n— Dhammapada 100",
+                    "As a beautiful flower that is colorful but has no fragrance, even so, fruitless is the well-spoken word of one who does not practice it.\n— Dhammapada 51",
+                    "The fool who knows he is a fool is wise to that extent; the fool who thinks himself wise is a fool indeed.\n— Dhammapada 63",
+                    "Just as a bee gathers nectar and moves on without harming the flower, so should the sage live in the village.\n— Dhammapada 49",
+                    "Your own self is your own mainstay, for who else could your mainstay be? With yourself well tamed, you gain a mainstay hard to gain.\n— Dhammapada 160",
+                    "Conquer anger with non-anger. Conquer badness with goodness. Conquer meanness with generosity. Conquer dishonesty with truth.\n— Dhammapada 223",
+                    "All tremble at violence; life is dear to all. Putting oneself in the place of another, one should not kill or cause another to kill.\n— Dhammapada 130",
+                    "The one who is wise and mindful, having abandoned attachment and aversion, calms this body and mind.\n— Itivuttaka 115",
+                    "This is the way to purification: by oneself is evil done, by oneself is evil undone. Purity and impurity depend on oneself; no one can purify another.\n— Dhammapada 165",
+                    "What we are today comes from our thoughts of yesterday, and our present thoughts build our life of tomorrow: our life is the creation of our mind.\n— Dhammapada 1 (paraphrased)",
+                    "In this world, hate never yet dispelled hate. Only love dispels hate. This is the law, ancient and inexhaustible.\n— Dhammapada 5",
+                    "Like a fine flower, beautiful to look at but without scent, fine words are fruitless in a man who does not act in accordance with them.\n— Dhammapada 51",
+                    "Think not lightly of evil, saying, 'It will not come to me.' Drop by drop is the water pot filled. Likewise, the fool, gathering it little by little, fills himself with evil.\n— Dhammapada 121",
+                    "One should not pry into the faults of others, into things done and left undone by others. One should consider only what one has done and left undone.\n— Dhammapada 50",
+                    "Better it is to live one day seeing the rise and fall of things than to live a hundred years without ever seeing it.\n— Dhammapada 113",
+                    "Just as a mountain of solid rock is not shaken by the storm, so the wise are not moved by praise or blame.\n— Dhammapada 81",
+                    "The craving of the thoughtless grows like a creeper. They jump from life to life like a monkey seeking fruit in the forest.\n— Dhammapada 334",
+                    "Those who cling to perceptions and views wander the world offending people.\n— Sutta Nipata 4.9",
+                    "A man is not learned simply because he talks much. He who is patient, free from hate and fear, is called learned.\n— Dhammapada 258",
+                    "There is no fire like passion, no shark like hatred, no snare like folly, no torrent like craving.\n— Dhammapada 251",
+                    "The wise one makes straight the crooked mind, just as a fletcher makes straight his arrows.\n— Dhammapada 33",
+                    "The mind is hard to check, swift, flits wherever it listeth: to tame it is good; a tamed mind brings happiness.\n— Dhammapada 35",
+                    "Do not give your attention to what others do or fail to do; give it to what you do or fail to do.\n— Dhammapada 50 (alternate translation)",
+                    "Happiness follows sorrow, sorrow follows happiness; but when one no longer discriminates happiness and sorrow, a good deed and a bad deed, one is able to realize freedom.\n— Based on the Sutra of Hui Neng",
+                    "If you do not find a wise companion to walk with, walk alone, like an elephant in the forest. Better to walk alone than with a fool.\n— Dhammapada 329",
+                    "He who, having been heedless, becomes heedful, lights up the world like the moon freed from clouds.\n— Dhammapada 172",
+                    "Easy to do are things that are bad and harmful to oneself. But exceedingly difficult to do are things that are good and beneficial.\n— Dhammapada 163",
+                    "Like a lake clear and peaceful, so is the wise one who hears the Dharma. Such a person is truly tranquil.\n— Dhammapada 82",
+                    "Health is the greatest gift, contentment the greatest wealth, faithfulness the best relationship.\n— Dhammapada 204",
+                    "The wise ones, ever meditative and steadfastly persevering, alone experience Nibbana, the incomparable freedom from bondage.\n— Dhammapada 23",
+                    "Even as a solid rock is unshaken by the wind, so are the wise unshaken by praise or blame.\n— Dhammapada 81",
+                    "There is no path in the sky; one must find the inner path. All things indeed are passing.\n— Dhammapada 254",
+                    "All conditioned things are impermanent — when one sees this with wisdom, one turns away from suffering.\n— Dhammapada 277",
+                    "All conditioned things are suffering — when one sees this with wisdom, one turns away from suffering.\n— Dhammapada 278",
+                    "All phenomena are without self — when one sees this with wisdom, one turns away from suffering.\n— Dhammapada 279",
+                    "When you see a person who knows what is good and what is not, follow that person like the moon follows the path of the stars.\n— Dhammapada 208",
+                    "Let go of the past, let go of the future, let go of the present, and cross over to the farther shore of existence. With mind wholly liberated, you shall come no more to birth and death.\n— Dhammapada 348",
+                    "Just as a farmer irrigates his field, as a fletcher shapes an arrow, as a carpenter carves wood, the wise tame themselves.\n— Dhammapada 80",
+                    "Speak only the speech that neither torments oneself nor does harm to others. That speech is truly well spoken.\n— Sutta Nipata 3.3",
+                    "One who is calm, restrained, and speaks truthfully, who has abandoned all harshness — such a one is truly a sage.\n— Sutta Nipata 1.4",
+                    "As a mother would risk her life to protect her only child, even so should one cultivate a limitless heart towards all beings.\n— Metta Sutta (Sn 1.8)",
+                    "Happiness is having few desires; unhappiness is having many desires.\n— Dhammapada 83 (paraphrased)",
+                    "Be an island unto yourself; be your own refuge. Take no other refuge. Let the Dhamma be your island and your refuge.\n— Mahaparinibbana Sutta (DN 16)",
+                    "The one who conquers himself is a far greater hero than he who conquers a thousand times a thousand men on the battlefield.\n— Dhammapada 103",
+                    "Ceasing to do evil, cultivating the good, purifying the heart: this is the teaching of the Buddhas.\n— Dhammapada 183",
+                    "When one feels no attachment for anything, having nothing to hold on to, then one crosses the flood.\n— Sutta Nipata 1.1",
+                    "Seeing the body as a fragile clay pot, and fortifying the mind like a well‑guarded city, fight Māra with the sword of wisdom.\n— Dhammapada 40",
+                    "Know that the body is like foam, a mirage. Break the flower‑tipped arrows of Mara and go where the King of Death cannot see you.\n— Dhammapada 46",
+                    "Better than absolute sovereignty over the earth, better than going to heaven, better than lordship over all the worlds, is the fruit of stream‑entry.\n— Dhammapada 178",
+                    "Do not rely on what you think you see; do not rely on tradition, or on scripture, or on logic, or on inference, or on analogy, or on agreement through pondering views. When you know for yourselves: 'These things are unskillful, blameworthy, criticized by the wise, and lead to harm and suffering,' then abandon them.\n— Kalama Sutta (AN 3.65)",
+                    "And when you know for yourselves: 'These things are skillful, blameless, praised by the wise, and lead to welfare and happiness,' then enter and abide in them.\n— Kalama Sutta (AN 3.65)",
+                    "This is the only way, O monks, for the purification of beings, for the overcoming of sorrow and lamentation, for the destruction of pain and grief, for reaching the right path, for the attainment of Nibbana, namely, the four foundations of mindfulness.\n— Satipatthana Sutta (MN 10)",
+                    "A monk develops mindfulness of breathing in and out, contemplating the body in the body, feelings in feelings, mind in mind, and mental objects in mental objects, ardent, clearly comprehending, and mindful, having put away covetousness and grief for the world.\n— Satipatthana Sutta (MN 10)"
+                ];
+                const quote = sutras[Math.floor(Math.random() * sutras.length)];
+                return `🪷 <span style="color: #ffaa00; line-height: 1.4;">${quote.replace('\n', '<br><span style="color:#888;">')}</span></span>`;
+            },
+            'koan': () => {
+                const koans = [
+                    "A monk asked Zhaozhou, 'Does a dog have Buddha-nature?' Zhaozhou replied, 'Mu.' (無)",
+                    "Two monks were arguing about a flag. One said, 'The flag is moving.' The other said, 'The wind is moving.' The Sixth Patriarch said, 'Not the wind, not the flag—mind is moving.'",
+                    "A monk asked, 'What is the essence of Buddhism?' The master said, 'Have you eaten your rice?' The monk replied, 'Yes.' The master said, 'Then wash your bowl.'",
+                    "Nan-in, a Japanese master, received a university professor who came to inquire about Zen. Nan-in served tea. He poured his visitor's cup full, and then kept on pouring. The professor watched until he could no longer restrain himself: 'It is overfull. No more will go in!' 'Like this cup,' Nan-in said, 'you are full of your own opinions. How can I show you Zen unless you first empty your cup?'",
+                    "The moon is reflected in the water. A man tries to grab it, and drowns.",
+                    "Before enlightenment, chop wood, carry water. After enlightenment, chop wood, carry water.",
+                    "A monk asked Dongshan, 'What is Buddha?' Dongshan replied, 'Three pounds of flax.'",
+                    "If you meet the Buddha on the road, kill him.",
+                    "The way is not difficult for those who have no preferences.",
+                    "What is the sound of one hand clapping?",
+                    "When you can't go any further, go further.",
+                    "The obstacle is the path.",
+                    "Muddy water, let stand, becomes clear.",
+                    "A student asked, 'What is the secret of your teaching?' The master said, 'Attention.' The student replied, 'Is that all?' The master said, 'Attention. Attention. Attention.'",
+                    "Sitting quietly, doing nothing, spring comes, and the grass grows by itself.",
+                    "The world is its own magic.",
+                    "Every day is a good day.",
+                    "Heaven and earth and I are of the same root. Ten thousand things and I are of one substance.",
+                    "To know that you have enough is to be rich.",
+                    "No snowflake ever falls in the wrong place."
+                ];
+                const koan = koans[Math.floor(Math.random() * koans.length)];
+                return `🪷 <span style="color: #ffaa00;">Zen Koan</span><br><span style="color: #ffffff;">${koan}</span>`;
+            },
+            // ⚛️ PHYSICS / MATH: Legendary formulas formatting in pure text
+            'physics': () => {
+                const formulas = [
+                { name: "Schrödinger Equation", eq: "iℏ ∂Ψ/∂t = ĤΨ", desc: "Describes how the quantum state of a physical system changes over time." },
+                { name: "Euler's Identity", eq: "e^(iπ) + 1 = 0", desc: "Often called the most beautiful equation in mathematics." },
+                { name: "Mass-Energy Equivalence", eq: "E = mc²", desc: "Energy equals mass times the speed of light squared. (Einstein)" },
+                { name: "Heisenberg's Uncertainty Principle", eq: "Δx Δp ≥ ℏ/2", desc: "You cannot simultaneously know the exact position and momentum of a particle." },
+                { name: "Newton's Law of Universal Gravitation", eq: "F = G(m₁m₂)/r²", desc: "Calculates the gravitational attraction between two masses." },
+                { name: "Maxwell's Equations (Gauss's Law)", eq: "∇·E = ρ/ε₀", desc: "Electric charges produce electric fields." },
+                { name: "Maxwell's Equations (Faraday's Law)", eq: "∇×E = -∂B/∂t", desc: "Changing magnetic fields create electric fields." },
+                { name: "Maxwell's Equations (Ampère's Law)", eq: "∇×B = μ₀J + μ₀ε₀ ∂E/∂t", desc: "Electric currents and changing electric fields produce magnetic fields." },
+                { name: "Second Law of Thermodynamics", eq: "ΔS ≥ 0", desc: "Entropy of an isolated system never decreases." },
+                { name: "Ideal Gas Law", eq: "PV = nRT", desc: "Relates pressure, volume, temperature, and moles of a gas." },
+                { name: "Coulomb's Law", eq: "F = k q₁q₂ / r²", desc: "Force between two point charges." },
+                { name: "Ohm's Law", eq: "V = IR", desc: "Voltage equals current times resistance." },
+                { name: "Pythagorean Theorem", eq: "a² + b² = c²", desc: "In a right triangle, the square of the hypotenuse equals the sum of the squares of the other two sides." },
+                { name: "Quadratic Formula", eq: "x = [-b ± √(b² - 4ac)] / 2a", desc: "Solves ax² + bx + c = 0." },
+                { name: "Einstein's Field Equations", eq: "G_μν + Λ g_μν = (8πG/c⁴) T_μν", desc: "General relativity: matter tells spacetime how to curve; spacetime tells matter how to move." },
+                { name: "Planck's Law", eq: "E = hν", desc: "Energy of a photon is proportional to its frequency." },
+                { name: "De Broglie Wavelength", eq: "λ = h/p", desc: "Particles exhibit wave‑like behavior." },
+                { name: "Hubble's Law", eq: "v = H₀ d", desc: "Galaxies recede at a speed proportional to their distance." },
+                { name: "Stefan‑Boltzmann Law", eq: "P = σ A T⁴", desc: "Total energy radiated by a black body per unit surface area." },
+                { name: "Wien's Displacement Law", eq: "λ_max = b / T", desc: "Peak wavelength of black‑body radiation is inversely proportional to temperature." },
+                { name: "Snell's Law", eq: "n₁ sin θ₁ = n₂ sin θ₂", desc: "Refraction of light at an interface." },
+                { name: "Lorentz Force", eq: "F = q(E + v×B)", desc: "Force on a charged particle in electromagnetic fields." },
+                { name: "Bernoulli's Principle", eq: "P + ½ρv² + ρgh = constant", desc: "Pressure decreases as fluid speed increases." },
+                { name: "Navier‑Stokes Equation", eq: "ρ(∂v/∂t + v·∇v) = -∇P + μ∇²v + f", desc: "Fluid motion (unsolved for general 3D)." },
+                { name: "Kepler's Third Law", eq: "T² ∝ a³", desc: "The square of orbital period is proportional to the cube of semi‑major axis." },
+                { name: "Escape Velocity", eq: "v_e = √(2GM/r)", desc: "Minimum speed to escape a planet's gravity." },
+                { name: "Schwarzschild Radius", eq: "R_s = 2GM/c²", desc: "Radius of a black hole's event horizon." },
+                { name: "Doppler Effect (Sound)", eq: "f' = f (v ± v_o) / (v ∓ v_s)", desc: "Change in frequency due to relative motion." },
+                { name: "Relativistic Time Dilation", eq: "Δt' = Δt / √(1 - v²/c²)", desc: "Moving clocks run slow." },
+                { name: "Relativistic Length Contraction", eq: "L' = L √(1 - v²/c²)", desc: "Moving objects appear shorter." },
+                { name: "Relativistic Mass", eq: "m = m₀ / √(1 - v²/c²)", desc: "Mass increases with velocity." },
+                { name: "Compton Scattering", eq: "Δλ = (h/mₑc)(1 - cos θ)", desc: "Wavelength shift of scattered photons." },
+                { name: "Bohr Model Energy Levels", eq: "E_n = -13.6 eV / n²", desc: "Hydrogen atom energy levels." },
+                { name: "Rydberg Formula", eq: "1/λ = R_H (1/n₁² - 1/n₂²)", desc: "Wavelengths of hydrogen spectral lines." },
+                { name: "Stefan's Law (Power)", eq: "P = εσAT⁴", desc: "Power radiated by a grey body." },
+                { name: "Drag Equation", eq: "F_d = ½ ρ v² C_d A", desc: "Drag force on an object moving through fluid." },
+                { name: "Reynolds Number", eq: "Re = ρ v L / μ", desc: "Predicts laminar vs turbulent flow." },
+                { name: "Fourier's Law of Heat Conduction", eq: "q = -k ∇T", desc: "Heat flux proportional to negative temperature gradient." },
+                { name: "Fick's First Law of Diffusion", eq: "J = -D ∇φ", desc: "Flux proportional to concentration gradient." },
+                { name: "Einstein Relation", eq: "D = μ k_B T", desc: "Diffusion coefficient related to mobility and temperature." },
+                { name: "Nernst Equation", eq: "E = E° - (RT/nF) ln Q", desc: "Cell potential under non‑standard conditions." },
+                { name: "Henderson‑Hasselbalch Equation", eq: "pH = pKa + log([A⁻]/[HA])", desc: "Buffer pH calculation." },
+                { name: "Michaelis‑Menten Equation", eq: "v = (V_max [S]) / (K_m + [S])", desc: "Enzyme kinetics." },
+                { name: "Golden Ratio", eq: "φ = (1 + √5) / 2 ≈ 1.618", desc: "Proportions found in nature and art." },
+                { name: "Euler's Formula", eq: "e^(ix) = cos x + i sin x", desc: "Connects complex exponentials to trigonometric functions." },
+                { name: "Stirling's Approximation", eq: "ln(n!) ≈ n ln n - n", desc: "Approximates factorials for large n." },
+                { name: "Bayes' Theorem", eq: "P(A|B) = P(B|A) P(A) / P(B)", desc: "Probability of an event based on prior knowledge." },
+                { name: "Central Limit Theorem", eq: "X̄ ~ N(μ, σ²/n)", desc: "Sample means approach normal distribution." },
+                { name: "Poisson Distribution", eq: "P(k) = (λ^k e^{-λ}) / k!", desc: "Probability of a given number of events in a fixed interval." },
+                { name: "Clausius‑Clapeyron Relation", eq: "dP/dT = L / (T ΔV)", desc: "Phase boundary slope on P‑T diagram." }
+            ];
+                const f = formulas[Math.floor(Math.random() * formulas.length)];
+                
+                return `
+                    <div style="border-left: 2px solid #00f0ff; padding-left: 10px; margin: 5px 0;">
+                        ⚛️ <strong style="color: #00f0ff;">${f.name.toUpperCase()}</strong><br>
+                        <span style="color: #fff; font-size: 1.1rem; font-family: 'Courier New', monospace;">${f.eq}</span><br>
+                        <span style="color: #888;">${f.desc}</span>
+                    </div>
+                `;
+            },
+            'biology': () => {
+                const facts = [
+                    "The human body contains enough carbon to fill about 9,000 pencils.",
+                    "Your brain generates about 12-25 watts of electricity—enough to power a low-wattage LED light.",
+                    "There are more bacterial cells in your body than human cells.",
+                    "The DNA in a single human cell, if stretched out, would be about 2 meters long.",
+                    "Your heart beats about 100,000 times per day, pumping about 2,000 gallons of blood.",
+                    "The acid in your stomach is strong enough to dissolve razor blades.",
+                    "Humans share about 60% of their DNA with bananas.",
+                    "A single teaspoon of soil contains more microorganisms than there are people on Earth.",
+                    "Octopuses have three hearts and blue blood.",
+                    "Tardigrades (water bears) can survive in the vacuum of space.",
+                    "The largest living organism on Earth is a honey fungus in Oregon spanning 2.4 miles.",
+                    "Some jellyfish are biologically immortal—they can revert to their juvenile form.",
+                    "A human sneeze can travel up to 100 miles per hour.",
+                    "Your nose can remember 50,000 different scents.",
+                    "Humans are the only animals that blush.",
+                    "Elephants are the only mammals that can't jump.",
+                    "A cockroach can live for weeks without its head.",
+                    "The tongue of a blue whale weighs as much as an elephant.",
+                    "Bees can recognize human faces.",
+                    "Cows have best friends and get stressed when separated.",
+                    "Sloths can hold their breath longer than dolphins—up to 40 minutes.",
+                    "A group of flamingos is called a 'flamboyance.'",
+                    "The fingerprints of koalas are virtually indistinguishable from human fingerprints."
+                ];
+                const fact = facts[Math.floor(Math.random() * facts.length)];
+                return `<span style="color: #4aff9e;">🧬 Biology Fact</span><br><span style="color: #ffffff;">${fact}</span>`;
+            },
+            'space': async () => {
+                try {
+                    const resp = await fetch('https://bootprint.space/api/fact');
+                    const data = await resp.json();
+                    return `🌌 <span style="color: #9370db;">Space Fact</span><br><span style="color: #ffffff;">${data.text}</span>`;
+                } catch (e) {
+                    const fallbacks = [
+                        "Neutron stars are so dense that a sugar-cube-sized amount would weigh about a billion tons.",
+                        "There are more stars in the universe than grains of sand on all Earth's beaches.",
+                        "A day on Venus is longer than its year.",
+                        "The footprints left by Apollo astronauts will remain on the Moon for millions of years.",
+                        "There's a planet made entirely of diamond twice the size of Earth."
+                    ];
+                    const fact = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+                    return `🌌 <span style="color: #9370db;">Space Fact</span><br><span style="color: #ffffff;">${fact}</span>`;
+                }
+            },
+            'cstip': () => {
+                const tips = [
+                    "The first computer programmer was Ada Lovelace, who wrote an algorithm for Charles Babbage's Analytical Engine in the 1840s.",
+                    "The term 'bug' originated when a moth got stuck in a relay of the Harvard Mark II computer in 1947.",
+                    "Grace Hopper, who popularized 'debugging,' also invented the first compiler.",
+                    "The '@' symbol was chosen for email addresses by Ray Tomlinson because it wasn't used in names.",
+                    "The first 1GB hard drive, released in 1980, weighed over 500 pounds and cost $40,000.",
+                    "The QWERTY keyboard was designed to slow typists down to prevent mechanical jams.",
+                    "Python was named after Monty Python, not the snake.",
+                    "The first computer mouse was made of wood.",
+                    "There are over 700 programming languages.",
+                    "The term 'spam' for unwanted messages comes from a Monty Python sketch.",
+                    "JavaScript was created in just 10 days.",
+                    "The Apollo 11 guidance computer had only 4KB of RAM.",
+                    "CAPTCHA stands for 'Completely Automated Public Turing test to tell Computers and Humans Apart.'",
+                    "The first computer virus was called 'Creeper' and was created as an experiment in 1971.",
+                    "Over 90% of the world's currency exists only in computers.",
+                    "The original name for Java was 'Oak.'",
+                    "Every day, 2.5 quintillion bytes of data are created.",
+                    "The average smartphone today has more computing power than NASA had in 1969."
+                ];
+                const tip = tips[Math.floor(Math.random() * tips.length)];
+                return `💻 <span style="color: #00f0ff;">CS Tip / Fact</span><br><span style="color: #ffffff;">${tip}</span>`;
+            },
+            'stoic': async () => {
+                try {
+                    const resp = await fetch('https://stoic-quotes.com/api/quote');
+                    const data = await resp.json();
+                    return `🏛️ <span style="color: #ffaa00;">Stoic Wisdom</span><br><span style="color: #ffffff;">“${data.text}”</span><br><span style="color: #888;">— ${data.author}</span>`;
+                } catch (e) {
+                    const fallbacks = [
+                        { text: "You have power over your mind—not outside events. Realize this, and you will find strength.", author: "Marcus Aurelius" },
+                        { text: "We suffer more often in imagination than in reality.", author: "Seneca" },
+                        { text: "It's not what happens to you, but how you react to it that matters.", author: "Epictetus" },
+                        { text: "The happiness of your life depends upon the quality of your thoughts.", author: "Marcus Aurelius" },
+                        { text: "Luck is what happens when preparation meets opportunity.", author: "Seneca" }
+                    ];
+                    const quote = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+                    return `🏛️ <span style="color: #ffaa00;">Stoic Wisdom</span><br><span style="color: #ffffff;">“${quote.text}”</span><br><span style="color: #888;">— ${quote.author}</span>`;
+                }
+            },
+            'buddha': async () => {
+                const loadId = 'buddha-load-' + Date.now();
+                appendCommandHTML(`<span id="${loadId}" style="color: #888;">🧘 Receiving timeless wisdom...</span>`);
+                try {
+                    const resp = await fetch('https://buddha-api.com/api/random');
+                    const data = await resp.json();
+                    
+                    const loadEl = document.getElementById(loadId);
+                    if (loadEl) loadEl.remove();
+                    
+                    return `
+                        <div style="border-left: 2px solid #ffaa00; padding-left: 10px; margin: 5px 0;">
+                            🧘 <span style="color: #ffaa00;">Buddhist Wisdom</span><br>
+                            <span style="color: #ffffff;">“${data.text}”</span><br>
+                            <span style="color: #888;">— ${data.byName}</span>
+                        </div>
+                    `;
+                } catch (e) {
+                    const loadEl = document.getElementById(loadId);
+                    if (loadEl) loadEl.remove();
+                    
+                    // Fallback collection
+                    const fallbacks = [
+                        { text: "Whatever precious jewel there is in the heavenly worlds, there is nothing comparable to one who is Awakened.", byName: "Buddha" },
+                        { text: "But do not ask me where I am going, As I travel in this limitless world, Where every step I take is my home.", byName: "Dogen" },
+                        { text: "Life is available only in the present moment.", byName: "Thich Nhat Hanh" },
+                        { text: "One moment can change a day, one day can change a life, and one life can change the world.", byName: "Buddha" },
+                        { text: "Listening to and understanding our inner sufferings will resolve most of the problems we encounter.", byName: "Thich Nhat Hanh" }
+                    ];
+                    const quote = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+                    return `🧘 <span style="color: #ffaa00;">Buddhist Wisdom</span><br><span style="color: #ffffff;">“${quote.text}”</span><br><span style="color: #888;">— ${quote.byName}</span>`;
+                }
+            },
+            'electronics': () => {
+                const items = [
+                    // Formulas & Laws (20)
+                    { type: 'formula', name: "Ohm's Law", eq: "V = I × R", desc: "Voltage equals Current multiplied by Resistance." },
+                    { type: 'formula', name: "Electrical Power", eq: "P = V × I", desc: "Power (Watts) equals Voltage times Current." },
+                    { type: 'formula', name: "Kirchhoff's Current Law (KCL)", eq: "Σ I_in = Σ I_out", desc: "The total current entering a junction equals the total current leaving it." },
+                    { type: 'formula', name: "Kirchhoff's Voltage Law (KVL)", eq: "Σ V = 0", desc: "The sum of all voltages around any closed loop in a circuit must equal zero." },
+                    { type: 'formula', name: "Capacitors in Parallel", eq: "C_total = C₁ + C₂ + ... + Cₙ", desc: "Capacitances add up directly when connected in parallel." },
+                    { type: 'formula', name: "Capacitors in Series", eq: "1/C_total = 1/C₁ + 1/C₂ + ...", desc: "The reciprocal of total capacitance is the sum of reciprocals." },
+                    { type: 'formula', name: "Resistors in Series", eq: "R_total = R₁ + R₂ + ... + Rₙ", desc: "Resistances add up directly when connected in series." },
+                    { type: 'formula', name: "Resistors in Parallel", eq: "1/R_total = 1/R₁ + 1/R₂ + ...", desc: "The reciprocal of total resistance is the sum of reciprocals." },
+                    { type: 'formula', name: "RC Time Constant", eq: "τ = R × C", desc: "The time required to charge a capacitor to ~63.2% of its full voltage." },
+                    { type: 'formula', name: "Voltage Divider Rule", eq: "V_out = V_in × (R₂ / (R₁ + R₂))", desc: "Calculates the output voltage across R₂ in a series circuit." },
+                    { type: 'formula', name: "Current Divider Rule", eq: "I₁ = I_total × (R₂ / (R₁ + R₂))", desc: "For parallel resistors, current splits inversely proportional to resistance." },
+                    { type: 'formula', name: "Wheatstone Bridge Balance", eq: "R₁/R₂ = R₃/R₄", desc: "Condition for zero current through the galvanometer." },
+                    { type: 'formula', name: "Inductive Reactance", eq: "X_L = 2πfL", desc: "Opposition to AC current by an inductor." },
+                    { type: 'formula', name: "Capacitive Reactance", eq: "X_C = 1/(2πfC)", desc: "Opposition to AC current by a capacitor." },
+                    { type: 'formula', name: "Impedance (Series RLC)", eq: "Z = √(R² + (X_L - X_C)²)", desc: "Total opposition to AC in an RLC circuit." },
+                    { type: 'formula', name: "Resonant Frequency", eq: "f = 1/(2π√(LC))", desc: "Frequency at which inductive and capacitive reactances cancel." },
+                    { type: 'formula', name: "Transformer Turns Ratio", eq: "V_s/V_p = N_s/N_p", desc: "Secondary voltage relates to primary by the turns ratio." },
+                    { type: 'formula', name: "Decibel (Power Ratio)", eq: "dB = 10 log₁₀(P₁/P₂)", desc: "Logarithmic unit expressing power ratio." },
+                    { type: 'formula', name: "Decibel (Voltage Ratio)", eq: "dB = 20 log₁₀(V₁/V₂)", desc: "Logarithmic unit expressing voltage ratio." },
+                    { type: 'formula', name: "Coulomb's Law", eq: "F = k q₁q₂ / r²", desc: "Force between two point charges." },
+
+                    // Facts (40) – exactly as provided
+                    { type: 'fact', desc: "The first transistor, invented in 1947 at Bell Labs, was about the size of a human fist. Today, billions fit on a single chip." },
+                    { type: 'fact', desc: "The '555' timer IC, designed in 1971, is still in production and sells over a billion units annually." },
+                    { type: 'fact', desc: "LEDs (Light Emitting Diodes) were first developed in 1962 and initially only emitted red light. Blue LEDs, which enabled white LED lighting, weren't invented until the 1990s." },
+                    { type: 'fact', desc: "The Apollo Guidance Computer had only 4KB of RAM and 72KB of ROM. It used rope memory, literally woven by hand." },
+                    { type: 'fact', desc: "Capacitors can store energy and release it almost instantly—camera flashes and defibrillators rely on this principle." },
+                    { type: 'fact', desc: "The first computer 'bug' was an actual moth found trapped in a relay of the Harvard Mark II computer in 1947. The term 'debugging' was already in use, but this incident made it legendary." },
+                    { type: 'fact', desc: "Resistors are color‑coded with bands. The mnemonic 'Bad Boys Race Our Young Girls But Violet Generally Wins' helps remember: Black, Brown, Red, Orange, Yellow, Green, Blue, Violet, Grey, White." },
+                    { type: 'fact', desc: "The first hard drive, the IBM 350, weighed over a ton and stored just 3.75 MB." },
+                    { type: 'fact', desc: "A modern smartphone has more computing power than the entire NASA control center during the Apollo 11 moon landing." },
+                    { type: 'fact', desc: "The integrated circuit was invented by Jack Kilby and Robert Noyce independently in 1958-1959. Kilby won the Nobel Prize." },
+                    { type: 'fact', desc: "The QWERTY keyboard layout was designed in the 1870s to slow typists down and prevent mechanical typewriter jams." },
+                    { type: 'fact', desc: "The '@' symbol, used in email addresses, was chosen by Ray Tomlinson in 1971 because it was rarely used and meant 'at.'" },
+                    { type: 'fact', desc: "Moore's Law, observed by Gordon Moore in 1965, predicted that the number of transistors on a microchip doubles about every two years. It held true for over 50 years." },
+                    { type: 'fact', desc: "The first computer mouse, invented by Douglas Engelbart in 1964, was made of wood and had only one button." },
+                    { type: 'fact', desc: "Soldering involves melting a filler metal (solder) to join electronic components. Lead‑free solder is now standard for environmental and health reasons." },
+                    { type: 'fact', desc: "The 'blue screen of death' (BSOD) in Windows was originally written by Steve Ballmer for Windows 3.1." },
+                    { type: 'fact', desc: "E‑ink displays, like those in Kindle readers, use tiny microcapsules filled with charged particles. They consume power only when the image changes." },
+                    { type: 'fact', desc: "The first mobile phone call was made by Martin Cooper of Motorola in 1973. The phone weighed 2.5 pounds and had 20 minutes of battery life." },
+                    { type: 'fact', desc: "Wi‑Fi uses radio waves in the 2.4 GHz and 5 GHz bands—the same frequencies used by microwave ovens, which can cause interference." },
+                    { type: 'fact', desc: "The first 1GB hard drive, introduced by IBM in 1980, weighed over 500 pounds and cost $40,000." },
+                    { type: 'fact', desc: "A typical USB port provides 5 volts of power. USB‑C can deliver up to 240 watts, enough to charge a laptop." },
+                    { type: 'fact', desc: "The first RAM (random‑access memory) was magnetic core memory—tiny doughnut‑shaped magnets strung on wires." },
+                    { type: 'fact', desc: "Bluetooth is named after Harald 'Bluetooth' Gormsson, a 10th‑century king who united Denmark and Norway. The technology was designed to unite devices." },
+                    { type: 'fact', desc: "The first digital camera was built in 1975 by Steven Sasson at Kodak. It weighed 8 pounds and took 23 seconds to capture a 0.01‑megapixel image." },
+                    { type: 'fact', desc: "The 'ping' command, used to test network connectivity, was named after the sound of sonar pulses." },
+                    { type: 'fact', desc: "The ENIAC, one of the first general‑purpose computers (1945), weighed 30 tons and consumed 150 kW of power. Modern chips use a fraction of a watt." },
+                    { type: 'fact', desc: "The first computer virus, called 'Creeper,' was created in 1971 as an experiment. It displayed the message: 'I'm the creeper: catch me if you can.'" },
+                    { type: 'fact', desc: "The first commercial microprocessor, the Intel 4004 (1971), had 2,300 transistors and a clock speed of 740 kHz. Modern CPUs have billions of transistors and run at several GHz." },
+                    { type: 'fact', desc: "The term 'firewall' originally referred to a physical wall designed to prevent the spread of fire in buildings." },
+                    { type: 'fact', desc: "The first website ever created (info.cern.ch) is still online and was built by Tim Berners‑Lee in 1991." },
+                    { type: 'fact', desc: "The '404 Not Found' HTTP error code is named after room 404 at CERN, where the original web servers were located—though this may be apocryphal." },
+                    { type: 'fact', desc: "Capacitive touchscreens work by detecting changes in an electrostatic field when your finger (which is conductive) touches the screen." },
+                    { type: 'fact', desc: "The first television remote control, called 'Lazy Bones' (1950), was connected to the TV by a long wire." },
+                    { type: 'fact', desc: "The 'Save' icon—a floppy disk—has outlived the actual floppy disk by decades." },
+                    { type: 'fact', desc: "The first alarm clock could only ring at 4 AM, invented by Levi Hutchins in 1787." },
+                    { type: 'fact', desc: "The first webcam was deployed at Cambridge University to monitor a coffee pot so researchers wouldn't waste trips to an empty pot." },
+                    { type: 'fact', desc: "The 'Caps Lock' key was originally a 'Shift Lock' key on mechanical typewriters that physically locked the shift mechanism." },
+                    { type: 'fact', desc: "The first text message ever sent was 'Merry Christmas' in 1992." },
+                    { type: 'fact', desc: "The first YouTube video, 'Me at the zoo,' was uploaded on April 23, 2005." },
+                    { type: 'fact', desc: "The 'Cloud' is just someone else's computer. (But with better uptime.)" }
+                ];
+                
+                const item = items[Math.floor(Math.random() * items.length)];
+                
+                if (item.type === 'formula') {
+                    return `
+                        <div style="border-left: 2px solid #00ff00; padding-left: 10px; margin: 5px 0;">
+                            ⚡ <strong style="color: #00ff00;">${item.name.toUpperCase()}</strong><br>
+                            <span style="color: #fff; font-size: 1.1rem; font-family: 'Courier New', monospace;">${item.eq}</span><br>
+                            <span style="color: #888;">${item.desc}</span>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div style="border-left: 2px solid #00ff00; padding-left: 10px; margin: 5px 0;">
+                            ⚡ <strong style="color: #00ff00;">DID YOU KNOW?</strong><br>
+                            <span style="color: #ffffff;">${item.desc}</span>
+                        </div>
+                    `;
+                }
+            },
+            'scroll': () => {
+                const output = document.getElementById('cmd-output');
+                if (!output) return 'Terminal output not found.';
+                
+                // Save original scroll behavior
+                const originalScrollBehavior = output.style.scrollBehavior;
+                output.style.scrollBehavior = 'auto';
+                
+                const maxScroll = output.scrollHeight - output.clientHeight;
+                if (maxScroll <= 0) return 'Not enough content to scroll.';
+                
+                let direction = 1; // 1 = down, -1 = up
+                let pos = output.scrollTop;
+                let steps = 0;
+                const maxSteps = 1000; // total bounces
+                
+                const interval = setInterval(() => {
+                    pos += direction * 30; // jump 30px per frame
+                    
+                    // Bounce at edges
+                    if (pos >= maxScroll) {
+                        pos = maxScroll;
+                        direction = -1;
+                    } else if (pos <= 0) {
+                        pos = 0;
+                        direction = 1;
+                    }
+                    
+                    output.scrollTop = pos;
+                    steps++;
+                    
+                    if (steps >= maxSteps) {
+                        clearInterval(interval);
+                        output.style.scrollBehavior = originalScrollBehavior;
+                        // Reset to top for clean state
+                        output.scrollTop = 0;
+                    }
+                }, 40); // ~25fps
+                
+                return '📜 Scrolling... wheee!';
+            },
             'wisdom': async () => {
                 try {
                     const resp = await fetch('https://dummyjson.com/quotes/random');
                     const data = await resp.json();
-                    return `“${data.quote}” — ${data.author}`;
+                    return `<span style="color: #ffaa00;">“${data.quote}”</span> <span style="color: #00f0ff;">— ${data.author}</span>`;
                 } catch (e) {
                     return 'Failed to fetch quote.';
                 }
-            }
-        };
+            },
+            'intersect': () => {
+                if (typeof taoChapters === 'undefined' || !taoChapters.length) {
+                    return '⚠️ Tao Te Ching database not loaded. Intersect requires Tao chapters.';
+                }
+                if (typeof galleryImages === 'undefined' || !galleryImages.length) {
+                    return '⚠️ Gallery images not found.';
+                }
 
-        // Aliases
-        commands['hn'] = commands['hackernews'];
+                const overlay = document.createElement('div');
+                overlay.id = 'intersect-overlay';
+                document.body.appendChild(overlay);
+
+                let count = 0;
+                const maxFlashes = 20;
+
+                const interval = setInterval(() => {
+                    if (count >= maxFlashes) {
+                        clearInterval(interval);
+                        overlay.remove();
+                        if (typeof triggerGhost === 'function') {
+                            triggerGhost('🧠 INTERSECT DOWNLOAD COMPLETE');
+                        }
+                        return;
+                    }
+
+                    if (count % 2 === 0) {
+                        // Use a random image from your own gallery
+                        const randomImg = galleryImages[Math.floor(Math.random() * galleryImages.length)];
+                        overlay.innerHTML = `<img src="${randomImg}" style="width:100%; height:100%; object-fit:cover;">`;
+                    } else {
+                        const chapter = taoChapters[Math.floor(Math.random() * taoChapters.length)];
+                        const snippet = chapter.text.substring(0, 250).replace(/\n/g, ' ');
+                        overlay.innerHTML = `<div class="intersect-text">${snippet}…</div>`;
+                    }
+
+                    count++;
+                }, 100);
+
+                return '⚡ Initiating neural link... [STAY STILL]';
+            },
+        }
+
 
         // ----- COMMAND EXECUTION (Router Pattern) -----
         cmdInput.addEventListener('keypress', async (e) => {
