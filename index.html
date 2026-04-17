@@ -1133,13 +1133,14 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100%;    /* Better for scrollbar handling */
+            height: 100vh;  /* Guarantees full vertical coverage regardless of parent height */
             z-index: 999999;
             background: #000;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden; /* Prevents any internal images from triggering scrollbars */
         }
 
         .intersect-text {
