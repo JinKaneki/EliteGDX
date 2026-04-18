@@ -148,7 +148,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 ### Command Categories
 
 **⚡ System & Utility**  
-`help` `clear` `echo` `whoami` `ls` `history` `shutdown` `sudo` `motd` `login`
+`help` `clear` `echo` `whoami` `ls` `history` `shutdown` `sudo` `motd` `login` `sytem`
 
 **🎨 Theme & UI**  
 `theme` `pause` `fetch` `fastfetch` `neofetch`
@@ -163,7 +163,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 `tao` `wisdom` `sutra` `buddha` `koan` `stoic` `bible` `verse`
 
 **🎭 Fun & Entertainment**  
-`joke` `riddle` `poem` `poetry` `anime` `qr`
+`joke` `riddle` `poem` `poetry` `anime` `qr` `radio` `play youtube` `play audio` `stop`
 
 **🖼️ Visuals & Effects**  
 `image` `walls` `matrix` `scroll` `intersect` `intersectslow`
