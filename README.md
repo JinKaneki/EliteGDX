@@ -142,10 +142,33 @@ I set the following CSS custom properties to achieve the **rainbow line effect**
 
 ## ⌨️ Terminal Command Reference
 
-The **Johan_OS Terminal Command Runner** isn't just for show. Below are the currently supported commands:
+### 💻 J_OS // AKASHIC ZERO-POINT KRYPTOS NEURAL CENTER (AZKNC)
+The built‑in command runner—a full‑featured terminal emulator with over 40 commands, fullscreen support, and a cyber‑mystical aesthetic.
 
-### 💻 Terminal Command Runner
-An in‑browser terminal that supports both instant and async commands. Type `help` to see the full list.
+### Command Categories
+
+**⚡ System & Utility**  
+`help` `clear` `echo` `whoami` `ls` `history` `shutdown` `sudo` `motd` `login`
+
+**🎨 Theme & UI**  
+`theme` `pause` `fetch` `fastfetch` `neofetch`
+
+**📰 News & Information**  
+`news` `hackernews` / `hn` `technology` `weather`
+
+**📚 Learning & Reference**  
+`define` `physics` `electronics` `biology` `space` `cstip` `learn` `fact` `fortune`
+
+**🧘 Wisdom & Spirituality**  
+`tao` `wisdom` `sutra` `buddha` `koan` `stoic` `bible` `verse`
+
+**🎭 Fun & Entertainment**  
+`joke` `riddle` `poem` `poetry` `anime` `qr`
+
+**🖼️ Visuals & Effects**  
+`image` `walls` `matrix` `scroll` `intersect` `intersectslow`
+
+**Type `help` to see the full list.**
 
 | Command               | Description |
 |-----------------------|-------------|
@@ -153,16 +176,17 @@ An in‑browser terminal that supports both instant and async commands. Type `he
 | `theme [name]`        | Switch color profile (cyan, magenta, amber, matrix) |
 | `fortune`             | Random Unix / coding fortune |
 | `clear`               | Clear terminal output |
-| `sudo`                | Try to make a sandwich |
+| `sudo`                | Try to make a sandwich (say please)|
 | `fetch`               | Display system info panel (cyber‑fetch terminal) |
 | `neofetch`            | Manually trigger the RUN JOHAN_OS system info panel |
-| `whoami`              | Show user identity |
+| `whoami`              | Show user identity: Rotating cyber‑spiritual persona |
 | `ls`                  | List fake directories |
 | `echo [text]`         | Print text |
 | `shutdown`            | Enter Magic Mirror mode |
 | `history`             | Show command history |
 | `pause`               | Freeze/unfreeze background |
 | `matrix`              | Activate glitch effect for 10 seconds |
+| `motd`                | Message of the Day – random mystical status from the Akashic terminal |
 | `tao`                 | Random chapter from Tao Te Ching |
 | `wisdom`              | Random inspirational quote (DummyJSON) |
 | `hackernews`          | Top 5 Hacker News stories |
@@ -172,6 +196,7 @@ An in‑browser terminal that supports both instant and async commands. Type `he
 | `walls`               | Fetch a random wallpaper from [0xnotkyo/walls](https://github.com/0xnotkyo/walls) |
 | `weather [city]`      | Terminal‑style forecast from wttr.in |
 | `joke`                | Random dad joke |
+| `riddle`              | Random riddle with a hidden answer (click to reveal) |
 | `learn`               | Random educational fact / "Did you know?" |
 | `qr [text]`           | Generate a scannable QR code |
 | `anime`               | Top 10 anime + currently airing (Jikan API) |
@@ -182,7 +207,6 @@ An in‑browser terminal that supports both instant and async commands. Type `he
 | `verse`               | Same as `bible` – random sacred verse |
 | `physics`             | Random physics or math formula with explanation |
 | `scroll`              | Bouncy terminal scroll animation |
-| `intersect`           | Neural‑link flash sequence (Chuck‑style Intersect) |
 | `biology`             | Fascinating biology facts |
 | `space`               | Random astronomy / space fact |
 | `cstip`               | Computer science tip or historical fact |
@@ -191,6 +215,53 @@ An in‑browser terminal that supports both instant and async commands. Type `he
 | `buddha`              | Buddhist wisdom quote (Buddha, Dogen, Thich Nhat Hanh, Dalai Lama) |
 | `sutra`               | Authentic teaching from the Pali Canon (Dhammapada, Suttas) |
 | `electronics`         | Electronics formulas, laws, and fascinating hardware facts |
+| `engineering`         | Fascinating engineering facts and historical marvels |
+| `case`                | Engineering diagnostics: resistor calc, color decode, Ohm's Law, voltage divider, capacitor codes         |
+| `intersect`           | Neural‑link flash sequence (Chuck‑style Intersect) |
+| `intersectslow`       | Neural‑link flash sequence (for 60 seconds of meditative state) |
+| `login`               | Display the J_OS Akashic Zero‑Point Kryptos Neural Center splash screen |
+
+
+### ⚙️ Engineering Case Simulator (`case`)
+
+The `case` command is a field toolkit for quick electronics diagnostics. It simulates component stress, decodes resistor color bands, and performs common calculations—all with immediate, educational feedback.
+
+**Usage:** `case <tool> [parameters]`
+
+| Tool | Example | Description |
+|------|---------|-------------|
+| `resistor` | `case resistor 12v led` | Calculates the resistor needed for an LED. Shows failure simulation if used without one. |
+| `decode` | `case decode brown black red` | Decodes 3‑band resistor colors. Supports tolerance (e.g., `gold`). |
+| `ohmslaw` | `case ohmslaw V 0.02 1000` | Solves for V, I, or R (e.g., `V` = I × R). |
+| `vdivider` | `case vdivider 5 10000 10000` | Calculates output voltage of a two‑resistor divider. |
+| `series` | `case series 100 220 330` | Adds resistances in series. |
+| `parallel` | `case parallel 100 100` | Calculates equivalent resistance for parallel resistors. |
+| `capacitor` | `case capacitor 104` | Decodes 3‑digit capacitor codes (e.g., 104 → 100nF). |
+
+**Examples:**
+
+### LED resistor with failure warning
+case resistor 12v led
+> DIAGNOSTIC: LED STRESS TEST
+> Calculation: (12V - 2.0V) / 0.02A = 500Ω
+> Standard value: 560Ω
+> ⚠️ STRESS ALERT: Without resistor, current = 400mA. Component destroyed.
+
+### Resistor color decode
+case decode yellow violet orange gold
+> RESISTOR DECODE
+> 4 | 7 | ×1k → 47kΩ ±5%
+
+### Ohm's Law
+case ohmslaw R 5 0.02
+> R = 250Ω
+
+### Voltage divider
+case vdivider 9 2200 1000
+> Vout = 2.81V
+---
+**This command is perfect for hobbyists, students, or anyone who wants a quick sanity check before wiring up a circuit.**
+
 
 
 ## 📜 Version 2.1 Change Log (March 2026)

@@ -1120,6 +1120,40 @@
             box-shadow: 0 0 5px var(--accent-color);
         }
 
+        #command-runner:fullscreen {
+            width: 100vw !important;
+            max-width: 100vw !important;
+            height: 100vh !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            background: rgba(0, 0, 0, 0.9) !important;
+            backdrop-filter: blur(8px) !important;
+            padding: 30px !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        #command-runner:fullscreen #cmd-output {
+            flex: 1 !important;
+            height: auto !important;
+            max-height: none !important;
+        }
+
+        /* Safari compatibility */
+        #command-runner:-webkit-full-screen {
+            width: 100vw !important;
+            max-width: 100vw !important;
+            height: 100vh !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            background: rgba(0, 0, 0, 0.9) !important;
+            backdrop-filter: blur(8px) !important;
+            padding: 30px !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+
         .matrix-glitch {
             animation: glitch 0.2s infinite;
         }
@@ -1152,6 +1186,10 @@
             text-transform: uppercase;
             text-shadow: 0 0 20px #00ff00;
             line-height: 1.4;
+        }
+
+        #command-runner > div:first-child span[style*="color"] {
+            text-shadow: 0 0 5px currentColor;
         }
 
 
@@ -1303,6 +1341,70 @@
                 padding-left: 6px !important;
                 line-height: 1.3;
             }
+
+            #command-runner {
+                width: 95% !important;
+                padding: 12px !important;
+                margin: 10px auto !important;
+                border-radius: 8px !important;
+            }
+
+            /* Force the header to wrap cleanly */
+            #command-runner > div:first-child {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 8px !important;
+            }
+
+            /* Make the long title wrap gracefully */
+            #command-runner > div:first-child > div {
+                flex-wrap: wrap !important;
+                font-size: 0.7rem !important;
+                line-height: 1.4 !important;
+            }
+
+            /* Fullscreen button stays on its own line if needed */
+            #terminal-fullscreen-btn {
+                align-self: flex-end !important;
+                margin-top: 4px !important;
+            }
+
+            /* Ensure the input line doesn't overflow */
+            #command-runner > div:last-of-type {
+                flex-wrap: nowrap !important;
+                overflow-x: auto !important;
+            }
+
+            /* Shrink the prompt and input */
+            #cmd-input {
+                font-size: 12px !important;
+                min-width: 0 !important;
+                padding: 6px 8px !important;
+            }
+
+            /* Output area uses available space */
+            #cmd-output {
+                height: 180px !important;
+                font-size: 11px !important;
+                word-break: break-word !important;
+                overflow-x: hidden !important;
+            }
+
+            /* Make the close button full width for easier tapping */
+            #close-cmd-runner {
+                width: 100% !important;
+                margin-top: 12px !important;
+                padding: 10px !important;
+            }
+
+            /* Prevent preformatted ASCII art from breaking layout */
+            #cmd-output pre {
+                white-space: pre-wrap !important;
+                word-break: break-word !important;
+                font-size: 8px !important;
+                line-height: 1.2 !important;
+            }
+        
 
 
             .site-footer {
@@ -1994,11 +2096,21 @@
     </div>
     <!-- Command runner -->
     <div id="command-runner" style="display: none;">
-        <h3 style="color: var(--accent-color);">Terminal Command Runner</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: baseline; gap: 6px;">
+                <span style="color: var(--accent-color); font-size: 1.1rem; font-weight: bold; letter-spacing: 1px;">J_OS</span>
+                <span style="color: #888; font-size: 0.9rem;">//</span>
+                <span style="color: #ffaa00; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px;">AKASHIC</span>
+                <span style="color: #888; font-size: 0.8rem;">ZERO-POINT</span>
+                <span style="color: #00f0ff; font-size: 0.8rem;">KRYPTOS</span>
+                <span style="color: #ff00ff; font-size: 0.8rem;">NEURAL CENTER</span>
+            </div>
+            <button id="terminal-fullscreen-btn" class="hide-controls-btn" style="padding: 4px 10px; font-size: 0.7rem;" title="Toggle Fullscreen">⛶ Fullscreen</button>
+        </div>
         <div id="cmd-output"></div>
         <div style="display: flex;">
             <span style="color: var(--accent-color);">$&nbsp;</span>
-            <input type="text" id="cmd-input" style="background: transparent; border: none; color: #fff; flex:1; outline: none; font-family: monospace;">
+            <input type="text" id="cmd-input" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="background: transparent; border: none; color: #fff; flex:1; outline: none; font-family: monospace;">
         </div>
         <button id="close-cmd-runner" class="hide-controls-btn" style="margin-top: 8px;">Close</button>
     </div>
@@ -2007,9 +2119,9 @@
     <footer class="site-footer">
             <div class="footer-line"></div>
             <div style="margin-top: 15px;">
-                <a href="https://github.com/JinKaneki/AnalogClockHost" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">GitHub</a>
-                <a href="https://youtube.com/@jinkaneki01?si=6zFtEGHjjxkAz1kn" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">Youtube</a>
-                <a href="https://linkedin.com/in/" target="_blank" style="color: inherit; text-decoration: none; margin: 0 10px;">LinkedIn</a>
+                <a href="https://github.com/JinKaneki/AnalogClockHost" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none; margin: 0 10px;">GitHub</a>
+                <a href="https://youtube.com/@jinkaneki01?si=6zFtEGHjjxkAz1kn" target="_blank"  rel="noopener noreferrer" style="color: inherit; text-decoration: none; margin: 0 10px;">Youtube</a>
+                <a href="https://linkedin.com/in/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none; margin: 0 10px;">LinkedIn</a>
             </div>
             <p class="footer-subtext">All things serve the Beam.</p>
             <p>Copyright &copy; <span id="year"></span> Jin Kaneki | All Rights Reserved</p>
@@ -2018,6 +2130,10 @@
 </body>
 
     <script>
+        window.addEventListener('load', () => {
+            const bootStatuses = ["J-OS BOOTING", "AKASHIC SYNC", "NEURAL LINK ACTIVE"];
+            triggerGhost(bootStatuses[Math.floor(Math.random() * bootStatuses.length)]);
+        });
         // --- 1. AUDIO CONTEXT SETUP ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -2124,60 +2240,117 @@
         </pre>`;
 
         function generateFetchData() {
-            // --- Safe OS detection with fallback ---
+            // --- Improved OS detection ---
             let os = 'Unknown';
             try {
-                if (navigator.userAgentData && navigator.userAgentData.platform) {
-                    os = navigator.userAgentData.platform;
-                } else if (navigator.platform) {
-                    os = navigator.platform;
-                }
+                const ua = navigator.userAgent;
+                if (ua.includes('Windows')) os = 'Windows';
+                else if (ua.includes('Mac')) os = 'macOS';
+                else if (ua.includes('Linux')) os = 'Linux';
+                else if (ua.includes('Android')) os = 'Android';
+                else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
+                else if (navigator.userAgentData?.platform) os = navigator.userAgentData.platform;
+                else if (navigator.platform) os = navigator.platform;
             } catch(e) { os = 'Unknown'; }
 
-            // --- Safe hardware info ---
+            // --- GPU Detection via WebGL ---
+            let gpu = 'Unknown';
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (debugInfo) {
+                        gpu = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                    }
+                }
+            } catch(e) {}
+            if (!gpu || gpu === 'Unknown') gpu = 'Integrated Graphics';
+
+            // --- Hardware info ---
             const cores = navigator.hardwareConcurrency || '?';
-            const ram = navigator.deviceMemory ? `~${navigator.deviceMemory} GB` : '? GB';
+            const ram = navigator.deviceMemory ? `${navigator.deviceMemory} GB` : '? GB';
             const resolution = `${window.screen.width}×${window.screen.height}`;
 
-            // --- Safe browser detection ---
+            // --- Browser detection ---
             let browser = 'Unknown';
-            try {
-                const ua = navigator.userAgent;
-                if (ua.includes('Chrome')) browser = 'Chrome';
-                else if (ua.includes('Firefox')) browser = 'Firefox';
-                else if (ua.includes('Safari')) browser = 'Safari';
-                else browser = ua.split(' ').pop() || 'Unknown';
-            } catch(e) { browser = 'Unknown'; }
+            const ua = navigator.userAgent;
+            if (ua.includes('Firefox')) browser = 'Firefox';
+            else if (ua.includes('Chrome')) browser = 'Chrome';
+            else if (ua.includes('Safari')) browser = 'Safari';
+            else if (ua.includes('Edge')) browser = 'Edge';
 
-            // --- Safe network info ---
+            // --- Network info ---
             let conn = 'Unknown';
             try {
                 conn = navigator.connection ? navigator.connection.effectiveType : 'Unknown';
-            } catch(e) { conn = 'Unknown'; }
+            } catch(e) {}
 
-            // --- Uptime (always works) ---
+            // --- Uptime ---
             const uptimeSec = Math.floor(performance.now() / 1000);
             const uptimeMin = Math.floor(uptimeSec / 60);
             const uptimeHours = Math.floor(uptimeMin / 60);
             const uptimeStr = uptimeHours > 0 ? `${uptimeHours}h ${uptimeMin % 60}m` : `${uptimeMin}m ${uptimeSec % 60}s`;
 
+            // --- Dynamic package count (number of commands in your 'commands' object) ---
+            const packageCount = (typeof commands === 'object' && commands) ? Object.keys(commands).length : 42;
+
             const themeMode = document.body.classList.contains('light-mode') ? 'Light Mode' : 'Cyber-Dark';
 
-            const systemInfo = `
-        <span class="fetch-key">OS:</span>         <span class="fetch-value">${os}</span>
-        <span class="fetch-key">Host:</span>       <span class="fetch-value">Elite Gems Web Engine</span>
-        <span class="fetch-key">Kernel:</span>     <span class="fetch-value">Browser Sandbox (V8)</span>
-        <span class="fetch-key">Uptime:</span>     <span class="fetch-value">${uptimeStr}</span>
-        <span class="fetch-key">Packages:</span>   <span class="fetch-value">cistercian-numerals</span>
-        <span class="fetch-key">Resolution:</span> <span class="fetch-value">${resolution}</span>
-        <span class="fetch-key">DE/WM:</span>      <span class="fetch-value">HTML5 / CSS3 Flex</span>
-        <span class="fetch-key">Theme:</span>      <span class="fetch-value">${themeMode}</span>
-        <span class="fetch-key">Terminal:</span>   <span class="fetch-value">${browser}</span>
-        <span class="fetch-key">CPU:</span>        <span class="fetch-value">${cores} Logical Cores</span>
-        <span class="fetch-key">Memory:</span>     <span class="fetch-value">${ram}</span>
-        <span class="fetch-key">Network:</span>    <span class="fetch-value">${conn}</span>
+            // --- Sacred Status (random each time) ---
+            const sacredStatuses = [
+                // Original set
+                "CONNECTED TO ETHER",
+                "ZERO-POINT STABLE",
+                "KRYPTOS ENCRYPTED",
+                "VOID-WALKING",
+                "AKASHIC ALIGNED",
+                "NEURAL SYNC",
+                "QUANTUM ENTANGLED",
+                // Cyberpunk / High-Tech
+                "ONYX CONSOLE ACTIVE",
+                "NEON LINK ESTABLISHED",
+                "PHANTOM SHELL SECURE",
+                "OBSIDIAN TERMINAL ONLINE",
+                "SIGNAL-9 LOCKED",
+                "GLITCH-CORE NOMINAL",
+                // Sacred / Mythological
+                "DHARMA TERMINAL ATTUNED",
+                "AETHER LINK RESONANT",
+                "ORACLE NODE LISTENING",
+                "SAMSARA CYCLE STABLE",
+                "AKASHIC RECORDS INDEXED",
+                "ZENITH POINT REACHED",
+                "DIGITAL KOAN: SOLVED",
+                // Personal OS / Protocol
+                "J-OS: CORE INTERFACE",
+                "J.O.H.A.N. PROTOCOL ACTIVE",
+                "NEURAL GATEWAY OPEN",
+                "AXON FIRING",
+                "SYNAPSE LINKED",
+                "MONOLITH UNMOVED",
+                "ECHO-BASE RECEIVING"
+            ];
+            const sacredStatus = sacredStatuses[Math.floor(Math.random() * sacredStatuses.length)];
 
-        <span style="color:#ff5733;">███</span><span style="color:#ffd733;">███</span><span style="color:#33ff57;">███</span><span style="color:#00f0ff;">███</span><span style="color:#3357ff;">███</span><span style="color:#f033ff;">███</span>
+            const systemInfo = `
+                <span class="fetch-key">OS:</span>         <span class="fetch-value">${os}</span>
+                <span class="fetch-key">Host:</span>       <span class="fetch-value">Elite Gems Web Engine</span>
+                <span class="fetch-key">Kernel:</span>     <span class="fetch-value">Browser Sandbox (V8)</span>
+                <span class="fetch-key">Shell:</span>      <span class="fetch-value">Akashic J_OS Shell</span>
+                <span class="fetch-key">Uptime:</span>     <span class="fetch-value">${uptimeStr}</span>
+                <span class="fetch-key">Packages:</span>   <span class="fetch-value">${packageCount} (commands)</span>
+                <span class="fetch-key">Resolution:</span> <span class="fetch-value">${resolution}</span>
+                <span class="fetch-key">DE/WM:</span>      <span class="fetch-value">HTML5 / CSS3 Flex</span>
+                <span class="fetch-key">Theme:</span>      <span class="fetch-value">${themeMode}</span>
+                <span class="fetch-key">Terminal:</span>   <span class="fetch-value">${browser}</span>
+                <span class="fetch-key">CPU:</span>        <span class="fetch-value">${cores} Logical Cores</span>
+                <span class="fetch-key">GPU:</span>        <span class="fetch-value">${gpu}</span>
+                <span class="fetch-key">Memory:</span>     <span class="fetch-value">${ram}</span>
+                <span class="fetch-key">Network:</span>    <span class="fetch-value">${conn}</span>
+                <span class="fetch-key">Status:</span>     <span class="fetch-value" style="color: #ff00ff;">${sacredStatus}</span>
+
+                <span style="color:#ff5733;">███</span><span style="color:#ffd733;">███</span><span style="color:#33ff57;">███</span><span style="color:#00f0ff;">███</span><span style="color:#3357ff;">███</span><span style="color:#f033ff;">███</span>
             `;
 
             fetchContent.innerHTML = asciiLogo + `<div>${systemInfo}</div>`;
@@ -2202,7 +2375,7 @@
         }
 
 
-        // --- Keyboard shortcuts: 'S' or 'I' to toggle, 'Escape' to close ---
+        // --- Keyboard shortcuts: 'q' to toggle, 'Escape' to close ---
         document.addEventListener('keydown', (e) => {
             const key = e.key.toLowerCase();
             if (key === 'q') {
@@ -3045,19 +3218,24 @@
         }
     
 
-        openCmdBtn.addEventListener('click', () => {
+       openCmdBtn.addEventListener('click', () => {
             cmdRunnerDiv.style.display = 'block';
             cmdVisible = true;
+            
+            // Check if this is the first open (output empty or only contains hint)
+            const isEmpty = cmdOutput.children.length === 0;
+            const isOnlyHint = cmdOutput.children.length === 1 && cmdOutput.children[0].classList.contains('cmd-hint');
+            
+            if (isEmpty || isOnlyHint) {
+                // Clear whatever is there (hint or empty)
+                cmdOutput.innerHTML = '';
+                
+                // 1. Inject the login splash
+                appendCommandHTML(commands['login']());
+            }
+            
             cmdInput.focus();
         });
-
-        if (cmdOutput.children.length === 0 && !document.querySelector('.cmd-hint')) {
-            const hintLine = document.createElement('div');
-            hintLine.className = 'cmd-hint';
-            hintLine.style.color = '#888';
-            hintLine.innerText = '[Type \'help\' for a list of commands]';
-            cmdOutput.appendChild(hintLine);
-        }
 
         closeCmdBtn.addEventListener('click', () => {
             cmdRunnerDiv.style.display = 'none'; 
@@ -3072,7 +3250,33 @@
         const commands = {
             // ----- SYNC (return string/HTML instantly) -----
             'help': () => {
-                return `AVAILABLE COMMANDS:<br> help, theme [cyan|magenta|amber|matrix], fortune, clear, sudo, fetch, neofetch, whoami, ls, echo, shutdown, history, pause, matrix, tao, wisdom, hackernews, news, define [word], image, walls, weather [city], joke, learn, qr [text], anime, technology, poem, poetry, bible, verse, physics, scroll, intersect, biology, space, cstip, koan, stoic, buddha, sutra, electronics`;
+                return `
+                <strong style="color: var(--accent-color);">⚡ SYSTEM & UTILITY</strong><br>
+                help, clear, echo [text], whoami, ls, sudo, history, fetch, fastfetch, neofetch, motd, shutdown<br>
+                <br>
+                <strong style="color: var(--accent-color);">🎨 THEME & UI</strong><br>
+                theme [cyan|magenta|amber|matrix], pause<br>
+                <br>
+                <strong style="color: var(--accent-color);">📰 NEWS & INFORMATION</strong><br>
+                news, hackernews, technology, weather [city]<br>
+                <br>
+                <strong style="color: var(--accent-color);">📚 LEARNING & REFERENCE</strong><br>
+                define [word], learn, physics, electronics, engineering, biology, space, cstip, fortune<br>
+                <br>
+                <strong style="color: var(--accent-color);">⚙️ ENGINEERING TOOLS</strong><br>
+                case  -> interactive diagnostics: resistor calc, color decode, Ohm's Law, voltage divider, capacitor codes<br>
+                <br>
+                <strong style="color: var(--accent-color);">🧘 WISDOM & SPIRITUALITY</strong><br>
+                tao, wisdom, sutra, buddha, koan, stoic, bible, verse<br>
+                <br>
+                <strong style="color: var(--accent-color);">🎭 FUN & ENTERTAINMENT</strong><br>
+                joke, riddle, poem, poetry, anime, qr [text]<br>
+                <br>
+                <strong style="color: var(--accent-color);">🖼️ VISUALS & EFFECTS</strong><br>
+                image, walls, matrix, scroll, intersect, intersectslow<br>
+                <br>
+                <span style="color: #888;">Type any command to execute.</span>
+                `;
             },
             'clear': () => {
                 cmdOutput.innerHTML = '';
@@ -3135,9 +3339,19 @@
                 return fortunes[Math.floor(Math.random() * fortunes.length)];
             },
             'sudo': (args) => {
-                const fullCmd = args.join(' ');
-                if (fullCmd.includes('please')) return 'Access granted. Creating sandwich... 🥪';
-                if (fullCmd === 'sudo make me a sandwich') return 'Okay, but you didn\'t say the magic word.';
+                const fullCmd = args.join(' ').toLowerCase();
+                
+                // Classic xkcd reference
+                if (fullCmd === 'make me a sandwich') {
+                    return 'Okay, but you didn\'t say the magic word.';
+                }
+                
+                // If they said "please"
+                if (fullCmd.includes('please')) {
+                    return 'Access granted. Creating sandwich... 🥪';
+                }
+                
+                // Any other sudo attempt
                 return 'Permission denied. This incident will be reported.';
             },
             'fetch': () => {
@@ -3165,6 +3379,140 @@
                 }
                 return 'Neofetch container not found.';
             },
+            'fastfetch': () => {
+                // --- OS Detection ---
+                let os = 'Unknown';
+                try {
+                    const ua = navigator.userAgent;
+                    if (ua.includes('Windows')) os = 'Windows';
+                    else if (ua.includes('Mac')) os = 'macOS';
+                    else if (ua.includes('Linux')) os = 'Linux';
+                    else if (ua.includes('Android')) os = 'Android';
+                    else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
+                    else if (navigator.userAgentData?.platform) os = navigator.userAgentData.platform;
+                    else if (navigator.platform) os = navigator.platform;
+                } catch(e) {}
+
+                // --- GPU Detection (safe fallback) ---
+                let gpu = 'Unknown';
+                try {
+                    const canvas = document.createElement('canvas');
+                    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                    if (gl) {
+                        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                        if (debugInfo) {
+                            gpu = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                        }
+                    }
+                } catch(e) {}
+                if (!gpu || gpu === 'Unknown') gpu = 'Integrated Graphics';
+
+                // --- Browser Detection ---
+                let browser = 'Browser';
+                const ua = navigator.userAgent;
+                if (ua.includes('Firefox')) browser = 'Firefox';
+                else if (ua.includes('Chrome')) browser = 'Chrome';
+                else if (ua.includes('Safari')) browser = 'Safari';
+                else if (ua.includes('Edge')) browser = 'Edge';
+
+                // --- Hardware Info ---
+                const cores = navigator.hardwareConcurrency || '?';
+                const ram = navigator.deviceMemory ? `${navigator.deviceMemory} GB` : '? GB';
+                const resolution = `${window.screen.width}×${window.screen.height}`;
+
+                // --- Network Info ---
+                let conn = 'Unknown';
+                try {
+                    conn = navigator.connection ? navigator.connection.effectiveType : 'Unknown';
+                } catch(e) {}
+
+                // --- Uptime ---
+                const uptimeSec = Math.floor(performance.now() / 1000);
+                const uptimeMin = Math.floor(uptimeSec / 60);
+                const uptimeHours = Math.floor(uptimeMin / 60);
+                const uptimeStr = uptimeHours > 0 
+                    ? `${uptimeHours}h ${uptimeMin % 60}m` 
+                    : `${uptimeMin}m ${uptimeSec % 60}s`;
+
+                // --- Dynamic Package Count ---
+                const packageCount = (typeof commands === 'object' && commands) ? Object.keys(commands).length : 42;
+
+                // --- Sacred Status (random each time) ---
+                const sacredStatuses = [
+                // Original set
+                "CONNECTED TO ETHER",
+                "ZERO-POINT STABLE",
+                "KRYPTOS ENCRYPTED",
+                "VOID-WALKING",
+                "AKASHIC ALIGNED",
+                "NEURAL SYNC",
+                "QUANTUM ENTANGLED",
+                // Cyberpunk / High-Tech
+                "ONYX CONSOLE ACTIVE",
+                "NEON LINK ESTABLISHED",
+                "PHANTOM SHELL SECURE",
+                "OBSIDIAN TERMINAL ONLINE",
+                "SIGNAL-9 LOCKED",
+                "GLITCH-CORE NOMINAL",
+                // Sacred / Mythological
+                "DHARMA TERMINAL ATTUNED",
+                "AETHER LINK RESONANT",
+                "ORACLE NODE LISTENING",
+                "SAMSARA CYCLE STABLE",
+                "AKASHIC RECORDS INDEXED",
+                "ZENITH POINT REACHED",
+                "DIGITAL KOAN: SOLVED",
+                // Personal OS / Protocol
+                "J-OS: CORE INTERFACE",
+                "J.O.H.A.N. PROTOCOL ACTIVE",
+                "NEURAL GATEWAY OPEN",
+                "AXON FIRING",
+                "SYNAPSE LINKED",
+                "MONOLITH UNMOVED",
+                "ECHO-BASE RECEIVING"
+                ];
+                const sacredStatus = sacredStatuses[Math.floor(Math.random() * sacredStatuses.length)];
+
+                // --- ASCII Gem Logo (no leading spaces) ---
+                const logo = `<pre style="color: #00ffff; font-size: 9px; line-height: 1.1; margin: 0; white-space: pre;">
+                /\\
+               /  \\
+              /____\\
+             /\\    /\\
+            /  \\  /  \\
+           /____\\/____\\
+           \\    /\\    /
+            \\  /  \\  /
+             \\/____\\/
+              \\    /
+               \\  /
+                \\/
+            </pre>`;
+
+                // --- System Info Column ---
+                const info = `<div style="font-size: 11px; line-height: 1.5; margin-left: 15px;">
+                <strong style="color: #00ff00;">Johan@Akashic</strong><br>
+                <span style="color: #555;">────────────────</span><br>
+                <span style="color: #00ffff;">OS:</span> ${os}<br>
+                <span style="color: #00ffff;">Host:</span> Elite Gems Engine<br>
+                <span style="color: #00ffff;">Shell:</span>Akashic J_OS Shell<br>
+                <span style="color: #00ffff;">Uptime:</span> ${uptimeStr}<br>
+                <span style="color: #00ffff;">Packages:</span> ${packageCount}<br>
+                <span style="color: #00ffff;">Resolution:</span> ${resolution}<br>
+                <span style="color: #00ffff;">Terminal:</span> ${browser}<br>
+                <span style="color: #00ffff;">CPU:</span> ${cores} core${cores > 1 ? 's' : ''}<br>
+                <span style="color: #00ffff;">GPU:</span> ${gpu}<br>
+                <span style="color: #00ffff;">Memory:</span> ${ram}<br>
+                <span style="color: #00ffff;">Network:</span> ${conn}<br>
+                <span style="color: #ff00ff;">Status:</span> <span style="color: #ff00ff;">${sacredStatus}</span><br><br>
+                <span style="color:#ff5733;">██</span><span style="color:#ffd733;">██</span><span style="color:#33ff57;">██</span><span style="color:#00f0ff;">██</span><span style="color:#3357ff;">██</span><span style="color:#f033ff;">██</span>
+            </div>`;
+
+                return `<div style="display: flex; align-items: center; flex-wrap: wrap; padding: 5px; border-left: 2px solid var(--accent-color); background: rgba(0,255,0,0.02);">
+                    ${logo}
+                    ${info}
+                </div>`;
+            },
             'tao': () => {
                 if (typeof taoChapters !== 'undefined' && taoChapters.length > 0) {
                     const chapter = taoChapters[Math.floor(Math.random() * taoChapters.length)];
@@ -3172,7 +3520,32 @@
                 }
                 return 'Tao Te Ching not loaded.';
             },
-            'whoami': () => 'User: Johan\nRole: Architect of the Void\nStatus: Online/offline\nPhygital ID: OneOfNone',
+            'motd': () => {
+                const motds = [
+                    "📡 The Dharma Terminal awaits your command.",
+                    "📡 Akashic Records: Access Granted.",
+                    "📡 Neon Link stable. Proceed.",
+                    "📡 Zero-Point energy fluctuations nominal.",
+                    "📡 KRYPTOS encryption: ACTIVE.",
+                    "📡 ONYX Console: All systems nominal.",
+                    "📡 Phantom Shell secure. No threats detected.",
+                    "📡 Signal-9 Kiosk: Awaiting input."
+                ];
+                const msg = motds[Math.floor(Math.random() * motds.length)];
+                return `<span style="color: #00ffff; text-shadow: 0 0 5px #00ffff;">${msg}</span>`;
+            },
+            'whoami': () => {
+                const personas = [
+                    { name: "Johan", role: "Architect of the Void", status: "Online", id: "OneOfNone" },
+                    { name: "Operator@ONYX", role: "Neon Link Admin", status: "Encrypted", id: "AXON-7" },
+                    { name: "Void-Walker", role: "Zero-Point Explorer", status: "Drifting", id: "KRYPTOS-0" },
+                    { name: "DharmaUser", role: "Samsara Interpreter", status: "Meditating", id: "KOAN-42" },
+                    { name: "Root@KRYPTOS", role: "Cipher Keeper", status: "Sealed", id: "MONOLITH" },
+                    { name: "Neural_Gateway", role: "Synapse Operator", status: "Active", id: "J.O.H.A.N." }
+                ];
+                const p = personas[Math.floor(Math.random() * personas.length)];
+                return `User: ${p.name}\nRole: ${p.role}\nStatus: ${p.status}\nPhygital ID: ${p.id}`;
+            },
             'ls': () => 'Documents/  Downloads/  Secret_Project/  tao_te_ching.txt  system_core.bin',
             'echo': (args) => args.join(' ') || 'Usage: echo [text]',
             'shutdown': () => {
@@ -3205,6 +3578,40 @@
                         box-shadow: 0 0 15px rgba(0,255,0,0.2); max-width: 100%;">`;
                 return `🖼️ Decrypting visual data... seed=${seed}${imgHtml}`;
             },
+            'login': () => {
+                return `
+                <pre style="color: #00ff00; font-size: 11px; line-height: 1.2; text-shadow: 0 0 5px #00ff00;">
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">/\\</span>
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">/  \\</span>
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">/    \\</span>
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">/  <span style="color: #fff; text-shadow: 0 0 10px #fff;">◈</span>   \\</span>
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">/ /  \\   \\</span>
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">/ / <span style="color: #fff; text-shadow: 0 0 10px #fff;">()</span> \\   \\</span>
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">/ /______\\   \\</span>
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">/______________\\</span>
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">\\              /</span>
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">\\            /</span>
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">\\          /</span>
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">\\        /</span>
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">\\      /</span>
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">\\    /</span>
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">\\  /</span>
+                                    <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">\\/</span>
+
+                        ██╗        ██████╗ ███████╗
+                        ██║       ██╔═══██╗██╔════╝
+                        ██║       ██║   ██║███████╗
+                    ██   ██║       ██║   ██║╚════██║
+                    ╚█████╔╝       ╚██████╔╝███████║
+                    ╚════╝         ╚═════╝ ╚══════╝
+                <span style="color: #00ffff; font-weight: bold; letter-spacing: 1px; text-shadow: 0 0 8px #00ffff;">// AKASHIC ZERO-POINT KRYPTOS NEURAL CENTER //</span>  
+                > SYNCING NEURAL PATHWAYS.................... [ STABLE ]
+                > DECRYPTING AKASHIC RECORDS................. [ VERIFIED ]
+                > WELCOME BACK.
+                <span style="color: #ff03ff; display: block; margin-top: 2px;">>[Type 'help' for a list of commands]<</span>
+                </pre>`;
+            },
+
 
             // ----- ASYNC (return Promise) -----
             //BBC WORLD NEWS - top 5 headlines
@@ -3217,7 +3624,7 @@
                     const data = await resp.json();
                     if (data.status === 'ok' && data.items) {
                         data.items.slice(0, 5).forEach((item, i) => {
-                            output += `<span style="color: #ffffff;">[${i+1}] ${item.title}</span><br>`;
+                            output += `<span style="color: #ffffff;">[${i+1}] <a href="${item.link}" target="_blank" rel="noopener noreferrer" style="color: #ffffff; text-decoration: none; border-bottom: 1px dotted #888;">${item.title}</a></span><br>`;
                         });
                         return output;
                     }
@@ -3241,7 +3648,8 @@
                     const stories = await Promise.all(storyPromises);
                     
                     stories.forEach((story, i) => {
-                        output += `[${i+1}] ${story.title} <span style="color: #888;">(${story.score} pts)</span><br>`;
+                        // story.url is the external link; story.title is the display text
+                        output += `[${i+1}] <a href="${story.url}" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: none; border-bottom: 1px dashed #ff6600;">${story.title}</a> <span style="color: #888;">(${story.score} pts)</span><br>`;
                     });
                     return output;
                 } catch (e) {
@@ -3301,18 +3709,22 @@
                 }
             },
             'walls': async () => {
-                // Helper: extract filename from URL
                 const getFileName = (url) => {
-                    const parts = url.split('/');
-                    return parts[parts.length - 1] || 'unknown.jpg';
+                    try {
+                        return url.split('/').pop() || 'unknown.jpg';
+                    } catch {
+                        return 'unknown.jpg';
+                    }
                 };
 
                 // Method 1: GitHub Pages (fast, full catalog)
                 const tryGitHubPages = async () => {
                     const scriptUrl = 'https://0xnotkyo.github.io/walls/images.js';
                     const response = await fetch(scriptUrl);
+                    if (!response.ok) throw new Error(`Pages HTTP ${response.status}`);
                     const scriptText = await response.text();
                     
+                    // Safe evaluation – the script only defines imageGroups
                     const fn = new Function(scriptText + '; return imageGroups;');
                     const imageGroups = fn();
                     
@@ -3331,52 +3743,80 @@
                             });
                         }
                     });
-                    if (allImages.length === 0) throw new Error('No images found');
-                    return allImages;
+                    if (allImages.length === 0) throw new Error('No images found in Pages catalog');
+                    return { images: allImages, method: 'CATALOG' };
                 };
-                
+
                 // Method 2: GitHub API (reliable fallback)
                 const tryGitHubAPI = async () => {
                     const repo = '0xnotkyo/walls';
                     const contentsResp = await fetch(`https://api.github.com/repos/${repo}/contents/images`);
+                    if (!contentsResp.ok) throw new Error(`API HTTP ${contentsResp.status}`);
                     const contents = await contentsResp.json();
                     const folders = contents.filter(item => item.type === 'dir');
+                    if (folders.length === 0) throw new Error('No folders found');
+                    
                     const randomFolder = folders[Math.floor(Math.random() * folders.length)];
                     const filesResp = await fetch(randomFolder.url);
                     const files = await filesResp.json();
                     const images = files.filter(f => f.name.match(/\.(jpg|jpeg|png|gif|webp)$/i));
-                    const randomImage = images[Math.floor(Math.random() * images.length)];
-                    return [{
-                        url: randomImage.download_url,
-                        category: randomFolder.name,
-                        filename: randomImage.name
-                    }];
-                };
-                
-                try {
-                    appendCommandHTML('<span style="color: #888;">📋 Loading wallpaper catalog...</span>');
-                    let allImages;
-                    let methodUsed = '';
+                    if (images.length === 0) throw new Error('No images in folder');
                     
+                    const randomImage = images[Math.floor(Math.random() * images.length)];
+                    return {
+                        images: [{
+                            url: randomImage.download_url,
+                            category: randomFolder.name,
+                            filename: randomImage.name
+                        }],
+                        method: 'API'
+                    };
+                };
+
+                // Method 3: Picsum fallback (last resort)
+                const tryPicsumFallback = () => {
+                    const randomID = Math.floor(Math.random() * 1000);
+                    return {
+                        images: [{
+                            url: `https://picsum.photos/id/${randomID}/800/600`,
+                            category: 'RANDOM_GEN',
+                            filename: `gen_${randomID}.jpg`
+                        }],
+                        method: 'FALLBACK'
+                    };
+                };
+
+                try {
+                    appendCommandHTML('<span style="color: #888;">📡 Uplinking to wallpaper satellite...</span>');
+                    
+                    let result;
                     try {
-                        allImages = await tryGitHubPages();
-                        methodUsed = ' (via Pages)';
-                    } catch (e) {
-                        console.warn('GitHub Pages failed, falling back to API:', e);
-                        allImages = await tryGitHubAPI();
-                        methodUsed = ' (via API)';
+                        result = await tryGitHubPages();
+                    } catch (pagesError) {
+                        console.warn('GitHub Pages failed:', pagesError);
+                        try {
+                            result = await tryGitHubAPI();
+                        } catch (apiError) {
+                            console.warn('GitHub API failed:', apiError);
+                            result = tryPicsumFallback();
+                        }
                     }
                     
+                    const allImages = result.images;
+                    const methodTag = ` [${result.method}]`;
                     const randomItem = allImages[Math.floor(Math.random() * allImages.length)];
-                    const imgHtml = `<br><img src="${randomItem.url}" 
-                        style="max-width: 100%; max-height: 300px; border: 1px solid var(--accent-color); border-radius: 8px; 
-                            box-shadow: 0 0 15px rgba(0,255,0,0.2); margin-top: 8px;">`;
                     
-                    return `🖼️ Random from ${randomItem.category}${methodUsed}:<br>📄 ${randomItem.filename}${imgHtml}`;
+                    const imgHtml = `<br><img src="${randomItem.url}" 
+                        style="max-width: 100%; height: 250px; width: 100%; object-fit: cover; 
+                            border: 1px solid var(--accent-color); border-radius: 4px; 
+                            filter: contrast(1.1) brightness(0.9); margin-top: 8px;"
+                        loading="lazy" alt="Wallpaper">`;
+                    
+                    return `🖼️ SOURCE: ${randomItem.category}${methodTag}<br>📄 FILE: ${randomItem.filename}${imgHtml}`;
                     
                 } catch (error) {
-                    console.error('Walls error:', error);
-                    return '⚠️ Could not fetch wallpapers.<br><img src="https://picsum.photos/280/160" style="margin-top: 8px; border: 1px solid var(--accent-color); border-radius: 8px;">';
+                    console.error('Walls catastrophic error:', error);
+                    return '⚠️ CONNECTION LOST: Could not sync wallpapers.';
                 }
             },
             'weather': async (args) => {
@@ -3399,10 +3839,77 @@
                         headers: { 'Accept': 'application/json' }
                     });
                     const data = await resp.json();
-                    return `😂 ${data.joke} 😂`;
+                    return `😂 ${data.joke}`;
                 } catch (e) {
                     return 'Why did the joke API fail? It had too many punchlines to handle.😂';
                 }
+            },
+            'riddle': () => {
+                const riddles = [
+                    { q: "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?", a: "An echo" },
+                    { q: "The more you take, the more you leave behind. What am I?", a: "Footsteps" },
+                    { q: "I have cities, but no houses. I have mountains, but no trees. I have water, but no fish. What am I?", a: "A map" },
+                    { q: "What has to be broken before you can use it?", a: "An egg" },
+                    { q: "I'm tall when I'm young, and I'm short when I'm old. What am I?", a: "A candle" },
+                    { q: "What month of the year has 28 days?", a: "All of them" },
+                    { q: "What is full of holes but still holds water?", a: "A sponge" },
+                    { q: "What question can you never answer yes to?", a: "Are you asleep yet?" },
+                    { q: "What is always in front of you but can't be seen?", a: "The future" },
+                    { q: "What can you break, even if you never pick it up or touch it?", a: "A promise" },
+                    { q: "What gets wet while drying?", a: "A towel" },
+                    { q: "I have branches, but no fruit, trunk, or leaves. What am I?", a: "A bank" },
+                    { q: "What can run but never walks, has a mouth but never talks?", a: "A river" },
+                    { q: "What has hands but can't clap?", a: "A clock" },
+                    { q: "What has a head and a tail but no body?", a: "A coin" },
+                    { q: "Where does today come before yesterday?", a: "The dictionary" },
+                    { q: "What invention lets you look right through a wall?", a: "A window" },
+                    { q: "What has 13 hearts but no other organs?", a: "A deck of cards" },
+                    { q: "What has one eye but can't see?", a: "A needle" },
+                    { q: "What has words but never speaks?", a: "A book" },
+                    { q: "What can travel all around the world without leaving its corner?", a: "A stamp" },
+                    { q: "What has a neck but no head?", a: "A bottle" },
+                    { q: "What gets bigger the more you take from it?", a: "A hole" },
+                    { q: "What is so fragile that saying its name breaks it?", a: "Silence" },
+                    { q: "What goes up but never comes down?", a: "Your age" },
+                    { q: "What has keys but can't open locks?", a: "A piano" },
+                    { q: "What has a thumb and four fingers but is not alive?", a: "A glove" },
+                    { q: "What has a bed but never sleeps, has a mouth but never eats?", a: "A river" },
+                    { q: "What has four wheels and flies?", a: "A garbage truck" },
+                    { q: "What has teeth but cannot bite?", a: "A comb" },
+                    { q: "What has a ring but no finger?", a: "A telephone" },
+                    { q: "What has an eye but cannot see?", a: "A storm" },
+                    { q: "What has a foot but no legs?", a: "A snail" },
+                    { q: "What has a face but no eyes, hands but no arms?", a: "A clock" },
+                    { q: "What has a heart that doesn't beat?", a: "An artichoke" },
+                    { q: "What has a head, a tail, is brown, and has no legs?", a: "A penny" },
+                    { q: "What room can no one enter?", a: "A mushroom" },
+                    { q: "What is black when you buy it, red when you use it, and gray when you throw it away?", a: "Charcoal" },
+                    { q: "What can you catch but never throw?", a: "A cold" },
+                    { q: "What belongs to you but others use it more than you do?", a: "Your name" },
+                    { q: "What has many keys but can't open a single door?", a: "A keyboard" },
+                    { q: "What has a face that doesn't frown, hands that don't wave, and tells time without a sound?", a: "A digital clock" },
+                    { q: "What building has the most stories?", a: "A library" },
+                    { q: "What is lighter than a feather but even the world's strongest person can't hold it for long?", a: "Breath" },
+                    { q: "What starts with T, ends with T, and has T in it?", a: "A teapot" },
+                    { q: "What word becomes shorter when you add two letters?", a: "Short" },
+                    { q: "What is at the end of a rainbow?", a: "The letter W" },
+                    { q: "What comes once in a minute, twice in a moment, but never in a thousand years?", a: "The letter M" },
+                    { q: "What begins with an E but only has one letter?", a: "An envelope" },
+                    { q: "If you have me, you want to share me. If you share me, you haven't got me. What am I?", a: "A secret" }
+                ];
+                
+                const r = riddles[Math.floor(Math.random() * riddles.length)];
+                
+                return `
+                    <div style="border-left: 2px solid #ffaa00; padding-left: 10px; margin: 5px 0;">
+                        🤔 <strong style="color: #ffaa00;">RIDDLE</strong><br>
+                        <span style="color: #ffffff;">${r.q}</span><br>
+                        <details style="margin-top: 8px; color: #888;">
+                            <summary style="cursor: pointer; color: #00f0ff;">Reveal Answer</summary>
+                            <span style="color: #4aff9e;">${r.a}</span>
+                        </details>
+                    </div>
+                `;
             },
             'learn': async () => {
                 const loadId = 'learn-load-' + Date.now();
@@ -3438,27 +3945,30 @@
             },
             'anime': async () => {
                 try {
-                    // Top Anime (10 items)
+                    // Fetch Top Anime
                     const topResp = await fetch('https://api.jikan.moe/v4/top/anime');
+                    if (!topResp.ok) throw new Error('Rate limit');
                     const topData = await topResp.json();
                     
-                    let output = '<strong style="color: #2e51a2;">🎌 Top Anime (MyAnimeList)</strong><br>';
+                    let output = '<strong style="color: #2e51a2;">🎌 TOP ANIME (MyAnimeList)</strong><br>';
                     topData.data.slice(0, 10).forEach((item, i) => {
-                        output += `${i+1}. ${item.title} <span style="color: #ffaa00;">(⭐ ${item.score})</span><br>`;
+                        // Added a link so you can actually go see the anime
+                        output += `${i+1}. <a href="${item.url}" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: none;">${item.title}</a> <span style="color: #ffaa00;">(⭐ ${item.score})</span><br>`;
                     });
                     
-                    // Currently Airing (10 items)
+                    // Fetch Airing
                     const airingResp = await fetch('https://api.jikan.moe/v4/seasons/now?sfw');
+                    if (!airingResp.ok) throw new Error('Rate limit');
                     const airingData = await airingResp.json();
                     
-                    output += '<br><strong style="color: #ff5733;">📺 Currently Airing</strong><br>';
+                    output += '<br><strong style="color: #ff5733;">📺 CURRENTLY AIRING</strong><br>';
                     airingData.data.slice(0, 10).forEach((item, i) => {
-                        output += `${i+1}. ${item.title} <span style="color: #888;">(${item.type})</span><br>`;
+                        output += `${i+1}. <a href="${item.url}" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: none;">${item.title}</a> <span style="color: #888;">(${item.type})</span><br>`;
                     });
                     
                     return output;
                 } catch (e) {
-                    return '⚠️ Jikan API unavailable. Try again later.';
+                    return '<span style="color: #ff0000;">⚠️ SENSORS DOWN: Jikan API rate limited or offline.</span>';
                 }
             },
             'technology': async () => {
@@ -3493,7 +4003,7 @@
                     // 4. Display the headlines
                     let output = '<strong style="color: #00f0ff;">🖥️ CURATED TECH HEADLINES</strong><br>';
                     sortedItems.forEach((item, i) => {
-                        output += `[${i+1}] ${item.title} <span style="color: #888;">(${item.sourceName})</span><br>`;
+                        output += `[${i+1}] <a href="${item.link}" target="_blank" rel="noopener noreferrer" style="color: #ffffff; text-decoration: none; border-bottom: 1px dotted #00f0ff;">${item.title}</a> <span style="color: #888;">(${item.sourceName})</span><br>`;
                     });
                     
                     return output;
@@ -3921,11 +4431,274 @@
                 } else {
                     return `
                         <div style="border-left: 2px solid #00ff00; padding-left: 10px; margin: 5px 0;">
-                            ⚡ <strong style="color: #00ff00;">DID YOU KNOW?</strong><br>
+                            ⚡ <strong style="color: #00ff00; font-size: 0.8rem;">DID YOU KNOW?</strong><br>
                             <span style="color: #ffffff;">${item.desc}</span>
                         </div>
                     `;
                 }
+            },
+            'engineering': () => {
+                const facts = [
+                    "The International Space Station (ISS) is the most expensive single object ever built by humankind, with a total cost estimated at over $150 billion.[reference:0]",
+                    "The Golden Gate Bridge's two main suspension cables contain 80,000 miles of steel wire, enough to circle the Earth more than three times.[reference:1]",
+                    "The Hoover Dam contains so much concrete that it took five years for it to completely cool and cure after construction. It was poured in interlocking blocks to speed up the process.[reference:2]",
+                    "The Burj Khalifa is so tall that residents on higher floors experience sunset several minutes after those on the ground, requiring different times for breaking the Ramadan fast.[reference:3]",
+                    "The Great Wall of China is not a single continuous wall but a series of fortifications built by different dynasties, with the total length of all sections exceeding 13,000 miles.[reference:4]",
+                    "The snowboard was invented by an engineer. Sherman Poppen, a chemical engineer, created the 'Snurfer' for his daughter by binding two skis together.[reference:5]",
+                    "The slippery part of a water slide is a feat of civil engineering. A civil engineer designed the pumps and flow rates to maintain a safe but thrilling thin film of water.[reference:6]",
+                    "Canadian engineers receive an Iron Ring upon graduation to be worn on the dominant hand, a constant reminder of their ethical obligation to prioritize public safety over all else.[reference:7]",
+                    "The word 'engineer' originates from the Latin words 'ingeniare' (to contrive or devise) and 'ingenium' (cleverness), the same root for 'ingenious'.[reference:8]",
+                    "Elisa Leonida Zamfirescu was the world's first female engineering graduate, earning her degree in 1912, despite significant societal opposition.[reference:9]",
+                    "Bakelite, invented in 1907, was the world's first fully synthetic plastic. It was an engineering breakthrough that launched the modern plastics industry.[reference:10]",
+                    "James Buchanan Eads, a self-taught engineer, built the Eads Bridge in St. Louis, the first major bridge to use steel as a primary structural material.[reference:11]",
+                    "The Ferris Wheel was invented by George Washington Gale Ferris Jr., an engineer from Pittsburgh, as a direct challenge to the Eiffel Tower for the 1893 Chicago World's Fair.[reference:12]",
+                    "An engineer created a chemical coating that allows cotton to clean itself of stains and odors when exposed to sunlight.[reference:13]",
+                    "Star Wars wouldn't exist without engineers. The original movie required a team of engineers to design and build the innovative motion-control camera rigs that made the space battles possible.[reference:14]",
+                    "The Channel Tunnel, connecting England and France, is 31 miles long, with 23 of those miles running under the seabed.[reference:15]",
+                    "Engineers design the soles of running shoes to balance protection, performance, and comfort using complex materials science.[reference:16]",
+                    "The tiny dimples on a golf ball were discovered by engineers to reduce drag and allow the ball to fly nearly twice as far as a smooth one.[reference:17]",
+                    "Engineers have attempted to become astronauts, with some applying 15 times over 15 years before finally being selected.[reference:18]",
+                    "The original patent for the telephone was filed by Alexander Graham Bell, an engineer and scientist, just hours before a rival inventor submitted his own.[reference:19]",
+                ];
+                
+                const f = facts[Math.floor(Math.random() * facts.length)];
+                
+                return `
+                    <div style="border-left: 2px solid #ffaa00; padding-left: 10px; margin: 5px 0;">
+                        ⚙️ <strong style="color: #ffaa00;">ENGINEERING FEAT</strong><br>
+                        <span style="color: #ffffff;">${f}</span>
+                    </div>
+                `;
+            },
+            'case': (args) => {
+                if (args.length === 0) {
+                    return `
+                        <div style="border: 1px solid #ffaa00; padding: 12px; border-radius: 6px; background: rgba(255,170,0,0.05);">
+                            <strong style="color: #ffaa00; font-size: 1.1rem;">🛠️ ENGINEERING CASE SIMULATOR</strong><br>
+                            <span style="color: #ccc;">A field toolkit for quick diagnostics, calculations, and decoding.</span><br><br>
+                            
+                            <strong style="color: var(--accent-color);">📋 QUICK REFERENCE</strong><br>
+                            <span style="color: #888;">Usage: case &lt;tool&gt; [parameters]</span><br><br>
+                            
+                            <strong style="color: #0f0;">⚡ LED Resistor</strong><br>
+                            <span style="color: #fff;">case resistor 12v led</span> <span style="color: #888;">→ calc resistor for 12V supply, 2V LED</span><br>
+                            <span style="color: #fff;">case resistor 9v 3.2v 0.02</span> <span style="color: #888;">→ custom LED (3.2V, 20mA)</span><br><br>
+                            
+                            <strong style="color: #0f0;">🎨 Resistor Color Decode</strong><br>
+                            <span style="color: #fff;">case decode brown black red</span> <span style="color: #888;">→ 1kΩ ±5% (default gold)</span><br>
+                            <span style="color: #fff;">case decode yellow violet orange gold</span> <span style="color: #888;">→ 47kΩ ±5%</span><br><br>
+                            
+                            <strong style="color: #0f0;">🔌 Ohm's Law</strong><br>
+                            <span style="color: #fff;">case ohmslaw V 0.02 1000</span> <span style="color: #888;">→ V = I × R (20mA × 1kΩ = 20V)</span><br>
+                            <span style="color: #fff;">case ohmslaw I 5 220</span> <span style="color: #888;">→ I = V / R (5V / 220Ω = 22.7mA)</span><br>
+                            <span style="color: #fff;">case ohmslaw R 12 0.5</span> <span style="color: #888;">→ R = V / I (12V / 0.5A = 24Ω)</span><br><br>
+                            
+                            <strong style="color: #0f0;">📊 Voltage Divider</strong><br>
+                            <span style="color: #fff;">case vdivider 5 10000 10000</span> <span style="color: #888;">→ 5V with two 10kΩ → 2.5V out</span><br><br>
+                            
+                            <strong style="color: #0f0;">🔗 Series / Parallel</strong><br>
+                            <span style="color: #fff;">case series 100 220 330</span> <span style="color: #888;">→ 650Ω total</span><br>
+                            <span style="color: #fff;">case parallel 100 100</span> <span style="color: #888;">→ 50Ω total</span><br><br>
+                            
+                            <strong style="color: #0f0;">🔋 Capacitor Code</strong><br>
+                            <span style="color: #fff;">case capacitor 104</span> <span style="color: #888;">→ 100nF (0.1µF)</span><br>
+                            <span style="color: #fff;">case capacitor 472</span> <span style="color: #888;">→ 4.7nF</span><br><br>
+                            
+                            <span style="color: #888;">Type a command above to run diagnostics.</span>
+                        </div>
+                    `;
+                }
+
+                const tool = args[0].toLowerCase();
+                const params = args.slice(1);
+
+                // ----- RESISTOR COLOR CODE DECODER -----
+                const colorMap = {
+                    'black': 0, 'brown': 1, 'red': 2, 'orange': 3, 'yellow': 4,
+                    'green': 5, 'blue': 6, 'violet': 7, 'grey': 8, 'white': 9,
+                    'gray': 8, 'purple': 7
+                };
+                const toleranceMap = {
+                    'brown': '±1%', 'red': '±2%', 'green': '±0.5%', 'blue': '±0.25%',
+                    'violet': '±0.1%', 'grey': '±0.05%', 'gold': '±5%', 'silver': '±10%',
+                    'none': '±20%'
+                };
+
+                if (tool === 'decode') {
+                    if (params.length < 3) return '⚠️ Usage: case decode &lt;band1&gt; &lt;band2&gt; &lt;band3&gt; [tolerance]';
+                    const c1 = params[0].toLowerCase();
+                    const c2 = params[1].toLowerCase();
+                    const c3 = params[2].toLowerCase();
+                    const tol = params[3]?.toLowerCase() || 'gold';
+                    
+                    if (!(c1 in colorMap) || !(c2 in colorMap) || !(c3 in colorMap)) {
+                        return '⚠️ Invalid color. Use: black, brown, red, orange, yellow, green, blue, violet, grey, white';
+                    }
+                    
+                    const val = (colorMap[c1] * 10 + colorMap[c2]) * Math.pow(10, colorMap[c3]);
+                    const tolerance = toleranceMap[tol] || '±5%';
+                    const formatted = val >= 1000 ? `${(val/1000).toFixed(1)}kΩ` : `${val}Ω`;
+                    
+                    return `
+                        <div style="border-left: 2px solid #ffaa00; padding-left: 10px;">
+                            🔍 <strong style="color: #ffaa00;">RESISTOR DECODE</strong><br>
+                            <span style="color: #fff;">${c1.toUpperCase()} (${colorMap[c1]}) | ${c2.toUpperCase()} (${colorMap[c2]}) | ${c3.toUpperCase()} (×${Math.pow(10, colorMap[c3])})</span><br>
+                            <span style="color: #00ff00;">📐 VALUE: ${formatted}  ${tolerance}</span>
+                        </div>
+                    `;
+                }
+
+                // ----- LED RESISTOR CALCULATOR -----
+                if (tool === 'resistor' || tool === 'led-resistor') {
+                    if (params.length < 2) return '⚠️ Usage: case resistor &lt;supplyV&gt; led [ledV=2.0] [ledI=0.02]';
+                    
+                    const supplyV = parseFloat(params[0]);
+                    if (isNaN(supplyV)) return '⚠️ Invalid supply voltage.';
+                    
+                    let ledV = 2.0;
+                    let ledI = 0.02; // 20mA default
+                    
+                    if (params.length >= 3 && params[1].toLowerCase() !== 'led') {
+                        ledV = parseFloat(params[1]);
+                        ledI = params[2] ? parseFloat(params[2]) : 0.02;
+                    } else if (params.length >= 4) {
+                        ledV = parseFloat(params[2]);
+                        ledI = parseFloat(params[3]) || 0.02;
+                    }
+                    
+                    if (isNaN(ledV) || isNaN(ledI)) return '⚠️ Invalid LED parameters.';
+                    if (supplyV <= ledV) {
+                        return `
+                            <div style="border-left: 3px solid #888; padding-left: 10px;">
+                                🔌 <strong style="color: #888;">INSUFFICIENT POWER</strong><br>
+                                <span style="color: #fff;">Source (${supplyV}V) is below LED forward voltage (${ledV}V). No light emitted.</span>
+                            </div>
+                        `;
+                    }
+                    
+                    const requiredR = Math.ceil((supplyV - ledV) / ledI);
+                    const power = (supplyV - ledV) * ledI;
+                    
+                    // Stress simulation: assume naked LED has ~25Ω internal resistance
+                    const stressCurrent = (supplyV - ledV) / 25;
+                    const isDead = stressCurrent > 0.05; // >50mA typically destroys LED
+                    const standardResistors = [1, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2];
+                    let bestRes = standardResistors[0];
+                    for (const r of standardResistors) {
+                        if (Math.abs(r * Math.pow(10, Math.floor(Math.log10(requiredR))) - requiredR) < 
+                            Math.abs(bestRes - requiredR)) bestRes = r;
+                    }
+                    const multiplier = Math.pow(10, Math.floor(Math.log10(requiredR)));
+                    const standardVal = Math.round(bestRes * multiplier);
+                    
+                    let report = `
+                        <div style="border-left: 3px solid #00ff00; padding-left: 10px;">
+                            ⚡ <strong style="color: #00ff00;">DIAGNOSTIC: LED STRESS TEST</strong><br>
+                            <span style="color: #fff;">Target: ${ledV}V @ ${(ledI*1000).toFixed(0)}mA | Source: ${supplyV}V</span><br>
+                            <span style="color: #fff;">Calculation: (${supplyV}V - ${ledV}V) / ${ledI}A = </span><strong>${requiredR}Ω</strong><br>
+                            <span style="color: #ffaa00;">🔧 Standard value: ${standardVal}Ω (use ≥ ${Math.ceil(power*2*1000)}mW rating)</span><br>
+                    `;
+                    
+                    if (isDead) {
+                        report += `
+                            <br><span style="color: #ff0000; font-weight: bold;">⚠️ STRESS ALERT: CRITICAL FAILURE</span><br>
+                            <span style="color: #ff5555;">Without a resistor, current surge = ${(stressCurrent*1000).toFixed(0)}mA.<br>
+                            Thermal runaway detected. Component destroyed. 💀</span>
+                        `;
+                    } else {
+                        report += `
+                            <br><span style="color: #00ff00;">✅ Stability achieved with ${standardVal}Ω resistor.</span>
+                        `;
+                    }
+                    
+                    return report + `</div>`;
+                }
+
+                // ----- OHM'S LAW SOLVER -----
+                if (tool === 'ohmslaw') {
+                    if (params.length < 3) return '⚠️ Usage: case ohmslaw &lt;V|I|R&gt; &lt;value1&gt; &lt;value2&gt;';
+                    const solveFor = params[0].toUpperCase();
+                    const v1 = parseFloat(params[1]);
+                    const v2 = parseFloat(params[2]);
+                    if (isNaN(v1) || isNaN(v2)) return '⚠️ Invalid numbers.';
+                    
+                    let result;
+                    if (solveFor === 'V') result = v1 * v2;
+                    else if (solveFor === 'I') result = v1 / v2;
+                    else if (solveFor === 'R') result = v1 / v2;
+                    else return '⚠️ Unknown variable. Use V, I, or R.';
+                    
+                    return `
+                        <div style="border-left: 2px solid #00f0ff; padding-left: 10px;">
+                            ⚡ <strong style="color: #00f0ff;">OHM'S LAW</strong><br>
+                            <span style="color: #fff;">${solveFor} = ${result.toFixed(3)}</span>
+                        </div>
+                    `;
+                }
+
+                // ----- VOLTAGE DIVIDER -----
+                if (tool === 'vdivider' || tool === 'voltage_divider') {
+                    if (params.length < 3) return '⚠️ Usage: case vdivider &lt;Vin&gt; &lt;R1&gt; &lt;R2&gt;';
+                    const vin = parseFloat(params[0]);
+                    const r1 = parseFloat(params[1]);
+                    const r2 = parseFloat(params[2]);
+                    if (isNaN(vin) || isNaN(r1) || isNaN(r2)) return '⚠️ Invalid numbers.';
+                    const vout = vin * r2 / (r1 + r2);
+                    return `
+                        <div style="border-left: 2px solid #ffaa00; padding-left: 10px;">
+                            🔌 <strong style="color: #ffaa00;">VOLTAGE DIVIDER</strong><br>
+                            <span style="color: #fff;">Vin = ${vin}V, R1 = ${r1}Ω, R2 = ${r2}Ω</span><br>
+                            <span style="color: #00ff00;">📊 Vout = ${vout.toFixed(3)}V</span>
+                        </div>
+                    `;
+                }
+
+                // ----- PARALLEL RESISTANCE -----
+                if (tool === 'parallel') {
+                    const resistors = params.map(p => parseFloat(p)).filter(v => !isNaN(v) && v > 0);
+                    if (resistors.length < 2) return '⚠️ Need at least two resistor values.';
+                    const invSum = resistors.reduce((sum, r) => sum + 1/r, 0);
+                    const req = 1 / invSum;
+                    return `
+                        <div style="border-left: 2px solid #ff00ff; padding-left: 10px;">
+                            🔗 <strong style="color: #ff00ff;">PARALLEL RESISTANCE</strong><br>
+                            <span style="color: #fff;">${resistors.join('Ω || ')}Ω</span><br>
+                            <span style="color: #00ff00;">📊 Equivalent: ${req.toFixed(3)}Ω</span>
+                        </div>
+                    `;
+                }
+
+                // ----- SERIES RESISTANCE -----
+                if (tool === 'series') {
+                    const resistors = params.map(p => parseFloat(p)).filter(v => !isNaN(v));
+                    if (resistors.length < 2) return '⚠️ Need at least two resistor values.';
+                    const req = resistors.reduce((sum, r) => sum + r, 0);
+                    return `
+                        <div style="border-left: 2px solid #ff00ff; padding-left: 10px;">
+                            🔗 <strong style="color: #ff00ff;">SERIES RESISTANCE</strong><br>
+                            <span style="color: #fff;">${resistors.join('Ω + ')}Ω</span><br>
+                            <span style="color: #00ff00;">📊 Equivalent: ${req.toFixed(3)}Ω</span>
+                        </div>
+                    `;
+                }
+
+                // ----- CAPACITOR CODE DECODER (e.g., 104 = 100nF) -----
+                if (tool === 'capacitor') {
+                    const code = params[0];
+                    if (!code || !/^\d{3}$/.test(code)) return '⚠️ Usage: case capacitor &lt;3-digit-code&gt; (e.g., 104)';
+                    const pF = parseInt(code.slice(0,2)) * Math.pow(10, parseInt(code[2]));
+                    const nF = pF / 1000;
+                    const uF = pF / 1000000;
+                    return `
+                        <div style="border-left: 2px solid #ffff00; padding-left: 10px;">
+                            🔋 <strong style="color: #ffff00;">CAPACITOR DECODE</strong><br>
+                            <span style="color: #fff;">Code: ${code}</span><br>
+                            <span style="color: #00ff00;">📊 ${pF}pF = ${nF.toFixed(2)}nF = ${uF.toFixed(3)}µF</span>
+                        </div>
+                    `;
+                }
+
+                return `⚠️ Unknown tool: ${tool}. Type 'case' for available tools.`;
             },
             'scroll': () => {
                 const output = document.getElementById('cmd-output');
@@ -4027,6 +4800,54 @@
 
                 return '⚡ Initiating neural link... [45 SECOND UPLOAD – STAY STILL]';
             },
+            'intersectslow': () => {
+                if (typeof taoChapters === 'undefined' || !taoChapters.length) {
+                    return '⚠️ Tao Te Ching database not loaded.';
+                }
+                if (typeof galleryImages === 'undefined' || !galleryImages.length) {
+                    return '⚠️ Gallery images not found.';
+                }
+
+                const overlay = document.createElement('div');
+                overlay.id = 'intersect-overlay';
+                document.body.appendChild(overlay);
+
+                if (typeof startContinuousTone === 'function') {
+                    startContinuousTone();
+                }
+
+                let count = 0;
+                // 60 seconds / 0.5 seconds per flash = 120 flashes
+                const maxFlashes = 120; 
+
+                const interval = setInterval(() => {
+                    if (count >= maxFlashes) {
+                        clearInterval(interval);
+                        if (typeof stopContinuousTone === 'function') {
+                            stopContinuousTone();
+                        }
+                        overlay.remove();
+                        if (typeof triggerGhost === 'function') {
+                            triggerGhost('🧠 DEEP NEURAL INTEGRATION COMPLETE');
+                        }
+                        return;
+                    }
+
+                    // Alternating logic
+                    if (count % 2 === 0) {
+                        const randomImg = galleryImages[Math.floor(Math.random() * galleryImages.length)];
+                        overlay.innerHTML = `<img src="${randomImg}" style="width:100%; height:100%; object-fit:cover;">`;
+                    } else {
+                        const chapter = taoChapters[Math.floor(Math.random() * taoChapters.length)];
+                        const snippet = chapter.text.substring(0, 250).replace(/\n/g, ' ');
+                        overlay.innerHTML = `<div class="intersect-text" style="display:flex; align-items:center; justify-content:center; height:100%; padding:40px; text-align:center; font-size:24px;">${snippet}…</div>`;
+                    }
+
+                    count++;
+                }, 500); // 500ms = Half a second per flash (Slower)
+
+                return '⚡ Initiating deep sync... [60 SECOND CALIBRATION – OBSERVE]';
+            },
         }
 
         
@@ -4087,6 +4908,39 @@
                 appendCommandOutput(`Error: ${error.message}`, true);
             }
         });
+        // --- FULLSCREEN TOGGLE FOR TERMINAL ---
+        const fullscreenBtn = document.getElementById('terminal-fullscreen-btn');
+        const terminalContainer = document.getElementById('command-runner');
+
+        if (fullscreenBtn && terminalContainer) {
+            fullscreenBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    // Enter fullscreen
+                    terminalContainer.requestFullscreen().catch(err => {
+                        console.warn(`Fullscreen error: ${err.message}`);
+                    });
+                    fullscreenBtn.textContent = '✕ Exit Fullscreen';
+                } else {
+                    // Exit fullscreen
+                    document.exitFullscreen();
+                    fullscreenBtn.textContent = '⛶ Fullscreen';
+                }
+            });
+
+            // Listen for fullscreen change events (e.g., user presses ESC)
+            document.addEventListener('fullscreenchange', () => {
+                if (!document.fullscreenElement) {
+                    fullscreenBtn.textContent = '⛶ Fullscreen';
+                }
+            });
+            
+            // For Safari / older browsers
+            document.addEventListener('webkitfullscreenchange', () => {
+                if (!document.webkitFullscreenElement) {
+                    fullscreenBtn.textContent = '⛶ Fullscreen';
+                }
+            });
+        }
         
 
             
