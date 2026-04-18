@@ -181,6 +181,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 | `play youtube <id/url>` | Embed YouTube video player in the terminal |
 | `play audio <url>`      | Play direct audio file (MP3, OGG, WAV) or live stream URL |
 | `radio [channel]`       | Tune into a curated Akashic radio frequency (see channel list below) |
+| `tv [channel]`          | Watch a curated live TV feed: fr24-fr, fr24-en, nasa, iss, lofi, and more |
 | `stop`                  | Stop all currently playing media (YouTube and audio) |
 | `fetch`               | Display system info panel (cyber‑fetch terminal) |
 | `neofetch`            | Manually trigger the RUN JOHAN_OS system info panel |
@@ -228,22 +229,17 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 
 ### 🎧 Media Playback
 
-The terminal supports both video and audio playback.
+The terminal supports YouTube video embedding, direct audio playback, live radio streams, and curated live TV channels.
 
-- **YouTube videos** can be embedded directly using a video ID or full URL.  
-  Example: `play youtube dQw4w9WgXcQ` or `play youtube https://youtu.be/dQw4w9WgXcQ`
-
-- **Audio files and live streams** are played via an invisible HTML5 audio element.  
-  Example: `play audio https://ice1.somafm.com/defcon-128-mp3`
-
-- **Curated radio stations** are available via the `radio` command. Type `radio` alone to see the channel list, or jump directly to a channel:  
-  Example: `radio defcon` or `radio deepspace`
-
-- **Stop playback** at any time with `stop` command.
+| Command                   | Description |
+|---------------------------|-------------|
+| `play youtube <id/url>`   | Embed a YouTube video or live stream in the terminal |
+| `play audio <url>`        | Play a direct audio file (MP3, OGG, WAV) or live stream URL |
+| `radio [channel]`         | Tune into a curated Akashic radio frequency |
+| `tv [channel]`            | Watch a curated live TV feed (news, space, anime, documentaries) |
+| `stop`                    | Stop all currently playing media (YouTube and audio) |
 
 #### 📻 Akashic Radio Frequencies
-
-Use `radio <channel>` to tune into a curated stream. All stations are HTTPS‑compatible and require no authentication.
 
 | Channel      | Genre / Vibe                | Source                     |
 |--------------|-----------------------------|----------------------------|
@@ -257,7 +253,25 @@ Use `radio <channel>` to tune into a curated stream. All stations are HTTPS‑co
 | `fiphiphop`  | Hip‑Hop (French)            | Fip Hip‑Hop                |
 | `thebeat`    | Hip‑Hop / Urban             | 181.fm The Beat            |
 
-Type `radio` without arguments to see the channel list directly in the terminal.
+#### 📺 Akashic Visual Uplink Channels
+
+| Channel       | Type      | Description |
+|---------------|-----------|-------------|
+| `fr24-en`     | YouTube   | France 24 English |
+| `fr24-fr`     | YouTube   | France 24 Français |
+| `euronews-fr` | YouTube   | Euronews Français |
+| `sky`         | YouTube   | Sky News |
+| `nasa-hd`     | YouTube   | NASA ISS HD Live (official high‑quality) |
+| `iss-earth`   | YouTube   | Earth from Space (ISS) |
+| `lofi`        | YouTube   | Lofi Girl |
+| `gumball`     | YouTube   | Amazing World of Gumball (24/7) |
+| `afrobeats`   | HLS       | Afrobeats music |
+| `anileap`     | HLS       | Anime streaming |
+| `clubtv`      | HLS       | English Club TV |
+| `curiosity`   | HLS       | Curiosity Now |
+| `natgeowild`  | HLS       | Nat Geo Wild |
+
+Type `radio` or `tv` without arguments to see the channel list directly in the terminal.
 
 
 ### ⚙️ Engineering Case Simulator (`case`)

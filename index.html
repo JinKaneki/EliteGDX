@@ -12,6 +12,7 @@
     <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
     <!--BASIC SEO-->
     <meta name="description" content="Elite Gems Dashboard : an ambient display with Cistercian clock, analog clock, and image slideshow.">
@@ -1203,6 +1204,26 @@
             animation: scanline 2s infinite ease-in-out;
             border-left: 3px solid #00ffff !important;
             padding-left: 10px;
+        }
+
+        video {
+            outline: none;
+            background: #000;
+            border-radius: 6px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+        }
+
+        /* Cyberpunk neon controls */
+        video::-webkit-media-controls-panel {
+            background-color: rgba(0, 0, 0, 0.7) !important;
+            filter: hue-rotate(180deg) invert(1);
+            border-radius: 0 0 6px 6px;
+        }
+
+        video::-webkit-media-controls-play-button,
+        video::-webkit-media-controls-volume-slider,
+        video::-webkit-media-controls-timeline {
+            filter: drop-shadow(0 0 5px #00ffff);
         }
 
 
@@ -3216,7 +3237,7 @@
         // Authorization state (from sudo / login)
         let isAuthorized = false;  // set to true when user says "please" or logs in
 
-        function createYouTubePlayer(videoId, containerId) {
+        function createYouTubePlayer(videoUrlOrId, containerId) {
             if (!window.YTReady) {
                 appendCommandOutput('⚠️ YouTube API still loading. Try again in a moment.', true);
                 return;
@@ -3231,7 +3252,6 @@
                 youtubePlayer = new YT.Player(containerId, {
                     height: '250',
                     width: '100%',
-                    videoId: videoId,
                     playerVars: {
                         autoplay: 1,
                         modestbranding: 1,
@@ -3252,6 +3272,13 @@
                         }
                     }
                 });
+                
+                // Determine if it's a full URL or just an ID
+                if (videoUrlOrId.includes('youtube.com') || videoUrlOrId.includes('youtu.be')) {
+                    youtubePlayer.loadVideoByUrl(videoUrlOrId);
+                } else {
+                    youtubePlayer.loadVideoById(videoUrlOrId);
+                }
             } catch (e) {
                 appendCommandOutput(`⚠️ Player creation failed: ${e.message}`, true);
             }
@@ -3276,6 +3303,37 @@
             'fiphiphop': 'https://direct.fipradio.fr/live/fiphiphop-hifi.aac',
             'thebeat': 'https://listen.181fm.com/181-beat_128k.mp3'
         };
+
+        function playTvChannel(channelId, channelName, streamType, streamUrl) {
+            if (streamType === 'youtube') {
+                // Reuse existing YouTube player logic
+                return commands['play'](['youtube', streamUrl]);
+            } else if (streamType === 'hls') {
+                const containerId = 'hls-player-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+                
+                // Schedule HLS initialization after DOM update
+                setTimeout(() => {
+                    const video = document.getElementById(containerId);
+                    if (video && Hls.isSupported()) {
+                        const hls = new Hls();
+                        hls.loadSource(streamUrl);
+                        hls.attachMedia(video);
+                        hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+                    } else if (video && video.canPlayType('application/vnd.apple.mpegurl')) {
+                        // Safari native HLS support
+                        video.src = streamUrl;
+                        video.play();
+                    }
+                }, 50);
+                
+                return `
+                    <div style="margin: 12px 0; border: 1px solid var(--accent-color); border-radius: 8px; overflow: hidden; background: #000;">
+                        <video id="${containerId}" controls autoplay style="width: 100%; max-height: 300px;"></video>
+                    </div>
+                    <span style="color: #00ffff;">📡 FEED ESTABLISHED: ${channelName}</span>
+                `;
+            }
+        }
 
         
         // 3. COMMAND RUNNER
@@ -3348,7 +3406,7 @@
                 news, hackernews, technology, weather [city]<br>
                 <br>
                 <strong style="color: var(--accent-color);">📚 LEARNING & REFERENCE</strong><br>
-                define [word], learn, physics, electronics, engineering, biology, space, cstip, fortune<br>
+                define [word], learn, physics, electronics, engineering, biology, space, cstip, fortune, Akashic<br>
                 <br>
                 <strong style="color: var(--accent-color);">⚙️ ENGINEERING TOOLS</strong><br>
                 case  -> interactive diagnostics: resistor calc, color decode, Ohm's Law, voltage divider, capacitor codes<br>
@@ -3357,7 +3415,7 @@
                 tao, wisdom, sutra, buddha, koan, stoic, bible, verse<br>
                 <br>
                 <strong style="color: var(--accent-color);">🎭 FUN & ENTERTAINMENT</strong><br>
-                joke, riddle, poem, poetry, anime, qr [text], radio [channel], play youtube, play audio, stop<br>
+                joke, riddle, poem, poetry, anime, qr [text], radio [channel], tv [channel], play youtube, play audio, stop<br>
                 <br>
                 <strong style="color: var(--accent-color);">🖼️ VISUALS & EFFECTS</strong><br>
                 image, walls, matrix, scroll, intersect, intersectslow<br>
@@ -3634,6 +3692,17 @@
                 const p = personas[Math.floor(Math.random() * personas.length)];
                 return `User: ${p.name}\nRole: ${p.role}\nStatus: ${p.status}\nPhygital ID: ${p.id}`;
             },
+            'akashic': () => {
+                const secrets = [
+                    "You are the observer and the observed.",
+                    "The terminal is a mirror. What do you see?",
+                    "Zero-point energy fluctuations: nominal.",
+                    "KRYPTOS cipher: UNSOLVED.",
+                    "The Dharma Terminal awaits your next command."
+                ];
+                const msg = secrets[Math.floor(Math.random() * secrets.length)];
+                return `<span style="color: #ff00ff; text-shadow: 0 0 8px #ff00ff;">✨ ${msg}</span>`;
+            },
             'ls': () => 'Documents/  Downloads/  Secret_Project/  tao_te_ching.txt  system_core.bin',
             'echo': (args) => args.join(' ') || 'Usage: echo [text]',
             'shutdown': () => {
@@ -3685,31 +3754,28 @@
                 
                 // ----- YOUTUBE -----
                 if (type === 'youtube' || type === 'yt') {
-                    const input = args[1];
-                    
                     // Gold‑standard regex to extract video ID
-                    const match = input.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-                    
-                    let videoId = null;
+                    const input = args[1];
+                    const match = input.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=|c\/[^\/\n\s]+\/|user\/[^\/\n\s]+\/|@[^\/\n\s]+\/)|youtu\.be\/)([a-zA-Z0-9_-]{11}|live)/);
+
+                    let videoUrlOrId = null;
                     if (match && match[1]) {
-                        videoId = match[1];
+                        // If the captured group is 'live', pass the full URL; otherwise pass the 11-char ID
+                        videoUrlOrId = match[1] === 'live' ? input : match[1];
                     } else if (/^[a-zA-Z0-9_-]{11}$/.test(input)) {
-                        videoId = input; // direct ID
+                        videoUrlOrId = input; // direct ID
                     } else {
                         return '⚠️ Invalid YouTube URL or ID.';
                     }
-                    
-                    // Generate unique container ID
+
                     const containerId = 'yt-player-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
-                    
-                    // Schedule player initialization after DOM update
-                    setTimeout(() => createYouTubePlayer(videoId, containerId), 50);
-                    
+                    setTimeout(() => createYouTubePlayer(videoUrlOrId, containerId), 50);
+
                     return `
                         <div style="margin: 12px 0; border: 1px solid var(--accent-color); border-radius: 8px; overflow: hidden; background: #000; box-shadow: 0 0 15px rgba(0,255,0,0.2);">
                             <div id="${containerId}" style="width: 100%; min-height: 200px;"></div>
                         </div>
-                        <span style="color: #00ffff;">📡 FEED ESTABLISHED: Signal locked to ID [${videoId}]</span>
+                        <span style="color: #00ffff;">📡 FEED ESTABLISHED</span>
                     `;
                 }
                 
@@ -3800,6 +3866,13 @@
                     }
                     currentFeed = feedName;
                 }
+                // Detect YouTube visual feed
+                let visualStatus = 'IDLE';
+                if (youtubePlayer && youtubePlayer.getPlayerState && youtubePlayer.getPlayerState() === 1) {
+                    visualStatus = '<span style="color: #0f0;">ACTIVE FEED</span>';
+                } else {
+                    visualStatus = '<span style="color: #555;">IDLE</span>';
+                }
                 
                 // Uptime calculation
                 const uptimeSec = Math.floor(performance.now() / 1000);
@@ -3823,6 +3896,53 @@
                         <span style="color: #00ffff;">SYSTEM STABILITY: 99.9%</span>
                     </div>
                 `;
+            },
+            'tv': (args) => {
+                const channels = {
+                    // ----- Permanent YouTube /live URLs -----
+                    'fr24-en':     { name: 'France 24 English', type: 'youtube', url: 'https://www.youtube.com/c/FRANCE24English/live' },
+                    'fr24-fr':     { name: 'France 24 Français', type: 'youtube', url: 'https://www.youtube.com/c/FRANCE24/live' },
+                    'euronews-fr': { name: 'Euronews Français', type: 'youtube', url: 'https://www.youtube.com/c/Euronewsfr/live' },
+                    'sky':         { name: 'Sky News', type: 'youtube', url: 'https://www.youtube.com/c/SkyNews/live' },
+                    
+                    // ----- NASA / Space (high quality official streams) -----
+                    'nasa-hd':     { name: 'NASA ISS HD Live', type: 'youtube', url: 'https://www.youtube.com/watch?v=zPH5KtjJFaQ' },
+                    'iss-earth':   { name: 'Earth from Space (ISS)', type: 'youtube', url: 'https://www.youtube.com/watch?v=vytmBNhc9ig' },
+                    
+                    // ----- Entertainment -----
+                    'lofi':        { name: 'Lofi Girl', type: 'youtube', url: 'https://www.youtube.com/c/LofiGirl/live' },
+                    'gumball':     { name: 'Amazing World of Gumball', type: 'youtube', url: 'https://www.youtube.com/watch?v=nIyaCRNwxhU' },
+
+                    // ----- HLS Streams -----
+                    'afrobeats':   { name: 'Afrobeats', type: 'hls', url: 'https://5e2730a9f5f5e.streamlock.net:8443/afrobeats/afrobeats/playlist.m3u8' },
+                    'anileap':     { name: 'AniLeap (Anime)', type: 'hls', url: 'https://dai.google.com/linear/hls/event/uE4M8ZzPRx6YlHwWPnK3Gw/master.m3u8' },
+                    'clubtv':      { name: 'English Club TV', type: 'hls', url: 'https://cdn-englishclubtv.teleosmedia.com/englishclubtv/englishclubtv/playlist.m3u8' },
+                    'curiosity':   { name: 'Curiosity Now', type: 'hls', url: 'https://curiositynow.amagi.tv/playlist.m3u8' },
+                    'natgeowild':  { name: 'Nat Geo Wild', type: 'hls', url: 'https://natgeowild-lh.akamaihd.net/i/natgeowild_1@3241/master.m3u8' }
+                };
+
+                if (!args || args.length === 0) {
+                    let channelList = '';
+                    for (const ch in channels) {
+                        channelList += `<span style="color: #0f0;">${ch}</span>  `;
+                    }
+                    return `
+                        <strong style="color: #00ffff;">📺 AKASHIC VISUAL UPLINK</strong><br>
+                        <span style="color: #888;">Available feeds:</span><br>
+                        ${channelList}<br><br>
+                        <span style="color: #888;">Usage:</span> <span style="color: #0f0;">tv &lt;channel&gt;</span><br>
+                        <span style="color: #888;">Example:</span> tv nasa-hd, tv gumball
+                    `;
+                }
+
+                const choice = args[0].toLowerCase();
+                const channel = channels[choice];
+                if (!channel) {
+                    return `⚠️ Feed "${choice}" not found. Type <span style="color: #0f0;">tv</span> to see channels.`;
+                }
+
+                appendCommandOutput(`📡 Tuning visual feed to ${channel.name}...`, false);
+                return playTvChannel(choice, channel.name, channel.type, channel.url);
             },
             'login': () => {
                 isAuthorized = true;
