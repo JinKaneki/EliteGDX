@@ -157,13 +157,13 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 `news` `hackernews` / `hn` `technology` `weather`
 
 **📚 Learning & Reference**  
-`define` `physics` `electronics` `biology` `space` `cstip` `learn` `fact` `fortune`
+`define` `physics` `electronics` `biology` `space` `cstip` `learn` `fact` `fortune` `akashic`
 
 **🧘 Wisdom & Spirituality**  
 `tao` `wisdom` `sutra` `buddha` `koan` `stoic` `bible` `verse`
 
 **🎭 Fun & Entertainment**  
-`joke` `riddle` `poem` `poetry` `anime` `qr` `radio` `play youtube` `play audio` `stop`
+`joke` `riddle` `poem` `poetry` `anime` `qr` `radio` `tv` `play youtube` `play audio` `stop`
 
 **🖼️ Visuals & Effects**  
 `image` `walls` `matrix` `scroll` `intersect` `intersectslow`
