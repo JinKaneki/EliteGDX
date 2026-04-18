@@ -1193,6 +1193,18 @@
             text-shadow: 0 0 5px currentColor;
         }
 
+        @keyframes scanline {
+            0% { background: rgba(0, 255, 255, 0.02); }
+            50% { background: rgba(0, 255, 255, 0.08); }
+            100% { background: rgba(0, 255, 255, 0.02); }
+        }
+
+        .active-transmission {
+            animation: scanline 2s infinite ease-in-out;
+            border-left: 3px solid #00ffff !important;
+            padding-left: 10px;
+        }
+
 
         /* MOBILE-FRIENDLY TWEAKS */
         @media (max-width: 600px) {
@@ -3201,6 +3213,8 @@
         // Media state globals
         let youtubePlayer = null;
         let currentAudio = null;
+        // Authorization state (from sudo / login)
+        let isAuthorized = false;  // set to true when user says "please" or logs in
 
         function createYouTubePlayer(videoId, containerId) {
             if (!window.YTReady) {
@@ -3242,6 +3256,26 @@
                 appendCommandOutput(`⚠️ Player creation failed: ${e.message}`, true);
             }
         }
+
+        // Curated Akashic frequencies – all HTTPS, no proxy needed
+        const stations = {
+            // Cyber-Dark / Industrial
+            'defcon': 'https://ice1.somafm.com/defcon-128-mp3',
+            'ebsm': 'https://stream.rekt.network/ebsm.ogg',
+            'datawave': 'https://stream.nightride.fm/datawave.ogg',
+            
+            // Space / Ambient
+            'deepspace': 'https://ice4.somafm.com/deepspaceone-128-mp3',
+            'spacestation': 'https://ice5.somafm.com/spacestation-128-mp3',
+            'spacesynth': 'https://stream.nightride.fm/spacesynth.ogg',
+                    
+            // Meditation / Zen
+            'dronezone': 'https://ice1.somafm.com/dronezone-128-mp3',
+            
+            // Hip-Hop / Urban
+            'fiphiphop': 'https://direct.fipradio.fr/live/fiphiphop-hifi.aac',
+            'thebeat': 'https://listen.181fm.com/181-beat_128k.mp3'
+        };
 
         
         // 3. COMMAND RUNNER
@@ -3305,7 +3339,7 @@
             'help': () => {
                 return `
                 <strong style="color: var(--accent-color);">⚡ SYSTEM & UTILITY</strong><br>
-                help, clear, echo [text], whoami, ls, sudo, history, fetch, fastfetch, neofetch, motd, shutdown<br>
+                help, clear, echo [text], whoami, ls, sudo, history, fetch, fastfetch, neofetch, motd, system, shutdown<br>
                 <br>
                 <strong style="color: var(--accent-color);">🎨 THEME & UI</strong><br>
                 theme [cyan|magenta|amber|matrix], pause<br>
@@ -3323,7 +3357,7 @@
                 tao, wisdom, sutra, buddha, koan, stoic, bible, verse<br>
                 <br>
                 <strong style="color: var(--accent-color);">🎭 FUN & ENTERTAINMENT</strong><br>
-                joke, riddle, poem, poetry, anime, qr [text], play youtube, play audio, stop<br>
+                joke, riddle, poem, poetry, anime, qr [text], radio [channel], play youtube, play audio, stop<br>
                 <br>
                 <strong style="color: var(--accent-color);">🖼️ VISUALS & EFFECTS</strong><br>
                 image, walls, matrix, scroll, intersect, intersectslow<br>
@@ -3401,6 +3435,7 @@
                 
                 // If they said "please"
                 if (fullCmd.includes('please')) {
+                    isAuthorized = true;
                     return 'Access granted. Creating sandwich... 🥪';
                 }
                 
@@ -3693,7 +3728,7 @@
                     currentAudio.play().catch(e => {
                         appendCommandOutput(`⚠️ Audio playback failed: ${e.message}`, true);
                     });
-                    return `🔊 NEURAL AUDIO STREAM STARTED: ${url}`;
+                    return `<div class="active-transmission">🔊 NEURAL AUDIO STREAM STARTED: ${url}</div>`;
                 }
                 
                 return '⚠️ Unknown type. Use "play youtube" or "play audio".';
@@ -3714,7 +3749,83 @@
                 
                 return '🔇 All transmissions silenced.';
             },
+            'radio': (args) => {
+                // No arguments – show available channels
+                if (!args || args.length === 0) {
+                    let channelList = '';
+                    for (const ch in stations) {
+                        channelList += `<span style="color: #0f0;">${ch}</span>  `;
+                    }
+                    return `
+                        <strong style="color: #00ffff;">📻 AKASHIC RADIO FREQUENCIES</strong><br>
+                        <span style="color: #888;">Available channels:</span><br>
+                        ${channelList}<br>
+                        <br>
+                        <span style="color: #888;">Usage:</span> <span style="color: #0f0;">radio &lt;channel&gt;</span><br>
+                        <span style="color: #888;">Example:</span> radio defcon
+                    `;
+                }
+
+                const choice = args[0].toLowerCase();
+                if (!stations[choice]) {
+                    return `⚠️ Frequency "${choice}" not found. Type <span style="color: #0f0;">radio</span> to see channels.`;
+                }
+
+                appendCommandOutput(`📡 Tuning to ${choice.toUpperCase()} frequency...`, false);
+    
+                // Then delegate to play audio
+                return commands['play'](['audio', stations[choice]]);
+            },
+            'system': () => {
+                const authStatus = isAuthorized ? 
+                    '<span style="color: #0f0;">[ AUTHORIZED ]</span>' : 
+                    '<span style="color: #f00;">[ LOCKED ]</span>';
+                
+                // Detect current audio feed
+                let currentFeed = "None";
+                if (currentAudio && !currentAudio.paused) {
+                    const src = currentAudio.src;
+                    // Try to identify the radio channel by matching against stations
+                    let feedName = src;
+                    // Check if it's one of our radio stations
+                    for (const ch in stations) {
+                        if (src.includes(stations[ch])) {
+                            feedName = ch.toUpperCase();
+                            break;
+                        }
+                    }
+                    // Fallback: truncate URL
+                    if (feedName === src) {
+                        feedName = src.length > 40 ? src.substring(0, 37) + '...' : src;
+                    }
+                    currentFeed = feedName;
+                }
+                
+                // Uptime calculation
+                const uptimeSec = Math.floor(performance.now() / 1000);
+                const uptimeMin = Math.floor(uptimeSec / 60);
+                const uptimeHours = Math.floor(uptimeMin / 60);
+                const uptimeStr = uptimeHours > 0 
+                    ? `${uptimeHours}h ${uptimeMin % 60}m ${uptimeSec % 60}s`
+                    : `${uptimeMin}m ${uptimeSec % 60}s`;
+
+                return `
+                    <div style="border: 1px solid #00ffff; padding: 12px; background: rgba(0, 255, 255, 0.05); border-radius: 8px;">
+                        <strong style="color: #00ffff;">// AKASHIC NEURAL LINK STATUS //</strong><br>
+                        <span style="color: #555;">────────────────────────────────</span><br>
+                        <span style="color: #888;">USER:</span> <span style="color: #fff;">Johan</span><br>
+                        <span style="color: #888;">ACCESS:</span> ${authStatus}<br>
+                        <span style="color: #888;">UPTIME:</span> <span style="color: #fff;">${uptimeStr}</span><br>
+                        <span style="color: #888;">AUDIO FEED:</span> <span style="color: #ff00ff;">${currentFeed}</span><br>
+                        <span style="color: #888;">CPU CORES:</span> <span style="color: #fff;">${navigator.hardwareConcurrency || '?'}</span><br>
+                        <span style="color: #888;">MEMORY:</span> <span style="color: #fff;">${navigator.deviceMemory || '?'} GB</span><br>
+                        <span style="color: #555;">────────────────────────────────</span><br>
+                        <span style="color: #00ffff;">SYSTEM STABILITY: 99.9%</span>
+                    </div>
+                `;
+            },
             'login': () => {
+                isAuthorized = true;
                 return `
                 <pre style="color: #00ff00; font-size: 11px; line-height: 1.2; text-shadow: 0 0 5px #00ff00;">
                                     <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">/\\</span>

@@ -177,6 +177,11 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 | `fortune`             | Random Unix / coding fortune |
 | `clear`               | Clear terminal output |
 | `sudo`                | Try to make a sandwich (say please)|
+| `system`              | Unified neural link status: user auth, audio feed, uptime, system stability |
+| `play youtube <id/url>` | Embed YouTube video player in the terminal |
+| `play audio <url>`      | Play direct audio file (MP3, OGG, WAV) or live stream URL |
+| `radio [channel]`       | Tune into a curated Akashic radio frequency (see channel list below) |
+| `stop`                  | Stop all currently playing media (YouTube and audio) |
 | `fetch`               | Display system info panel (cyber‑fetch terminal) |
 | `neofetch`            | Manually trigger the RUN JOHAN_OS system info panel |
 | `whoami`              | Show user identity: Rotating cyber‑spiritual persona |
@@ -220,6 +225,39 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 | `intersect`           | Neural‑link flash sequence (Chuck‑style Intersect) |
 | `intersectslow`       | Neural‑link flash sequence (for 60 seconds of meditative state) |
 | `login`               | Display the J_OS Akashic Zero‑Point Kryptos Neural Center splash screen |
+
+### 🎧 Media Playback
+
+The terminal supports both video and audio playback.
+
+- **YouTube videos** can be embedded directly using a video ID or full URL.  
+  Example: `play youtube dQw4w9WgXcQ` or `play youtube https://youtu.be/dQw4w9WgXcQ`
+
+- **Audio files and live streams** are played via an invisible HTML5 audio element.  
+  Example: `play audio https://ice1.somafm.com/defcon-128-mp3`
+
+- **Curated radio stations** are available via the `radio` command. Type `radio` alone to see the channel list, or jump directly to a channel:  
+  Example: `radio defcon` or `radio deepspace`
+
+- **Stop playback** at any time with `stop` command.
+
+#### 📻 Akashic Radio Frequencies
+
+Use `radio <channel>` to tune into a curated stream. All stations are HTTPS‑compatible and require no authentication.
+
+| Channel      | Genre / Vibe                | Source                     |
+|--------------|-----------------------------|----------------------------|
+| `defcon`     | Darkwave / Industrial       | SomaFM DEF CON Radio       |
+| `ebsm`       | Dark Electro / Synthwave    | Nightride FM EBSM          |
+| `datawave`   | Glitchy / Retro Computing   | Nightride FM Datawave      |
+| `deepspace`  | Deep Ambient / Space        | SomaFM Deep Space One      |
+| `spacestation` | Ambient / Space           | SomaFM Space Station       |
+| `spacesynth` | Space Disco / Retro         | Nightride FM Spacesynth    |
+| `dronezone`  | Meditation / Drone          | SomaFM Drone Zone          |
+| `fiphiphop`  | Hip‑Hop (French)            | Fip Hip‑Hop                |
+| `thebeat`    | Hip‑Hop / Urban             | 181.fm The Beat            |
+
+Type `radio` without arguments to see the channel list directly in the terminal.
 
 
 ### ⚙️ Engineering Case Simulator (`case`)
