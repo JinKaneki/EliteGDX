@@ -253,23 +253,19 @@ The terminal supports YouTube video embedding, direct audio playback, live radio
 | `fiphiphop`  | Hip‑Hop (French)            | Fip Hip‑Hop                |
 | `thebeat`    | Hip‑Hop / Urban             | 181.fm The Beat            |
 
-#### 📺 Akashic Visual Uplink Channels
+### 📺 Akashic Visual Uplink Channels
 
-| Channel       | Type      | Description |
-|---------------|-----------|-------------|
-| `fr24-en`     | YouTube   | France 24 English |
-| `fr24-fr`     | YouTube   | France 24 Français |
-| `euronews-fr` | YouTube   | Euronews Français |
-| `sky`         | YouTube   | Sky News |
-| `nasa-hd`     | YouTube   | NASA ISS HD Live (official high‑quality) |
-| `iss-earth`   | YouTube   | Earth from Space (ISS) |
-| `lofi`        | YouTube   | Lofi Girl |
-| `gumball`     | YouTube   | Amazing World of Gumball (24/7) |
-| `afrobeats`   | HLS       | Afrobeats music |
-| `anileap`     | HLS       | Anime streaming |
-| `clubtv`      | HLS       | English Club TV |
-| `curiosity`   | HLS       | Curiosity Now |
-| `natgeowild`  | HLS       | Nat Geo Wild |
+| Channel       | Description                 |
+|---------------|-----------------------------|
+| `nasa-hd`     | NASA ISS HD Live (high‑quality) |
+| `nasa`        | NASA Live (channel redirect) |
+| `iss-earth`   | Earth from Space (ISS)      |
+| `fr24-en`     | France 24 English           |
+| `fr24-fr`     | France 24 Français          |
+| `euronews-fr` | Euronews Français           |
+| `sky`         | Sky News                    |
+| `lofi`        | Lofi Girl                   |
+| `gumball`     | Amazing World of Gumball (24/7) |
 
 Type `radio` or `tv` without arguments to see the channel list directly in the terminal.
 

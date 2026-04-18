@@ -12,7 +12,6 @@
     <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
     <!--BASIC SEO-->
     <meta name="description" content="Elite Gems Dashboard : an ambient display with Cistercian clock, analog clock, and image slideshow.">
@@ -1226,44 +1225,6 @@
             filter: drop-shadow(0 0 5px #00ffff);
         }
 
-        #hls-overlay-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 360px;
-            max-width: 40vw;
-            border: 2px solid var(--accent-color);
-            background: #000;
-            z-index: 9999;
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
-            border-radius: 12px;
-            overflow: hidden;
-            display: none;
-            resize: both;
-            min-width: 200px;
-            min-height: 150px;
-        }
-
-        #hls-overlay-container video {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        /* Optional close button for the overlay */
-        #hls-close-btn {
-            position: absolute;
-            top: 6px;
-            right: 10px;
-            color: #ff0055;
-            font-weight: bold;
-            font-size: 18px;
-            cursor: pointer;
-            z-index: 10000;
-            background: rgba(0,0,0,0.5);
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
 
 
 
@@ -3283,51 +3244,67 @@
                 return;
             }
 
-            // Extract the 11-character video ID from any YouTube URL format
+            // Extract video ID (for standard URLs) or keep full URL for /live
             const match = input.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=|c\/[^\/\n\s]+\/|user\/[^\/\n\s]+\/|@[^\/\n\s]+\/)|youtu\.be\/)([a-zA-Z0-9_-]{11}|live)/);
             const videoId = (match && match[1] && match[1] !== 'live') ? match[1] : input;
+            const isFullUrl = videoId === input; // true for /live or other non‑ID formats
 
-            try {
-                // 🔥 ALWAYS destroy the old player before creating a new one
-                if (youtubePlayer && typeof youtubePlayer.destroy === 'function') {
-                    youtubePlayer.destroy();
-                    youtubePlayer = null;
-                }
-                
-                // Create a fresh player instance in the new container
-                youtubePlayer = new YT.Player(containerId, {
-                    height: '250',
-                    width: '100%',
-                    videoId: videoId,
-                    playerVars: {
-                        autoplay: 1,
-                        modestbranding: 1,
-                        rel: 0
-                    },
-                    events: {
-                        onReady: (event) => {
-                            appendCommandOutput('🎬 Signal Locked. Playback started.');
-                            event.target.playVideo();
-                        },
-                        onError: (e) => {
-                            const errorMap = {
-                                2: 'Invalid video ID',
-                                5: 'HTML5 player error',
-                                100: 'Video not found',
-                                101: 'Embedding disabled by owner',
-                                150: 'Embedding disabled by owner'
-                            };
-                            const msg = errorMap[e.data] || `Playback error (${e.data})`;
-                            appendCommandOutput(`⚠️ YouTube error: ${msg}`, true);
-                        }
+            // 1. GRACEFUL CLEANUP: Stop and destroy previous player
+            if (youtubePlayer) {
+                try {
+                    if (typeof youtubePlayer.stopVideo === 'function') {
+                        youtubePlayer.stopVideo();
                     }
-                });
-            } catch (e) {
-                console.error('Player creation failed:', e);
-                appendCommandOutput(`📡 Re-initializing neural link...`, true);
-                // Retry after 1 second if the API wasn't ready
-                setTimeout(() => createYouTubePlayer(videoId, containerId), 1000);
+                    if (typeof youtubePlayer.destroy === 'function') {
+                        youtubePlayer.destroy();
+                    }
+                } catch (e) {
+                    console.warn('Cleanup warning:', e);
+                }
+                youtubePlayer = null; // Clear reference
             }
+
+            // 2. WAIT for API to reset (100ms sweet spot)
+            setTimeout(() => {
+                try {
+                    youtubePlayer = new YT.Player(containerId, {
+                        height: '250',
+                        width: '100%',
+                        // For /live URLs we leave videoId empty and load via onReady
+                        videoId: isFullUrl ? undefined : videoId,
+                        playerVars: {
+                            autoplay: 1,
+                            modestbranding: 1,
+                            rel: 0,
+                            origin: window.location.origin   // Helps with stricter channels
+                        },
+                        events: {
+                            onReady: (event) => {
+                                if (isFullUrl) {
+                                    // Load the full URL (e.g., /live) once player is ready
+                                    event.target.loadVideoByUrl(input);
+                                }
+                                appendCommandOutput('🎬 Signal Locked. Playback started.');
+                                event.target.playVideo();
+                            },
+                            onError: (e) => {
+                                const errorMap = {
+                                    2: 'Invalid ID',
+                                    5: 'HTML5 error',
+                                    100: 'Video not found',
+                                    101: 'Embed restricted',
+                                    150: 'Embed restricted'
+                                };
+                                const msg = errorMap[e.data] || `Error ${e.data}`;
+                                appendCommandOutput(`⚠️ YouTube error: ${msg}`, true);
+                            }
+                        }
+                    });
+                } catch (e) {
+                    console.error('Final attempt failed:', e);
+                    appendCommandOutput(`📡 Neural Link Error: ${e.message}`, true);
+                }
+            }, 100); // 100ms delay gives the API time to clean up
         }
 
         // Curated Akashic frequencies – all HTTPS, no proxy needed
@@ -3350,58 +3327,7 @@
             'thebeat': 'https://listen.181fm.com/181-beat_128k.mp3'
         };
 
-        function playTvChannel(channelId, channelName, streamType, streamUrl) {
-            if (streamType === 'youtube') {
-                // YouTube remains in the terminal flow
-                return commands['play'](['youtube', streamUrl]);
-            }
-            
-            if (streamType === 'hls') {
-                let overlay = document.getElementById('hls-overlay-container');
-                
-                // Create the overlay if it doesn't exist
-                if (!overlay) {
-                    overlay = document.createElement('div');
-                    overlay.id = 'hls-overlay-container';
-                    overlay.innerHTML = `
-                        <span id="hls-close-btn" title="Close feed">✕</span>
-                        <video id="hls-video" controls autoplay></video>
-                    `;
-                    document.body.appendChild(overlay);
-                    
-                    // Close button functionality
-                    document.getElementById('hls-close-btn').addEventListener('click', () => {
-                        overlay.style.display = 'none';
-                        const video = document.getElementById('hls-video');
-                        if (video) video.pause();
-                    });
-                }
-                
-                overlay.style.display = 'block';
-                const video = document.getElementById('hls-video');
-                
-                // Load the HLS stream
-                if (Hls.isSupported()) {
-                    const hls = new Hls();
-                    hls.loadSource(streamUrl);
-                    hls.attachMedia(video);
-                    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                        video.play().catch(e => console.warn('Autoplay prevented:', e));
-                    });
-                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                    video.src = streamUrl;
-                    video.play();
-                } else {
-                    overlay.style.display = 'none';
-                    return '⚠️ HLS not supported in this browser.';
-                }
-                
-                return `<span style="color: #ff00ff;">📡 EXTERNAL FEED ESTABLISHED:</span> [${channelName}] activated in visual overlay.`;
-            }
-            
-            return '⚠️ Unknown stream type.';
-        }
-
+        
         
         // 3. COMMAND RUNNER
         let cmdVisible = false;
@@ -3956,26 +3882,20 @@
             },
             'tv': (args) => {
                 const channels = {
-                    // ----- Permanent YouTube /live URLs -----
-                    'fr24-en':     { name: 'France 24 English', type: 'youtube', url: 'https://www.youtube.com/c/FRANCE24English/live' },
-                    'fr24-fr':     { name: 'France 24 Français', type: 'youtube', url: 'https://www.youtube.com/c/FRANCE24/live' },
-                    'euronews-fr': { name: 'Euronews Français', type: 'youtube', url: 'https://www.youtube.com/c/Euronewsfr/live' },
-                    'sky':         { name: 'Sky News', type: 'youtube', url: 'https://www.youtube.com/c/SkyNews/live' },
+                    // ----- NASA / Space -----
+                    'nasa-hd':    { name: 'NASA ISS HD Live', type: 'youtube', url: 'https://www.youtube.com/watch?v=zPH5KtjJFaQ' },
+                    'nasa':       { name: 'NASA Live', type: 'youtube', url: 'https://www.youtube.com/c/NASA/live' },
+                    'iss-earth':  { name: 'Earth from Space (ISS)', type: 'youtube', url: 'https://www.youtube.com/watch?v=vytmBNhc9ig' },
                     
-                    // ----- NASA / Space (high quality official streams) -----
-                    'nasa-hd':     { name: 'NASA ISS HD Live', type: 'youtube', url: 'https://www.youtube.com/watch?v=zPH5KtjJFaQ' },
-                    'iss-earth':   { name: 'Earth from Space (ISS)', type: 'youtube', url: 'https://www.youtube.com/watch?v=vytmBNhc9ig' },
+                    // ----- News -----
+                    'fr24-en':    { name: 'France 24 English', type: 'youtube', url: 'https://www.youtube.com/c/FRANCE24English/live' },
+                    'fr24-fr':    { name: 'France 24 Français', type: 'youtube', url: 'https://www.youtube.com/c/FRANCE24/live' },
+                    'euronews-fr':{ name: 'Euronews Français', type: 'youtube', url: 'https://www.youtube.com/c/Euronewsfr/live' },
+                    'sky':        { name: 'Sky News', type: 'youtube', url: 'https://www.youtube.com/c/SkyNews/live' },
                     
                     // ----- Entertainment -----
-                    'lofi':        { name: 'Lofi Girl', type: 'youtube', url: 'https://www.youtube.com/c/LofiGirl/live' },
-                    'gumball':     { name: 'Amazing World of Gumball', type: 'youtube', url: 'https://www.youtube.com/watch?v=nIyaCRNwxhU' },
-
-                    // ----- HLS Streams -----
-                    'afrobeats':   { name: 'Afrobeats', type: 'hls', url: 'https://5e2730a9f5f5e.streamlock.net:8443/afrobeats/afrobeats/playlist.m3u8' },
-                    'anileap':     { name: 'AniLeap (Anime)', type: 'hls', url: 'https://dai.google.com/linear/hls/event/uE4M8ZzPRx6YlHwWPnK3Gw/master.m3u8' },
-                    'clubtv':      { name: 'English Club TV', type: 'hls', url: 'https://cdn-englishclubtv.teleosmedia.com/englishclubtv/englishclubtv/playlist.m3u8' },
-                    'curiosity':   { name: 'Curiosity Now', type: 'hls', url: 'https://curiositynow.amagi.tv/playlist.m3u8' },
-                    'natgeowild':  { name: 'Nat Geo Wild', type: 'hls', url: 'https://natgeowild-lh.akamaihd.net/i/natgeowild_1@3241/master.m3u8' }
+                    'lofi':       { name: 'Lofi Girl', type: 'youtube', url: 'https://www.youtube.com/c/LofiGirl/live' },
+                    'gumball':    { name: 'Amazing World of Gumball', type: 'youtube', url: 'https://www.youtube.com/watch?v=nIyaCRNwxhU' }
                 };
 
                 if (!args || args.length === 0) {
@@ -3988,7 +3908,7 @@
                         <span style="color: #888;">Available feeds:</span><br>
                         ${channelList}<br><br>
                         <span style="color: #888;">Usage:</span> <span style="color: #0f0;">tv &lt;channel&gt;</span><br>
-                        <span style="color: #888;">Example:</span> tv nasa-hd, tv gumball
+                        <span style="color: #888;">Example:</span> tv nasa, tv fr24-en
                     `;
                 }
 
@@ -3999,7 +3919,9 @@
                 }
 
                 appendCommandOutput(`📡 Tuning visual feed to ${channel.name}...`, false);
-                return playTvChannel(choice, channel.name, channel.type, channel.url);
+                
+                // All channels are now YouTube, so we can directly call the play command
+                return commands['play'](['youtube', channel.url]);
             },
             'login': () => {
                 isAuthorized = true;
