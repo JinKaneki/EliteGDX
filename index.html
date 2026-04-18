@@ -3244,11 +3244,18 @@
                 return;
             }
 
-            // Extract video ID (for standard URLs) or keep full URL for /live
-            const match = input.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=|c\/[^\/\n\s]+\/|user\/[^\/\n\s]+\/|@[^\/\n\s]+\/)|youtu\.be\/)([a-zA-Z0-9_-]{11}|live)/);
-            const videoId = (match && match[1] && match[1] !== 'live') ? match[1] : input;
-            const isFullUrl = videoId === input; // true for /live or other non‑ID formats
-
+            // Smart detection: if input is a plain 11‑char ID, use it immediately
+            let videoId;
+            let isFullUrl = false;
+            
+            if (input.length === 11 && !input.includes('/') && !input.includes('.') && /^[a-zA-Z0-9_-]{11}$/.test(input)) {
+                videoId = input;
+            } else {
+                // Try to extract from URL
+                const match = input.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=|c\/[^\/\n\s]+\/|user\/[^\/\n\s]+\/|@[^\/\n\s]+\/)|youtu\.be\/)([a-zA-Z0-9_-]{11}|live)/);
+                videoId = (match && match[1] && match[1] !== 'live') ? match[1] : input;
+                isFullUrl = (videoId === input); // true for /live or other non‑ID formats
+            }
             // 1. GRACEFUL CLEANUP: Stop and destroy previous player
             if (youtubePlayer) {
                 try {
@@ -3882,45 +3889,37 @@
             },
             'tv': (args) => {
                 const channels = {
-                    // ----- NASA / Space -----
+                    // NASA / Space
+                    'nasa':       { name: 'NASA Live', type: 'youtube', url: 'zPH5KtjJFaQ' },
+                    'iss-earth':  { name: 'Earth from Space (ISS)', type: 'youtube', url: 'vytmBNhc9ig' },
                     'nasa-hd':    { name: 'NASA ISS HD Live', type: 'youtube', url: 'https://www.youtube.com/watch?v=zPH5KtjJFaQ' },
-                    'nasa':       { name: 'NASA Live', type: 'youtube', url: 'https://www.youtube.com/c/NASA/live' },
-                    'iss-earth':  { name: 'Earth from Space (ISS)', type: 'youtube', url: 'https://www.youtube.com/watch?v=vytmBNhc9ig' },
-                    
-                    // ----- News -----
-                    'fr24-en':    { name: 'France 24 English', type: 'youtube', url: 'https://www.youtube.com/c/FRANCE24English/live' },
-                    'fr24-fr':    { name: 'France 24 Français', type: 'youtube', url: 'https://www.youtube.com/c/FRANCE24/live' },
-                    'euronews-fr':{ name: 'Euronews Français', type: 'youtube', url: 'https://www.youtube.com/c/Euronewsfr/live' },
-                    'sky':        { name: 'Sky News', type: 'youtube', url: 'https://www.youtube.com/c/SkyNews/live' },
-                    
-                    // ----- Entertainment -----
-                    'lofi':       { name: 'Lofi Girl', type: 'youtube', url: 'https://www.youtube.com/c/LofiGirl/live' },
-                    'gumball':    { name: 'Amazing World of Gumball', type: 'youtube', url: 'https://www.youtube.com/watch?v=nIyaCRNwxhU' }
+
+                    // News (direct IDs)
+                    'fr24-fr':    { name: 'France 24 Français', type: 'youtube', url: 'ww6pS7p_7uU' },
+                    'fr24-en':    { name: 'France 24 English', type: 'youtube', url: 'gT56v_H2o9E' },
+                    'sky':        { name: 'Sky News', type: 'youtube', url: '9Auqey6D_Lw' },
+
+                    // Entertainment
+                    'lofi':       { name: 'Lofi Girl', type: 'youtube', url: 'jfKfPfyJRdk' },
+                    'gumball':    { name: 'Amazing World of Gumball', type: 'youtube', url: 'nIyaCRNwxhU' }
                 };
 
                 if (!args || args.length === 0) {
                     let channelList = '';
-                    for (const ch in channels) {
-                        channelList += `<span style="color: #0f0;">${ch}</span>  `;
-                    }
+                    for (const ch in channels) channelList += `<span style="color: #0f0;">${ch}</span>  `;
                     return `
                         <strong style="color: #00ffff;">📺 AKASHIC VISUAL UPLINK</strong><br>
                         <span style="color: #888;">Available feeds:</span><br>
                         ${channelList}<br><br>
-                        <span style="color: #888;">Usage:</span> <span style="color: #0f0;">tv &lt;channel&gt;</span><br>
-                        <span style="color: #888;">Example:</span> tv nasa, tv fr24-en
+                        <span style="color: #888;">Usage:</span> <span style="color: #0f0;">tv &lt;channel&gt;</span>
                     `;
                 }
 
                 const choice = args[0].toLowerCase();
                 const channel = channels[choice];
-                if (!channel) {
-                    return `⚠️ Feed "${choice}" not found. Type <span style="color: #0f0;">tv</span> to see channels.`;
-                }
+                if (!channel) return `⚠️ Feed "${choice}" not found. Type <span style="color: #0f0;">tv</span> to see channels.`;
 
                 appendCommandOutput(`📡 Tuning visual feed to ${channel.name}...`, false);
-                
-                // All channels are now YouTube, so we can directly call the play command
                 return commands['play'](['youtube', channel.url]);
             },
             'login': () => {
