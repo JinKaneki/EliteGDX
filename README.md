@@ -181,7 +181,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 | `play youtube <id/url>` | Embed YouTube video player in the terminal |
 | `play audio <url>`      | Play direct audio file (MP3, OGG, WAV) or live stream URL |
 | `radio [channel]`       | Tune into a curated Akashic radio frequency (see channel list below) |
-| `tv [channel]`          | Watch a curated live TV feed: fr24-fr, fr24-en, nasa, iss, lofi, and more |
+| `tv [channel]`          | Watch a curated live TV feed: Gumball, nasa, iss, lofi, and more |
 | `stop`                  | Stop all currently playing media (YouTube and audio) |
 | `fetch`               | Display system info panel (cyber‑fetch terminal) |
 | `neofetch`            | Manually trigger the RUN JOHAN_OS system info panel |
