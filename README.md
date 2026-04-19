@@ -157,7 +157,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 `news` `hackernews` / `hn` `technology` `weather`
 
 **📚 Learning & Reference**  
-`define` `physics` `electronics` `biology` `space` `cstip` `learn` `fact` `fortune` `akashic`
+`define` `physics` `electronics` `biology` `space` `cstip` `learn` `fortune` `akashic`
 
 **🧘 Wisdom & Spirituality**  
 `tao` `wisdom` `sutra` `buddha` `koan` `stoic` `bible` `verse`

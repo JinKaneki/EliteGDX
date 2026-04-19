@@ -1045,11 +1045,15 @@
 
         /* Command Runner Terminal Styling */
         #command-runner {
+            display: flex;                
+            flex-direction: column;       
+            box-sizing: border-box;
             background: rgba(0, 0, 0, 0.555);
             backdrop-filter: blur(2px);
             border: 1px solid var(--accent-color);
             border-radius: 12px;
-            padding: 15px;
+            height: 80dvh;
+            padding: 16px 20px;
             margin: 20px auto;
             width: 90%;
             max-width: 650px;
@@ -1057,7 +1061,8 @@
         }
 
         #cmd-output {
-            height: 200px;                /* increased for better visibility */
+            flex: 1;
+            height: 220px;                /* 180 increased for better visibility */
             overflow-y: auto;
             font-family: 'Courier New', Courier, monospace;
             font-size: 13px;
@@ -1382,6 +1387,9 @@
                 padding: 12px !important;
                 margin: 10px auto !important;
                 border-radius: 8px !important;
+                display: flex;
+                flex-direction: column !important;
+                height: 90dvh !important;  /* Use dynamic viewport, not 100% to leave some space */
             }
 
             /* Force the header to wrap cleanly */
@@ -1407,29 +1415,41 @@
             /* Ensure the input line doesn't overflow */
             #command-runner > div:last-of-type {
                 flex-wrap: nowrap !important;
-                overflow-x: auto !important;
+                overflow-x: visible !important;
+                margin-bottom: 2px;              /* space before close button */
+            }
+            /* The $ prompt */
+            #command-runner > div:last-of-type > span {
+                font-size: 16px !important;
+            }
+
+            #open-cmd-runner {
+            margin: 15px !important;
+            padding: 8px 20px;
             }
 
             /* Shrink the prompt and input */
             #cmd-input {
-                font-size: 12px !important;
+                font-size: 16px !important;
                 min-width: 0 !important;
                 padding: 6px 8px !important;
             }
 
             /* Output area uses available space */
             #cmd-output {
-                height: 180px !important;
+                flex: 1 !important;
+                min-height: 0 !important;
                 font-size: 11px !important;
                 word-break: break-word !important;
                 overflow-x: hidden !important;
+                overflow-y: auto;
             }
 
             /* Make the close button full width for easier tapping */
             #close-cmd-runner {
                 width: 100% !important;
                 margin-top: 12px !important;
-                padding: 10px !important;
+                padding: 6px !important;
             }
 
             /* Prevent preformatted ASCII art from breaking layout */
@@ -2145,7 +2165,7 @@
         <div id="cmd-output"></div>
         <div style="display: flex;">
             <span style="color: var(--accent-color);">$&nbsp;</span>
-            <input type="text" id="cmd-input" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="background: transparent; border: none; color: #fff; flex:1; outline: none; font-family: monospace;">
+            <input type="text" id="cmd-input" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false";">
         </div>
         <button id="close-cmd-runner" class="hide-controls-btn" style="margin-top: 8px;">Close</button>
     </div>
@@ -3344,6 +3364,27 @@
         const cmdInput = document.getElementById('cmd-input');
         const cmdOutput = document.getElementById('cmd-output');
 
+        // Wait for the page to load
+        document.addEventListener('DOMContentLoaded', function() {
+        const cmdInput = document.getElementById('cmd-input');
+        const outputContainer = document.getElementById('cmd-output');
+
+        if (cmdInput) {
+            cmdInput.addEventListener('focus', function() {
+            // Delay allows the keyboard to fully open before scrolling
+            setTimeout(function() {
+                // Scroll the input into view, centered
+                cmdInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Also scroll the output container to bottom
+                if (outputContainer) {
+                outputContainer.scrollTop = outputContainer.scrollHeight;
+                }
+            }, 300);
+            });
+        }
+        });
+        
         // For plain text (use this for most commands)
         function appendCommandOutput(text, isError = false) {
             const line = document.createElement('div');
