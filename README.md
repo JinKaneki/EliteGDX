@@ -257,15 +257,11 @@ The terminal supports YouTube video embedding, direct audio playback, live radio
 
 | Channel       | Description                 |
 |---------------|-----------------------------|
-| `nasa-hd`     | NASA ISS HD Live (high‑quality) |
-| `nasa`        | NASA Live (channel redirect) |
+| `nasa`        | NASA Live (HD)              |
 | `iss-earth`   | Earth from Space (ISS)      |
-| `fr24-en`     | France 24 English           |
-| `fr24-fr`     | France 24 Français          |
-| `euronews-fr` | Euronews Français           |
-| `sky`         | Sky News                    |
-| `lofi`        | Lofi Girl                   |
-| `gumball`     | Amazing World of Gumball (24/7) |
+| `lofi`        | Lofi Girl (beats to relax)  |
+| `gumball`     | Amazing World of Gumball    |
+
 
 Type `radio` or `tv` without arguments to see the channel list directly in the terminal.
 
