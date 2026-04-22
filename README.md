@@ -418,9 +418,6 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 - Wallpaper collection sourced from [0xnotkyo/walls](https://github.com/0xnotkyo/walls)
 - Tao Te Ching text (public domain) translated by **Stephen Mitchell**.
 
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
 
 ## 🧠 Philosophy
   > "All things serve the Steam. XD"
