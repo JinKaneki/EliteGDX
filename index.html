@@ -1052,7 +1052,7 @@
             backdrop-filter: blur(2px);
             border: 1px solid var(--accent-color);
             border-radius: 48px;
-            height: 80dvh;
+            /*height: 80dvh;*/
             padding: 16px 20px;
             margin: 20px auto;
             width: 90%;
@@ -1062,7 +1062,7 @@
 
         #cmd-output {
             flex: 1;
-            height: 220px;                /* 180 increased for better visibility */
+            height: 210px;                /* 180 increased for better visibility */
             overflow-y: auto;
             font-family: 'Courier New', Courier, monospace;
             font-size: 13px;
@@ -1107,6 +1107,13 @@
             border-color: var(--accent-color);
             box-shadow: 0 0 7px var(--accent-color);
             background: #0a0a0a;
+        }
+
+        #close-cmd-runner {
+            width: 30%;
+            margin-top: 12px;
+            padding: 7px;
+            align-self: center;
         }
 
         #command-runner .hide-controls-btn {
@@ -1447,9 +1454,10 @@
 
             /* Make the close button full width for easier tapping */
             #close-cmd-runner {
-                width: 100% !important;
+                width: 80% !important;
                 margin-top: 12px !important;
                 padding: 6px !important;
+                align-self: center !important;
             }
 
             /* Prevent preformatted ASCII art from breaking layout */
@@ -1904,6 +1912,13 @@
         </div>
 
         <div class="block">
+            <p class="block-text">Kali Linux <br>The quieter you become, the more you are able to hear</p>
+            <div class="image-block">
+                <img src="images/Kali.png" alt="Kali">
+            </div>
+        </div>
+
+        <div class="block">
             <p class="block-text">flag</p>
             <div class="image-block">
                 <img src="images/BuddhismFlag.jpeg" alt="BuddhismFlag">
@@ -2054,6 +2069,13 @@
             <p class="block-text">Abyssal Wave</p>
             <div class="image-block">
                 <img src="images/AbyssalWave.png" alt="AbyssalWave">
+            </div>
+        </div>
+
+        <div class="block">
+            <p class="block-text">Chill Vibes</p>
+            <div class="image-block">
+                <img src="images/ChillVibes.jpg" alt="ChillVibes">
             </div>
         </div>
 
@@ -2760,6 +2782,7 @@
             'images/indepedentBG/Sunset_at_Long_Beach_SA.jpg',
             'images/indepedentBG/DavidMichael.jpg',
             'images/indepedentBG/PMononoke.png',
+            'images/indepedentBG/SolarSystem.png',
             //'images/indepedentBG/',
         ];
 
@@ -2821,6 +2844,8 @@
             'images/floralMandala.jpg',
             'images/d_wheel.jpg',
             'images/AbyssalWave.png',
+            'images/ChillVibes.jpg',
+            'images/Kali.png',
             'images/SoulNature.jpg',
             'images/JcohenDreamax.jpeg',
             'images/NelsonMandelaQuote.jpeg',
