@@ -415,7 +415,6 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 - Original Cistercian Web Components by **Hubert Sablonnière**.
 - **Engineered by** [Johan_nlb](https://github.com/JinKaneki) (Jin Kaneki)
 - Inspired by Linux ricing communities, Medieval Cistercian monks and the pursuit of compact data visualization and the TTC.
-- Wallpaper collection sourced from [0xnotkyo/walls](https://github.com/0xnotkyo/walls)
 - Tao Te Ching text (public domain) translated by **Stephen Mitchell**.
 
 
