@@ -141,29 +141,32 @@ I set the following CSS custom properties to achieve the **rainbow line effect**
 ---
 
 ## ⌨️ Terminal Command Reference
-
+  "You know how some people have a clock screensaver? I made something way cooler. It's a web page I keep open that not only tells time but also lets me type commands. I can type 'weather Tokyo' and it shows me the forecast. I can type 'tv nasa' and it plays a live stream from the space station. It also shows inspirational quotes, plays music, and even has a secret 'Intersect' flash. It's like my own little command center." **-Jin Kaneki**
 ### 💻 J_OS // AKASHIC ZERO-POINT KRYPTOS NEURAL CENTER (AZKNC)
 The built‑in command runner—a full‑featured terminal emulator with over 40 commands, fullscreen support, and a cyber‑mystical aesthetic.
 
 ### Command Categories
 
 **⚡ System & Utility**  
-`help` `clear` `echo` `whoami` `ls` `history` `shutdown` `sudo` `motd` `login` `sytem`
+`help` `about` `clear` `echo` `whoami` `ls` `history` `shutdown` `sudo` `motd` `login` `sytem` `ping` `date` `spinner` `stopspinner` `timer` `nuke`
 
 **🎨 Theme & UI**  
 `theme` `pause` `fetch` `fastfetch` `neofetch`
 
 **📰 News & Information**  
-`news` `hackernews` / `hn` `technology` `weather`
+`news` `hackernews` `technology` `weather`
 
 **📚 Learning & Reference**  
 `define` `physics` `electronics` `biology` `space` `cstip` `learn` `fortune` `akashic`
+
+**🔐 AKASHIC CIPHER SUITE & CYBER OPS 🕵️**  
+ `kali` `cipher`
 
 **🧘 Wisdom & Spirituality**  
 `tao` `wisdom` `sutra` `buddha` `koan` `stoic` `bible` `verse`
 
 **🎭 Fun & Entertainment**  
-`joke` `riddle` `poem` `poetry` `anime` `qr` `radio` `tv` `play youtube` `play audio` `stop`
+`joke` `riddle` `poem` `ascii` `poetry` `anime` `qr` `radio` `tv` `play youtube` `play audio` `stop` `cowsay [text]` `hack` `htop` `react`
 
 **🖼️ Visuals & Effects**  
 `image` `walls` `matrix` `scroll` `intersect` `intersectslow`
@@ -173,6 +176,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 | Command               | Description |
 |-----------------------|-------------|
 | `help`                | List all available commands |
+| `about`               | The story behind J_OS and its Akashic origin |
 | `theme [name]`        | Switch color profile (cyan, magenta, amber, matrix) |
 | `fortune`             | Random Unix / coding fortune |
 | `clear`               | Clear terminal output |
@@ -208,6 +212,16 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 | `anime`               | Top 10 anime + currently airing (Jikan API) |
 | `technology`          | Curated tech news (The Verge, Ars Technica, TechCrunch, Wired) |
 | `poem`                | Random classic poem with title and author |
+| `ping`                | Test network latency to Google |
+| `date`                | Display the current date and time |
+| `spinner`             | Start a terminal spinner animation |
+| `stopspinner`         | Stop the running spinner |
+| `timer [seconds]`     | Start a countdown timer that beeps on completion |
+| `ascii`               | Display a random J_OS ASCII art |
+| `cowsay [text]`       | An ASCII cow speaks your message |
+| `hack`                | Simulate a fake hacking sequence (animated bars) |
+| `htop`                | Show a fake system monitor (CPU, memory, processes) |
+| `react`               | Simulate a React build process |
 | `poetry`              | Short poetry excerpt (first 6 lines) |
 | `bible`               | Random Bible verse (labs.bible.org) |
 | `verse`               | Same as `bible` – random sacred verse |
@@ -226,6 +240,19 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 | `intersect`           | Neural‑link flash sequence (Chuck‑style Intersect) |
 | `intersectslow`       | Neural‑link flash sequence (for 60 seconds of meditative state) |
 | `login`               | Display the J_OS Akashic Zero‑Point Kryptos Neural Center splash screen |
+| `cipher`              | Display the complete Cipher usage manual with examples |
+| `encode [message]`    | Base64 encode a message |
+| `decode [base64]`     | Decode a Base64 string |
+| `shift [n] [message]` | Caesar cipher (letters & digits wrap) |
+| `vigenere [enc\|dec] [key] [message]` | Vigenère cipher |
+| `mirror [message]`    | Atbash mirror cipher |
+| `handshake [set\|clear] [key]` | Store or clear a personal encryption key locally |
+| `vault [enc\|dec] [password] [msg/hex]` | AES‑256‑GCM encryption (real, password‑based) |
+| `nuke`                | Factory reset: clears localStorage, terminal, and stops all animations (never use this unless necessary and you want to clear all stored data) |
+| `kryptos [enc\|dec] [bin\|hex] [text/stream]` | Convert text to/from binary or hex |
+| `tag [set\|get\|clear\|view] [key] [value]` | Cipher dictionary – store, retrieve, list, or delete hidden key‑value pairs |
+| `steg [hide\|reveal] "cover" "secret"`      | Steganography – hide & extract secret messages inside normal text |
+| `kali [module]`       | Pentest toolbox with real SHA-256, port scan, brute-force, and more |
 
 ### 🎧 Media Playback
 
@@ -265,6 +292,15 @@ The terminal supports YouTube video embedding, direct audio playback, live radio
 
 Type `radio` or `tv` without arguments to see the channel list directly in the terminal.
 
+### 🕵️ Steganography vs. Tag Store
+
+| Feature               | Steganography (`steg`)                       | Cipher Dictionary (`tag`)               |
+|-----------------------|----------------------------------------------|-----------------------------------------|
+| **Logic**             | Data is hidden inside the text itself.       | Data is hidden in your browser's memory.|
+| **Persistence**       | If you delete the text, the secret is gone.  | If you delete the text, the secret stays in the terminal. |
+| **Portability**       | You can send the "steg" text to a friend; they can reveal it. | If you send the word "Apple" to a friend, they see nothing. |
+| **The "Reveal"**      | You must Paste the specific invisible‑ink word. | You just type the Keyword (e.g., `tag get Apple`). |
+| **List stored items** | Not applicable – nothing is stored.         | `tag view` – shows all saved keys.      |
 
 ### ⚙️ Engineering Case Simulator (`case`)
 
@@ -306,20 +342,25 @@ case vdivider 9 2200 1000
 ---
 **This command is perfect for hobbyists, students, or anyone who wants a quick sanity check before wiring up a circuit.**
 
-### 🧘 Final Reflection
+## 🧘 Final Reflection
 
-the **J_OS // AKASHIC ZERO-POINT KRYPTOS NEURAL CENTER** Console now supports:
+The **J_OS // AKASHIC ZERO-POINT KRYPTOS NEURAL CENTER** console now supports:
 
-- 🔮 **Mystical wisdom** (`tao`, `sutra`, `koan`, `stoic`, `buddha`,`akashic`)
-- 📡 **Live information** (`news`, `weather`, `technology`)
-- 🛠️ **Engineering diagnostics** (`case`, `physics`, `electronics`)
-- 🎬 **Media playback** (`play youtube`, `play audio`, `radio`, `tv`)
-- 🖼️ **Ambient visuals** (`walls`, `intersect`, `matrix`)
-- 🧠 **System introspection** (`fastfetch`, `system`, `whoami`)
+- 🔮 **Mystical wisdom** (`tao`, `sutra`, `koan`, `stoic`, `buddha`, `bible`, `verse`, `wisdom`)
+- 📡 **Live information** (`news`, `weather`, `technology`, `hackernews`)
+- 🛠️ **Engineering diagnostics** (`case`, `physics`, `electronics`, `engineering`)
+- 🎬 **Media playback** (`play youtube`, `play audio`, `radio`, `tv`, `stop`)
+- 🖼️ **Ambient visuals** (`walls`, `intersect`, `intersectslow`, `matrix`, `image`, `scroll`)
+- 🧠 **System introspection** (`fastfetch`, `system`, `whoami`, `about`, `ping`, `date`, `spinner`, `stopspinner`, `timer`, `history`, `motd`, `login`, `nuke`)
+- 🔐 **Akashic Cipher Suite** (`encode`/`decode`, `shift`, `kryptos`, `vigenere`, `mirror`, `vault`, `handshake`)
+- 🕵️ **Cyber Ops** (`steg`, `tag`, `kali`)
+- 🎭 **Fun & Entertainment** (`joke`, `riddle`, `poem`, `poetry`, `anime`, `qr`, `cowsay`, `ascii`, `hack`, `react`, `htop`, `fortune`, `coinflip`, `8ball`, `rotate`, `rainbow`)
+- ⚙️ **Utilities** (`theme`, `clear`, `sudo`, `fetch`, `neofetch`, `history`, `pause`, `shutdown`, `echo`, `ls`, `whoami`)
 
-It is functionally complete and aesthetically cohesive.
+It is functionally complete, aesthetically cohesive, and ready for daily use as an ambient always‑on companion for your workspace or as a fast information retrieval tool.
 
-## 📜 Version 2.1 Change Log (March 2026)
+## version 1.0 Change Log(Base)
+## 📜 Version 2.1 Change Log(Aesthetics) (March 2026)
 
 The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced state management.
 
@@ -335,7 +376,7 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 | **Instant Mute** | One‑touch audio kill with volume memory. | `🔊` Icon Click |
 | **Ambient Landing** | Site starts with deep charcoal `#121214` solid background. | Automatic on Load |
 
-## version 4.0 Change Log (April 2026)
+## version 3.0 Change Log(CyberAkashicMystic) (April 2026)
 | Date | Change |
 |------|--------|
 | 2026‑04‑11 | Added Cyber‑Fetch terminal with JOHAN_OS ASCII + maple leaf |
@@ -347,6 +388,32 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 | 2026‑04‑09 | Added responsive Cistercian clock sizes |
 | 2026‑04‑08 | Integrated rainbow colours for Cistercian numerals |
 
+## 📜 Version 4.0 Change Log(CyberOps) (May 2026)
+
+The "Akashic Update" transforms the dashboard into a comprehensive information retrieval & cyber‑operations hub, with over 40 new commands, a full cipher suite, media playback, and live data feeds.
+
+| Feature | Description | Interaction |
+| :--- | :--- | :--- |
+| **Command Runner** | Built‑in terminal with sync/async router, HTML output, and fullscreen mode. | `💻 Command Runner` button, `⛶ Fullscreen` |
+| **Login & Identity** | Majestic Akashic splash with rotating header, typewriter names, and `whoami` personas. | Auto on terminal open, `login`, `whoami`, `motd`, `about` |
+| **News & Information** | BBC World News, Hacker News, curated tech headlines, weather. | `news`, `hn`, `technology`, `weather [city]` |
+| **Dictionary & Learning** | Full phonetic dictionary, physics/math formulas, electronics facts, engineering marvels, biology, space, CS tips. | `define`, `physics`, `electronics`, `engineering`, `biology`, `space`, `cstip`, `learn`, `fortune` |
+| **Engineering Diagnostics** | Resistor calculator, color code decoder, Ohm's Law, voltage divider, capacitor decoder, parallel/series. | `case` (interactive), `case resistor`, `case decode`, etc. |
+| **Wisdom & Spirituality** | Tao Te Ching, Bible verses, Buddhist sutras, Zen koans, Stoic quotes, Buddha quotes. | `tao`, `bible`, `verse`, `sutra`, `koan`, `stoic`, `buddha`, `wisdom` |
+| **Media Playback** | YouTube video/playlist/tv embedding, direct audio streaming, curated radio stations, live TV feeds (NASA, ISS, Lofi, Gumball). | `play youtube`, `play audio`, `radio [channel]`, `tv [channel]`, `stop` |
+| **Akashic Cipher Suite** | Base64 encode/decode, Caesar shift (with digit wrap), Binary/Hex streams, Vigenère cipher, Atbash mirror, AES‑256‑GCM vault with handshake password. | `encode`, `decode`, `shift`, `kryptos`, `vigenere`, `mirror`, `vault`, `handshake` |
+| **Steganography & Tag Store** | Hide secret messages inside normal text via zero‑width characters; permanent private tag dictionary. | `steg hide/reveal`, `tag set/get/view/clear` |
+| **Kali Pentest Suite** | Real SHA‑256 hashing, simulated port scans, brute‑force cracking, payload injection, SSH keygen, Kali dragon banner. | `kali hash/scan/crack/inject/genkey/banner` |
+| **Fun & Utility** | Riddles with reveal, dad jokes, random facts, QR codes, anime top 10, poetry, cowsay, coinflip, 8‑ball, rainbow text. | `joke`, `riddle`, `fact`, `qr`, `anime`, `poem`, `cowsay`, `coinflip`, `8ball`, `rainbow` |
+| **Visual Effects** | Glitch matrix, terminal scroll bounce, animated fake hacking, React build simulator, text rotation scrambler. | `matrix`, `scroll`, `hack`, `react`, `rotate` |
+| **Timers & Diagnostics** | Countdown with Morse beeps, network ping (real), system monitor (`htop`), spinner animation. | `timer`, `ping`, `htop`, `spinner`/`stopspinner` |
+| **ASCII Art Gallery** | 5+ cyber‑mystical ASCII pieces: J_OS box, meditating monk, Debian swirl, Arch Linux, Kali dragon, Akashic emblem. Selectable by index. | `ascii [1‑6]`, `kali banner`, `kali arch` |
+| **Factory Reset** | `nuke` command clears all local data, stops animations, and resets terminal to Zero‑Point. | `nuke` |
+| **UI & Mobile Polish** | Compressed terminal output for small screens, fixed ASCII wrapping, login splash responsive font, fullscreen support, `cipher` reference manual. | Automatic |
+
+---
+
+- *Version 4.0 makes J_OS a fast persistent information retrieval tool, a personal cipher lab, and an ambient workspace companion, all accessible from a single CLI.*
 ---
 
 ### 📱 PWA & Offline Support
