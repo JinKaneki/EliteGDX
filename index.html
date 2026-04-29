@@ -925,9 +925,9 @@
             padding: 20px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 12px;                   /* 30 original spacious gap */
             font-size: 0.9rem;
-            line-height: 1.5;
+            line-height: 1.2;
             white-space: pre-wrap;
             word-break: break-word;
         }
@@ -937,6 +937,11 @@
             text-shadow: 0 0 8px #ff00ff;
             font-weight: bold;
             white-space: pre;
+        }
+
+        /* --- Fastfetch panel – smaller gap --- */
+        #cyber-fetch-terminal.fastfetch-mode #fetch-content {
+            gap: 10px;  
         }
 
         .fetch-key {
@@ -1252,6 +1257,15 @@
             gap: 10px; 
         }
 
+        .gem-info {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .fastfetch-info {
+            font-size: 18px;   
+            line-height: 1.5;
+        }
+
 
 
 
@@ -1361,7 +1375,7 @@
 
 
             #cist-clock {
-                font-size: 10rem;   /* keep current size, or reduce to 6rem if too big */
+                font-size: 10rem;   
             }
 
             .cistercian-date-row cistercian-number {
@@ -1374,34 +1388,42 @@
                 gap: 4px;
             }
 
+             /* --- Fastfetch panel – tight spacing, readable font (8px) --- */
+            #cyber-fetch-terminal.fastfetch-mode #fetch-content {
+                gap: 4px;               /* logo and info stay close together */
+            }
+            #cyber-fetch-terminal.fastfetch-mode #fetch-content pre {
+                font-size: 8px !important;
+            }
+            #cyber-fetch-terminal.fastfetch-mode #fetch-content > div {
+                font-size: 8px !important;
+                line-height: 1 !important;
+                margin-left: 4px !important;   /* tiny left margin to not stick */
+            }
 
-            #fetch-content {
-                flex-direction: column;
-                font-size: 0.6rem;
+            /* --- Original gem panel – slightly more breathable (10px) --- */
+            #cyber-fetch-terminal:not(.fastfetch-mode) #fetch-content {
                 gap: 10px;
             }
-            #fetch-content pre {
-                font-size: 6px !important;
+            #cyber-fetch-terminal:not(.fastfetch-mode) #fetch-content pre {
+                font-size: 8px !important;
             }
-            #fetch-content > div {
-                font-size: 9px !important;
-                line-height: 1 !important;
-                margin-left: 4px !important;
+            #cyber-fetch-terminal:not(.fastfetch-mode) #fetch-content > div {
+                font-size: 10px !important;
+                line-height: 1.2 !important;
+                margin-left: 10px !important;
             }
 
-            .fetch-logo {
-                font-size: 10px;
-            }
 
             /* Mobile adjustments for the neofetch container */
-            #fastfetch-container {
+            #neofetch-container {
                 flex-wrap: nowrap !important;
                 padding: 8px;
                 gap: 10px;
             }
 
             /* Shrink the ASCII art */
-            #fastfetch-container pre {
+            #neofetch-container pre {
                 font-size: 4px !important;   /* very small, but still readable */
                 line-height: 1.1;
                 margin: 0;
@@ -1505,20 +1527,15 @@
             .ascii-art {
                 font-size: 8px !important;
             }
-            
-            .fastfetch-panel {
-                font-size: 8px !important;
-                gap: 6px !important;
+
+            /*.gem-info {
+                font-size: 10px;     still readable 
+                line-height: 1.3;
             }
-            .fastfetch-panel pre {
-                font-size: 6px !important;
-            }
-            .fastfetch-panel > div {
-                font-size: 9px !important;
-                line-height: 1 !important;
-                margin-left: 4px !important;
-            }
-            
+            .fastfetch-info {
+                font-size: 8px;      ultra‑compact 
+                line-height: 1.2;
+            }*/
 
 
             .site-footer {
@@ -2264,7 +2281,7 @@
         <button id="toggle-fetch-btn" class="action-btn">🖥️ RUN JOHAN_OS</button>
     </div>
 
-    <div id="fastfetch-container" style="visibility: hidden; font-family: 'Courier New', monospace; background: rgba(0, 0, 0, 0.502); backdrop-filter: blur(2px); border: 1px solid var(--accent-color); border-radius: 32px; padding: 20px; width: fit-content; max-width: 95%; margin: 0 auto; display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.5);">
+    <div id="neofetch-container" style="visibility: hidden; font-family: 'Courier New', monospace; background: rgba(0, 0, 0, 0.502); backdrop-filter: blur(2px); border: 1px solid var(--accent-color); border-radius: 32px; padding: 20px; width: fit-content; max-width: 95%; margin: 0 auto; display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.5);">
         <pre id="ascii-art" style="margin: 10px;padding: 10px; color: #ff00ff; font-size: 15px; line-height: 1.3; white-space: pre;">
      _  ____  _   _   _   _   _    ____  ____      \   /
        | |/ __ \| | | | / \ | \ | |  / __ \/ ___|  --  \ /  --
@@ -2424,6 +2441,7 @@
         </pre>`;
 
         function generateFetchData() {
+            document.getElementById('cyber-fetch-terminal').classList.remove('fastfetch-mode');
             // --- Improved OS detection ---
             let os = 'Unknown';
             try {
@@ -2517,28 +2535,38 @@
             ];
             const sacredStatus = sacredStatuses[Math.floor(Math.random() * sacredStatuses.length)];
 
-            const systemInfo = `
-                <span class="fetch-key">OS:</span>         <span class="fetch-value">${os}</span>
-                <span class="fetch-key">Host:</span>       <span class="fetch-value">Elite Gems Web Engine</span>
-                <span class="fetch-key">Kernel:</span>     <span class="fetch-value">Browser Sandbox (V8)</span>
-                <span class="fetch-key">Shell:</span>      <span class="fetch-value">Akashic J_OS Shell</span>
-                <span class="fetch-key">Uptime:</span>     <span class="fetch-value">${uptimeStr}</span>
-                <span class="fetch-key">Packages:</span>   <span class="fetch-value">${packageCount} (commands)</span>
-                <span class="fetch-key">Resolution:</span> <span class="fetch-value">${resolution}</span>
-                <span class="fetch-key">DE/WM:</span>      <span class="fetch-value">HTML5 / CSS3 Flex</span>
-                <span class="fetch-key">Theme:</span>      <span class="fetch-value">${themeMode}</span>
-                <span class="fetch-key">Terminal:</span>   <span class="fetch-value">${browser}</span>
-                <span class="fetch-key">CPU:</span>        <span class="fetch-value">${cores} Logical Cores</span>
-                <span class="fetch-key">GPU:</span>        <span class="fetch-value">${gpu}</span>
-                <span class="fetch-key">Memory:</span>     <span class="fetch-value">${ram}</span>
-                <span class="fetch-key">Network:</span>    <span class="fetch-value">${conn}</span>
-                <span class="fetch-key">Status:</span>     <span class="fetch-value" style="color: #ff00ff;">${sacredStatus}</span>
+            // Helper for a single row – same as in fastfetch, slightly larger label
+                const infoRow = (label, value, color = '#00ffff') => `
+                    <div style="display: flex;">
+                        <span style="width: 7em; flex-shrink: 0; color: ${color}; text-align: right; margin-right: 10px;">${label}</span>
+                        <span style="color: #fff; word-break: break-word;">${value}</span>
+                    </div>`;
 
-                <span style="color:#ff5733;">███</span><span style="color:#ffd733;">███</span><span style="color:#33ff57;">███</span><span style="color:#00f0ff;">███</span><span style="color:#3357ff;">███</span><span style="color:#f033ff;">███</span>
-            `;
+                const systemInfo = `
+                    <div class="gem-info" style="display: flex; flex-direction: column; gap: 3px; margin-left: 0px;">
+                        ${infoRow('OS:', os)}
+                        ${infoRow('Host:', 'Elite Gems Web Engine')}
+                        ${infoRow('Kernel:', 'Browser Sandbox (V8)')}
+                        ${infoRow('Shell:', 'Akashic J_OS Shell')}
+                        ${infoRow('Uptime:', uptimeStr)}
+                        ${infoRow('Packages:', `${packageCount} (commands)`)}
+                        ${infoRow('Resolution:', resolution)}
+                        ${infoRow('DE/WM:', 'HTML5 / CSS3 Flex')}
+                        ${infoRow('Theme:', themeMode)}
+                        ${infoRow('Terminal:', browser)}
+                        ${infoRow('CPU:', `${cores} Logical Cores`)}
+                        ${infoRow('GPU:', gpu)}
+                        ${infoRow('Memory:', ram)}
+                        ${infoRow('Network:', conn)}
+                        ${infoRow('Status:', sacredStatus, '#ff00ff')}
+                        <div style="margin-top: 4px;">
+                            <span style="color:#ff5733;">███</span><span style="color:#ffd733;">███</span><span style="color:#33ff57;">███</span><span style="color:#00f0ff;">███</span><span style="color:#3357ff;">███</span><span style="color:#f033ff;">███</span>
+                        </div>
+                    </div>`;
 
-            fetchContent.innerHTML = asciiLogo + `<div>${systemInfo}</div>`;
-        }
+                fetchContent.innerHTML = asciiLogo + systemInfo;   // systemInfo is already a <div>, no need to wrap again
+            }
+
 
         function toggleFetch() {
             const isActive = fetchTerminal.classList.contains('active');
@@ -2571,8 +2599,8 @@
             }
         });
 
-        // --- JOHAN_OS SYSTEM INFO (FASTFETCH STYLE) ---
-        const fetchContainer = document.getElementById('fastfetch-container');
+        // --- JOHAN_OS SYSTEM INFO (NEOFETCH STYLE) ---
+        const fetchContainer = document.getElementById('neofetch-container');
         const toggleBtn = document.getElementById('toggle-fetch-btn');
         let dataFetched = false;
 
@@ -2869,29 +2897,36 @@
          <span style="color: #00f0ff;">/___/      \\___\\</span>
         <span style="color: #00f0ff;">/   /        \\   \\</span>
        <span style="color: #00f0ff;">/___/          \\___\\</span>
-            <span style="color: #0f0;">[ ROOT PRIVILEGES: GRANTED // J_OS SECURE ]</span>
+    <span style="color: #0f0;">[ ROOT PRIVILEGES: GRANTED ]</span>
+       <span style="color: #0f0;">[ // J_OS SECURE // ]</span>
         </pre>`
     ];
             const randomLogo = logos[Math.floor(Math.random() * logos.length)];
 
-            // --- Info block ---
-            const info = `<div style="font-size: 11px; line-height: 1.5; margin-left: 15px;">
-            <strong style="color: #00ff00;">Johan@Akashic</strong><br>
-            <span style="color: #555;">────────────────</span><br>
-            <span style="color: #00ffff;">OS:</span> ${os}<br>
-            <span style="color: #00ffff;">Host:</span> Elite Gems Engine<br>
-            <span style="color: #00ffff;">Shell:</span> Akashic J_OS Shell<br>
-            <span style="color: #00ffff;">Uptime:</span> ${uptimeStr}<br>
-            <span style="color: #00ffff;">Packages:</span> ${packageCount}<br>
-            <span style="color: #00ffff;">Resolution:</span> ${resolution}<br>
-            <span style="color: #00ffff;">Terminal:</span> ${browser}<br>
-            <span style="color: #00ffff;">CPU:</span> ${cores} core${cores > 1 ? 's' : ''}<br>
-            <span style="color: #00ffff;">GPU:</span> ${gpu}<br>
-            <span style="color: #00ffff;">Memory:</span> ${ram}<br>
-            <span style="color: #00ffff;">Network:</span> ${conn}<br>
-            <span style="color: #ff00ff;">Status:</span> <span style="color: #ff00ff;">${sacredStatus}</span><br><br>
+            // --- Info block (flex‑based, for correct wrap alignment) ---
+            const infoRow = (label, value, color='#00ffff') => `
+                <div style="display: flex;">
+                    <span style="width: 6.5em; flex-shrink: 0; color: ${color}; text-align: right; margin-right: 8px;">${label}</span>
+                    <span style="color: #fff; word-break: break-word;">${value}</span>
+                </div>`;
 
-            <span style="color:#ff5733;">██</span><span style="color:#ffd733;">██</span><span style="color:#33ff57;">██</span><span style="color:#00f0ff;">██</span><span style="color:#3357ff;">██</span><span style="color:#f033ff;">██</span>
+            const info = `<div class="fastfetch-info" style="display: flex; flex-direction: column; gap: 2px; margin-left: 15px;">
+                <div style="font-size: 9px; color: #00ff00; font-weight: bold; margin-bottom: 4px;">Johan@Akashic</div>
+                ${infoRow('OS:', os)}
+                ${infoRow('Host:', 'Elite Gems Engine')}
+                ${infoRow('Shell:', 'Akashic J_OS Shell')}
+                ${infoRow('Uptime:', uptimeStr)}
+                ${infoRow('Packages:', packageCount)}
+                ${infoRow('Resolution:', resolution)}
+                ${infoRow('Terminal:', browser)}
+                ${infoRow('CPU:', `${cores} core${cores > 1 ? 's' : ''}`)}
+                ${infoRow('GPU:', gpu)}
+                ${infoRow('Memory:', ram)}
+                ${infoRow('Network:', conn)}
+                ${infoRow('Status:', sacredStatus, '#ff00ff')}
+                <div style="margin-top: 4px;">
+                    <span style="color:#ff5733;">██</span><span style="color:#ffd733;">██</span><span style="color:#33ff57;">██</span><span style="color:#00f0ff;">██</span><span style="color:#3357ff;">██</span><span style="color:#f033ff;">██</span>
+                </div>
             </div>`;
 
             return { logo: randomLogo, info: info };
@@ -3870,6 +3905,7 @@
                 // Set content exactly like the original panel: logo <pre> + info <div>
                 fetchContent.innerHTML = parts.logo + parts.info;
                 const terminal = document.getElementById('cyber-fetch-terminal');
+                terminal.classList.add('fastfetch-mode');
                 if (!terminal.classList.contains('active')) {
                     terminal.classList.add('active');
                     if (typeof playTick === 'function') playTick(true);
@@ -3877,7 +3913,7 @@
                 return '📊 Fastfetch panel displayed. Close with [X] or press Escape.';
             },
             'neofetch': () => {
-                const container = document.getElementById('fastfetch-container');
+                const container = document.getElementById('neofetch-container');
                 if (container) {
                     container.style.visibility = 'visible';
                     container.style.display = 'flex';
@@ -3984,11 +4020,11 @@
                     // 2. // Kali Linux Dragon
                         `<pre class="ascii-art" style="color: #3498db; font-size: 10px; line-height: 1; text-shadow: 0 0 3px #3498db; font-family: monospace;">
                          ..........
-                                    ..,;:ccc,.
-                                 ......''';lxO.
-                          .....''''..........,:ld;
-                                       .';;;:::;,,.x,
-                               ..'''.       0Xxoc:,.  ...
+                                ..,;:ccc,.
+                             ......''';lxO.
+                      .....''''..........,:ld;
+                                   .';;;:::;,,.x,
+                           ..'''.       0Xxoc:,.  ...
                               ....            ,ONkc;,;cokOdc',.
                             .                OMo           ':ddo.
                                             dMc               :OO;
@@ -4000,10 +4036,9 @@
                                                   .:dOdo:   'x0l
                                                       'x0l  
                                                           cWc   
-                                                       .cNl
-                            
-                            <span style="color: #00ffff;">[ THE QUIETER YOU BECOME ]</span>
-                            <span style="color: #00ffff;">[ THE MORE YOU CAN HEAR  ]</span>
+                                                        .cNl
+    <span style="color: #00ffff;">[ THE QUIETER YOU BECOME ]</span>
+    <span style="color: #00ffff;">[ THE MORE YOU CAN HEAR  ]</span>
                         </pre>`,
 
                     // 3. Debian Swirl (The Universal)
@@ -4036,7 +4071,9 @@
                                     <span style="color: #00f0ff;">/___/      \\___\\</span>
                                     <span style="color: #00f0ff;">/   /        \\   \\</span>
                                     <span style="color: #00f0ff;">/___/          \\___\\</span>
-                        <span style="color: #0f0;">[ ROOT PRIVILEGES: GRANTED // J_OS SECURE ]</span></pre>`,
+                                    <span style="color: #0f0;">[ ROOT PRIVILEGES: GRANTED ]</span>
+                                    <span style="color: #0f0;">[ // J_OS SECURE // ]</span>
+                        </pre>`,
                 ];
 
                 const randomLogo = logos[Math.floor(Math.random() * logos.length)];
@@ -4263,24 +4300,24 @@
                     // 1. TERMINAL POWER – J_OS (magenta)
                         `<pre class="ascii-art" style="color: #ff00ff; font-size: 10px; line-height: 1.2; text-shadow: 0 0 5px #ff00ff;">
                         ╔══════════════════╗
-                        ║  TERMINAL POWER  ║
+                        ║   TERMINAL POWER   ║
                         ╚══════════════════╝
                            ▄▄▄▄▄▄▄▄▄
                                      █  J_OS   █     [@_@]
                            ▀▀▀▀▀▀▀▀▀
                         ╔══════════════════╗
-                        ║     CLI POWER    ║
+                        ║      CLI POWER     ║
                         ╚══════════════════╝
                         </pre>`,
 
                     // 2. // Kali Linux Dragon
                         `<pre class="ascii-art" style="color: #3498db; font-size: 10px; line-height: 1; text-shadow: 0 0 3px #3498db; font-family: monospace;">
                          ..........
-                                    ..,;:ccc,.
-                                 ......''';lxO.
-                          .....''''..........,:ld;
-                                       .';;;:::;,,.x,
-                               ..'''.       0Xxoc:,.  ...
+                                ..,;:ccc,.
+                             ......''';lxO.
+                      .....''''..........,:ld;
+                                   .';;;:::;,,.x,
+                           ..'''.       0Xxoc:,.  ...
                               ....            ,ONkc;,;cokOdc',.
                             .                OMo           ':ddo.
                                             dMc               :OO;
@@ -4292,10 +4329,9 @@
                                                   .:dOdo:   'x0l
                                                       'x0l  
                                                           cWc   
-                                                       .cNl
-                            
-                            <span style="color: #00ffff;">[ THE QUIETER YOU BECOME ]</span>
-                            <span style="color: #00ffff;">[ THE MORE YOU CAN HEAR  ]</span>
+                                                    .cNl
+        <span style="color: #00ffff;">[ THE QUIETER YOU BECOME ]</span>
+        <span style="color: #00ffff;">[ THE MORE YOU CAN HEAR  ]</span>
                         </pre>`,
 
                     // 3. Debian Swirl (The Universal)
@@ -4328,7 +4364,9 @@
                                     <span style="color: #00f0ff;">/___/      \\___\\</span>
                                     <span style="color: #00f0ff;">/   /        \\   \\</span>
                                     <span style="color: #00f0ff;">/___/          \\___\\</span>
-                        <span style="color: #0f0;">[ ROOT PRIVILEGES: GRANTED // J_OS SECURE ]</span></pre>`,
+                                    <span style="color: #0f0;">[ ROOT PRIVILEGES: GRANTED ]</span>
+                                    <span style="color: #0f0;">[ // J_OS SECURE // ]</span>
+                        </pre>`,
                     
                     // 5. Meditating Monk Zazen – Dhyana Mudra
                     `<pre style="color: #ffaa00; font-size: 9px; line-height: 1.1; text-shadow: 0 0 5px #ffaa00; padding: 10px 0;">
@@ -6891,7 +6929,7 @@
             '.action-btn:not(#magic-mirror-btn):not(#mirror-exit-btn)',
             '#quote-widget', '#dynamic-quote-container',   // online quote
             '#xterm-modal', '.hide-controls-toggle-wrapper',
-            '.theme-switch-wrapper', '.text-wrapper', '#fastfetch-container',
+            '.theme-switch-wrapper', '.text-wrapper', '#neofetch-container',
             '.timepiece-wrapper .clock', '#digital-clock', '#cistercian-wrapper',
             '#cistercian-date-row', '.small-cist-date', '#perm-cist-clock',
             '#open-fetch-btn', '#edit-ascii-btn', '#open-xterm',
@@ -6963,7 +7001,7 @@
             document.getElementById('toggle-fetch-btn').parentElement.style.display = 'none';
 
             // Hide the fastfetch container completely
-            document.getElementById('fastfetch-container').style.display = 'none';
+            document.getElementById('neofetch-container').style.display = 'none';
             // Show exit button
             if (mirrorExitBtn) mirrorExitBtn.style.display = 'block';
 
@@ -7007,7 +7045,7 @@
             document.getElementById('toggle-fetch-btn').parentElement.style.display = 'block';
 
             // Bring back the fastfetch container (MUST be 'flex' to preserve your layout!)
-            document.getElementById('fastfetch-container').style.display = 'flex';
+            document.getElementById('neofetch-container').style.display = 'flex';
         }
 
         // Attach event listeners
