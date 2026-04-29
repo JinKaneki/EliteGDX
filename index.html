@@ -925,7 +925,7 @@
             padding: 20px;
             display: flex;
             align-items: center;
-            gap: 30px;
+            gap: 10px;
             font-size: 0.9rem;
             line-height: 1.5;
             white-space: pre-wrap;
@@ -1064,6 +1064,7 @@
             flex: 1;
             height: 230px;                /* 180 increased for better visibility */
             overflow-y: auto;
+            overflow-x: hidden;
             font-family: 'Courier New', Courier, monospace;
             font-size: 13px;
             color: #0f0;
@@ -1237,8 +1238,18 @@
             filter: drop-shadow(0 0 5px #00ffff);
         }
 
+        /* Desktop default login ascii splash */
+        .login-art {
+            font-size: 12px;
+            line-height: 1.2;
+        }
         .login-status-text {
-            font-size: 11px;       /* default on desktop */
+            font-size: 11px;
+        }
+
+        .fastfetch-panel {
+            font-size: 9px;
+            gap: 10px; 
         }
 
 
@@ -1367,7 +1378,18 @@
             #fetch-content {
                 flex-direction: column;
                 font-size: 0.6rem;
-                gap: 15px;
+                gap: 8px;
+            }
+            #fetch-content pre {
+                font-size: 6px !important;
+            }
+            #fetch-content > div {
+                font-size: 6px !important;
+                line-height: 1 !important;
+                margin-left: 4px !important;
+            }
+            .fetch-logo {
+                font-size: 7px;
             }
 
             /* Mobile adjustments for the fetch container */
@@ -1468,13 +1490,33 @@
             #cmd-output pre {
                 white-space: pre-wrap !important;     /* keep exact spacing – no wrapping */
                 /*word-break: break-word !important;*/
-                font-size: 10px;                      /* default small size – override in specific commands if needed */
+                font-size: 8px;                      /* default small size – override in specific commands if needed */
                 line-height: 1.2;
                 margin: 0;
             }        
 
+            /*login ascii size*/
+            .login-art {
+                font-size: 9px; 
+            }
             .login-status-text {
                 font-size: 7px !important;
+            }
+            .ascii-art {
+                font-size: 8px !important;
+            }
+            
+            .fastfetch-panel {
+                font-size: 6px !important;
+                gap: 4px !important;
+            }
+            .fastfetch-panel pre {
+                font-size: 6px !important;
+            }
+            .fastfetch-panel > div {
+                font-size: 6px !important;
+                line-height: 1 !important;
+                margin-left: 4px !important;
             }
             
 
@@ -2222,8 +2264,8 @@
         <button id="toggle-fetch-btn" class="action-btn">🖥️ RUN JOHAN_OS</button>
     </div>
 
-    <div id="fastfetch-container" style="visibility: hidden; font-family: 'Courier New', monospace; background: rgba(0, 0, 0, 0.502); backdrop-filter: blur(2px); border: 1px solid var(--accent-color); border-radius: 16px; padding: 20px; width: fit-content; max-width: 95%; margin: 0 auto; display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.5);">
-        <pre id="ascii-art" style="margin: 10px;padding: 10px; color: #ff00ff; font-size: 16px; line-height: 1.4; white-space: pre;">
+    <div id="fastfetch-container" style="visibility: hidden; font-family: 'Courier New', monospace; background: rgba(0, 0, 0, 0.502); backdrop-filter: blur(2px); border: 1px solid var(--accent-color); border-radius: 32px; padding: 20px; width: fit-content; max-width: 95%; margin: 0 auto; display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.5);">
+        <pre id="ascii-art" style="margin: 10px;padding: 10px; color: #ff00ff; font-size: 15px; line-height: 1.3; white-space: pre;">
      _  ____  _   _   _   _   _    ____  ____      \   /
        | |/ __ \| | | | / \ | \ | |  / __ \/ ___|  --  \ /  --
     _  | | |  | | |_| |/ _ \|  \| |  ||  | \___ \  (  \ | /  )
@@ -2359,7 +2401,7 @@
             osc.stop(audioCtx.currentTime + 0.03); // Stop osc after 30ms
         }
 
-        // --- CYBER-FETCH ENGINE (Bulletproof, with button & S/I keys) ---
+        // --- CYBER-FETCH ENGINE ---
         const fetchTerminal = document.getElementById('cyber-fetch-terminal');
         const fetchContent = document.getElementById('fetch-content');
         const closeFetchBtn = document.getElementById('close-fetch');
@@ -2689,6 +2731,171 @@
             body.classList.toggle('light-mode');
             themeLabel.innerText = body.classList.contains('light-mode') ? '' : '';// 'Light Mode' : 'Dark Mode';
         });
+
+        function generateFastfetchPanelParts() {
+            // --- System detection (same as fastfetch) ---
+            let os = 'Unknown';
+            try {
+                const ua = navigator.userAgent;
+                if (ua.includes('Windows')) os = 'Windows';
+                else if (ua.includes('Mac')) os = 'macOS';
+                else if (ua.includes('Linux')) os = 'Linux';
+                else if (ua.includes('Android')) os = 'Android';
+                else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
+                else if (navigator.userAgentData?.platform) os = navigator.userAgentData.platform;
+                else if (navigator.platform) os = navigator.platform;
+            } catch(e) {}
+
+            let gpu = 'Unknown';
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (debugInfo) gpu = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                }
+            } catch(e) {}
+            if (!gpu || gpu === 'Unknown') gpu = 'Integrated Graphics';
+
+            let browser = 'Browser';
+            const ua = navigator.userAgent;
+            if (ua.includes('Firefox')) browser = 'Firefox';
+            else if (ua.includes('Chrome')) browser = 'Chrome';
+            else if (ua.includes('Safari')) browser = 'Safari';
+            else if (ua.includes('Edge')) browser = 'Edge';
+
+            const cores = navigator.hardwareConcurrency || '?';
+            const ram = navigator.deviceMemory ? `${navigator.deviceMemory} GB` : '? GB';
+            const resolution = `${window.screen.width}×${window.screen.height}`;
+
+            let conn = 'Unknown';
+            try { conn = navigator.connection ? navigator.connection.effectiveType : 'Unknown'; } catch(e) {}
+
+            const uptimeSec = Math.floor(performance.now() / 1000);
+            const uptimeMin = Math.floor(uptimeSec / 60);
+            const uptimeHours = Math.floor(uptimeMin / 60);
+            const uptimeStr = uptimeHours > 0 ? `${uptimeHours}h ${uptimeMin % 60}m` : `${uptimeMin}m ${uptimeSec % 60}s`;
+
+            const packageCount = (typeof commands === 'object' && commands) ? Object.keys(commands).length : 42;
+
+            const sacredStatuses = [ 
+                 // Original set
+                "CONNECTED TO ETHER",
+                "ZERO-POINT STABLE",
+                "KRYPTOS ENCRYPTED",
+                "VOID-WALKING",
+                "AKASHIC ALIGNED",
+                "NEURAL SYNC",
+                "QUANTUM ENTANGLED",
+                // Cyberpunk / High-Tech
+                "ONYX CONSOLE ACTIVE",
+                "NEON LINK ESTABLISHED",
+                "PHANTOM SHELL SECURE",
+                "OBSIDIAN TERMINAL ONLINE",
+                "SIGNAL-9 LOCKED",
+                "GLITCH-CORE NOMINAL",
+                // Sacred / Mythological
+                "DHARMA TERMINAL ATTUNED",
+                "AETHER LINK RESONANT",
+                "ORACLE NODE LISTENING",
+                "SAMSARA CYCLE STABLE",
+                "AKASHIC RECORDS INDEXED",
+                "ZENITH POINT REACHED",
+                "DIGITAL KOAN: SOLVED",
+                // Personal OS / Protocol
+                "J-OS: CORE INTERFACE",
+                "J.O.H.A.N. PROTOCOL ACTIVE",
+                "NEURAL GATEWAY OPEN",
+                "AXON FIRING",
+                "SYNAPSE LINKED",
+                "MONOLITH UNMOVED",
+                "ECHO-BASE RECEIVING"
+            ];
+            const sacredStatus = sacredStatuses[Math.floor(Math.random() * sacredStatuses.length)];
+
+            // --- 3 linux based logos ---
+            const logos = [
+        // 1. Kali Dragon
+        `<pre class="ascii-art" style="color: #3498db; font-size: 10px; line-height: 1; text-shadow: 0 0 3px #3498db; font-family: monospace;">
+ ..........
+            ..,;:ccc,.
+         ......''';lxO.
+ .....''''..........,:ld;
+           .';;;:::;,,.x,
+       ..'''.       0Xxoc:,.  ...
+   ....            ,ONkc;,;cokOdc',.
+  .                OMo           ':ddo.
+                 dMc               :OO;
+                 0M.                 .:o.
+                 ;Wd
+                  ;XO,
+                    ,d0Odlc;,..
+                        ..',;:cdOOd::,.
+                                .:dOdo:   'x0l
+                                    'x0l  
+                                        cWc   
+                                    .cNl
+ <span style="color: #00ffff;">[ THE QUIETER YOU BECOME ]</span>
+ <span style="color: #00ffff;">[ THE MORE YOU CAN HEAR  ]</span>
+</pre>`,
+
+        // 2. Debian Swirl (middle)
+        `<pre style="color: #ff0055; font-size: 9px; line-height: 1.2; text-shadow: 0 0 4px #ff0055;">
+ _,nd8888888ba,_
+,d8888888888888888,
+,88888888888888888888,
+ d8888888P""'  '""Y88888b
+ 888888P'           'Y888
+ 888888               888
+ Y88888       _,aaaa,_ 888
+  Y88888     ,88888888P 88P
+   'Y8888,   88888888P ,88'
+     'Y8888888888888P ,88'
+        '""Y8888P""' ,88'
+              _______,88'
+              Y888888P'
+<span style="color: #ffaa00;">[ KERNEL: DEBIAN STABLE ]</span>
+</pre>`,
+
+        // 3. Arch Linux
+        `<pre style="font-size: 9px; line-height: 1.2;">
+                <span style="color: #00f0ff;">/\\</span>
+               <span style="color: #00f0ff;">/  \\</span>
+              <span style="color: #00f0ff;">/ /\\ \\</span>
+             <span style="color: #00f0ff;">/ /  \\ \\</span>
+            <span style="color: #00f0ff;">/ /    \\ \\</span>
+           <span style="color: #00f0ff;">/ /      \\ \\</span>
+          <span style="color: #00f0ff;">/ /_      _\\ \\</span>
+         <span style="color: #00f0ff;">/___/      \\___\\</span>
+        <span style="color: #00f0ff;">/   /        \\   \\</span>
+       <span style="color: #00f0ff;">/___/          \\___\\</span>
+            <span style="color: #0f0;">[ ROOT PRIVILEGES: GRANTED // J_OS SECURE ]</span>
+        </pre>`
+    ];
+            const randomLogo = logos[Math.floor(Math.random() * logos.length)];
+
+            // --- Info block ---
+            const info = `<div style="font-size: 11px; line-height: 1.5; margin-left: 15px;">
+            <strong style="color: #00ff00;">Johan@Akashic</strong><br>
+            <span style="color: #555;">────────────────</span><br>
+            <span style="color: #00ffff;">OS:</span> ${os}<br>
+            <span style="color: #00ffff;">Host:</span> Elite Gems Engine<br>
+            <span style="color: #00ffff;">Shell:</span> Akashic J_OS Shell<br>
+            <span style="color: #00ffff;">Uptime:</span> ${uptimeStr}<br>
+            <span style="color: #00ffff;">Packages:</span> ${packageCount}<br>
+            <span style="color: #00ffff;">Resolution:</span> ${resolution}<br>
+            <span style="color: #00ffff;">Terminal:</span> ${browser}<br>
+            <span style="color: #00ffff;">CPU:</span> ${cores} core${cores > 1 ? 's' : ''}<br>
+            <span style="color: #00ffff;">GPU:</span> ${gpu}<br>
+            <span style="color: #00ffff;">Memory:</span> ${ram}<br>
+            <span style="color: #00ffff;">Network:</span> ${conn}<br>
+            <span style="color: #ff00ff;">Status:</span> <span style="color: #ff00ff;">${sacredStatus}</span><br><br>
+
+            <span style="color:#ff5733;">██</span><span style="color:#ffd733;">██</span><span style="color:#33ff57;">██</span><span style="color:#00f0ff;">██</span><span style="color:#3357ff;">██</span><span style="color:#f033ff;">██</span>
+            </div>`;
+
+            return { logo: randomLogo, info: info };
+        }
 
 
 
@@ -3533,7 +3740,7 @@
             'help': () => {
                 return `
                 <strong style="color: var(--accent-color);">⚡ SYSTEM & UTILITY</strong><br>
-                help, about, clear, echo [text], whoami, ls, sudo, history, fetch, fastfetch, neofetch, system, shutdown, ping, date, spinner, stopspinner, timer, nuke :(factory reset)<br>
+                help, about, clear, echo [text], whoami, ls, sudo, history, fastfetch, fetchpanel, fetch, neofetch, system, shutdown, ping, date [utc\|iso\|unix], spinner, stopspinner, timer [seconds], stoptimer, nuke :(factory reset)<br>
                 <br>
                 <strong style="color: var(--accent-color);">🎨 THEME & UI</strong><br>
                 theme [cyan|magenta|amber|matrix], pause<br>
@@ -3547,14 +3754,17 @@
                 <strong style="color: var(--accent-color);">⚙️ ENGINEERING TOOLS</strong><br>
                 case  -> interactive diagnostics: resistor calc, color decode, Ohm's Law, voltage divider, capacitor codes<br>
                 <br>
-                <strong style="color: var(--accent-color);">🔐 AKASHIC CIPHER & CYBER OPS🕵️</strong><br>
-                cipher -> Full usage manual for all ciphers (encryption/decryption).<br> kali -> Pentest toolbox.
+                <strong style="color: var(--accent-color);">🔐 AKASHIC CIPHER SUITE</strong><br>
+                cipher ,encode <msg>, decode <b64>, shift <n> <msg>, kryptos <enc|dec> <bin|hex> <text>, vigenere <enc|dec> <key> <msg>, mirror <msg>, vault <enc|dec> [pw] <msg>, handshake <set|clear> [key]<br>
+                <br>
+                <strong style="color: var(--accent-color);">🕵️ CYBER OPS</strong><br>
+                kali, steg <hide|reveal> "cover" "secret", tag <set|get|clear|view> [key] [value], kali [hash|scan|crack|inject|genkey|banner|arch], nuke<br>
                 <br>
                 <strong style="color: var(--accent-color);">🧘 WISDOM & SPIRITUALITY</strong><br>
                 tao, wisdom, sutra, buddha, koan, stoic, bible, verse<br>
                 <br>
                 <strong style="color: var(--accent-color);">🎭 FUN & ENTERTAINMENT</strong><br>
-                joke, riddle, poem, poetry, anime, ascii, qr [text], radio [channel], tv [channel], play youtube [url], play audio, stop, cowsay [text], hack, htop, react<br>
+                joke, riddle, poem, poetry, anime, ascii, qr [text], radio [channel], tv [channel], play youtube [url], play audio, stop, cowsay [text], hack, htop, react, rotate<br>
                 <br>
                 <strong style="color: var(--accent-color);">🖼️ VISUALS & EFFECTS</strong><br>
                 image, walls, matrix, scroll, intersect, intersectslow<br>
@@ -3654,6 +3864,17 @@
                     }
                 }
                 return 'Fetch command not available.';
+            },
+            'fetchpanel': () => {
+                const parts = generateFastfetchPanelParts();
+                // Set content exactly like the original panel: logo <pre> + info <div>
+                fetchContent.innerHTML = parts.logo + parts.info;
+                const terminal = document.getElementById('cyber-fetch-terminal');
+                if (!terminal.classList.contains('active')) {
+                    terminal.classList.add('active');
+                    if (typeof playTick === 'function') playTick(true);
+                }
+                return '📊 Fastfetch panel displayed. Close with [X] or press Escape.';
             },
             'neofetch': () => {
                 const container = document.getElementById('fastfetch-container');
@@ -3758,21 +3979,67 @@
                 ];
                 const sacredStatus = sacredStatuses[Math.floor(Math.random() * sacredStatuses.length)];
 
-                // --- ASCII Gem Logo (no leading spaces) ---
-                const logo = `<pre style="color: #00ffff; font-size: 9px; line-height: 1.1; margin: 0; white-space: pre;">
-                /\\
-               /  \\
-              /____\\
-             /\\    /\\
-            /  \\  /  \\
-           /____\\/____\\
-           \\    /\\    /
-            \\  /  \\  /
-             \\/____\\/
-              \\    /
-               \\  /
-                \\/
-            </pre>`;
+                // --- Three Linux-inspired logos (Debian, Arch, Kali) ---
+                const logos = [
+                    // 2. // Kali Linux Dragon
+                        `<pre class="ascii-art" style="color: #3498db; font-size: 10px; line-height: 1; text-shadow: 0 0 3px #3498db; font-family: monospace;">
+                         ..........
+                                    ..,;:ccc,.
+                                 ......''';lxO.
+                          .....''''..........,:ld;
+                                       .';;;:::;,,.x,
+                               ..'''.       0Xxoc:,.  ...
+                              ....            ,ONkc;,;cokOdc',.
+                            .                OMo           ':ddo.
+                                            dMc               :OO;
+                                            0M.                 .:o.
+                        ;Wd
+                            ;XO,
+                                    ,d0Odlc;,..
+                                          ..',;:cdOOd::,.
+                                                  .:dOdo:   'x0l
+                                                      'x0l  
+                                                          cWc   
+                                                       .cNl
+                            
+                            <span style="color: #00ffff;">[ THE QUIETER YOU BECOME ]</span>
+                            <span style="color: #00ffff;">[ THE MORE YOU CAN HEAR  ]</span>
+                        </pre>`,
+
+                    // 3. Debian Swirl (The Universal)
+                        `<pre style="color: #ff0055; font-size: 9px; line-height: 1.2; text-shadow: 0 0 4px #ff0055;">
+                            _,nd8888888ba,_
+                         ,d8888888888888888b,
+                        ,888888888888888888888,
+                        d8888888P""'  '""Y88888b
+                       888888P'             'Y888
+                       888888                  888
+                       Y88888       _,aaaa,_    888
+                        Y88888     ,88888888P   88P
+                         'Y8888,   88888888P   ,88'
+                           'Y8888888888888P  ,88'
+                              '""Y8888P""' ,88'
+                               _______,88'
+                            Y888888P'
+                        <span style="color: #ffaa00;">[ KERNEL: DEBIAN STABLE]</span></pre>`,
+
+                    // 4. Arch Linux (Kryptos Vector)
+
+                        `<pre style="font-size: 9px; line-height: 1.2;">
+                                    <span style="color: #00f0ff;">/\\</span>
+                                    <span style="color: #00f0ff;">/  \\</span>
+                                    <span style="color: #00f0ff;">/ /\\ \\</span>
+                                    <span style="color: #00f0ff;">/ /  \\ \\</span>
+                                    <span style="color: #00f0ff;">/ /    \\ \\</span>
+                                    <span style="color: #00f0ff;">/ /      \\ \\</span>
+                                    <span style="color: #00f0ff;">/ /_      _\\ \\</span>
+                                    <span style="color: #00f0ff;">/___/      \\___\\</span>
+                                    <span style="color: #00f0ff;">/   /        \\   \\</span>
+                                    <span style="color: #00f0ff;">/___/          \\___\\</span>
+                        <span style="color: #0f0;">[ ROOT PRIVILEGES: GRANTED // J_OS SECURE ]</span></pre>`,
+                ];
+
+                const randomLogo = logos[Math.floor(Math.random() * logos.length)];
 
                 // --- System Info Column ---
                 const info = `<div style="font-size: 9px; line-height: 0.7; margin-left: 15px;">
@@ -3791,10 +4058,10 @@
                 <span style="color: #00ffff;">Network:</span> ${conn}<br>
                 <span style="color: #ff00ff;">Status:</span> <span style="color: #ff00ff;">${sacredStatus}</span><br><br>
                 <span style="color:#ff5733;">██</span><span style="color:#ffd733;">██</span><span style="color:#33ff57;">██</span><span style="color:#00f0ff;">██</span><span style="color:#3357ff;">██</span><span style="color:#f033ff;">██</span>
-            </div>`;
+                </div>`;
 
                 return `<div style="display: flex; align-items: center; flex-wrap: wrap; padding: 5px; border-left: 2px solid var(--accent-color); background: rgba(0,255,0,0.02);">
-                    ${logo}
+                    ${randomLogo}
                     ${info}
                 </div>`;
             },
@@ -3869,14 +4136,16 @@
             },
             'timer': (args) => {
                 const seconds = parseInt(args[0], 10);
-                if (isNaN(seconds) || seconds <= 0) return 'Usage: timer <seconds>';
+                if (isNaN(seconds) || seconds <= 0) return 'Usage: timer [seconds]';
+
+                // Stop any existing timer
+                if (window.activeTimerInterval) clearInterval(window.activeTimerInterval);
 
                 let remaining = seconds;
                 const output = document.getElementById('cmd-output');
                 const timerLine = document.createElement('div');
-                timerLine.style.color = '#ff00ff';
-                timerLine.style.textShadow = '0 0 5px #ff00ff';
-                timerLine.textContent = `⏱️ Timer: ${remaining}s`;
+                timerLine.style.cssText = 'color: #ff00ff; font-size: 18px; font-weight: bold; text-shadow: 0 0 8px #ff00ff; margin: 8px 0;';
+                timerLine.textContent = `⏱️ ${remaining}s`;
                 output.appendChild(timerLine);
 
                 // Self‑contained Morse beep helper – no external files needed
@@ -3902,23 +4171,61 @@
                     } catch(e) {}
                 };
 
-                const interval = setInterval(() => {
+                window.activeTimerInterval = setInterval(() => {
                     remaining--;
+                    timerLine.textContent = remaining > 0 ? `⏱️ ${remaining}s` : '⏱️ TIME EXPIRED';
+                    timerLine.style.color = remaining <= 0 ? '#0f0' : '#ff00ff';
+
+                    // Auto‑scroll only if user was already near the bottom
+                    const atBottom = (output.scrollTop + output.clientHeight) >= (output.scrollHeight - 20);
+                    if (atBottom) output.scrollTop = output.scrollHeight;
+
                     if (remaining <= 0) {
-                        clearInterval(interval);
-                        timerLine.textContent = '⏱️ [ SIGNAL RECEIVED: TIME EXPIRED ]';
-                        timerLine.style.color = '#0f0';
+                        clearInterval(window.activeTimerInterval);
+                        window.activeTimerInterval = null;
                         playMorseBeeps();
                         if (typeof playTick === 'function') playTick(true);
-                    } else {
-                        timerLine.textContent = `⏱️ Timer: ${remaining}s`;
                     }
-                    output.scrollTop = output.scrollHeight;
                 }, 1000);
 
-                return `Timer synchronized for ${seconds}s. Monitoring neural drift...`;
+                return `⏱️ Timer started for ${seconds}s. Type <span style="color: #0f0;">stoptimer</span> to cancel.`;
             },
-            'date': () => new Date().toString(),
+            'stoptimer': () => {
+                if (window.activeTimerInterval) {
+                    clearInterval(window.activeTimerInterval);
+                    window.activeTimerInterval = null;
+                    return '⏱️ Timer cancelled.';
+                }
+                return 'No active timer.';
+            },
+            'date': (args) => {
+                const now = new Date();
+                const mode = args[0]?.toLowerCase();
+
+                // Optional format switches
+                if (mode === 'utc') {
+                    return `<span style="color: #888;">UTC:</span> <span style="color: #00f0ff;">${now.toUTCString()}</span>`;
+                }
+                if (mode === 'iso') {
+                    return `<span style="color: #888;">ISO 8601:</span> <span style="color: #ffaa00;">${now.toISOString()}</span>`;
+                }
+                if (mode === 'unix') {
+                    return `<span style="color: #888;">UNIX Timestamp:</span> <span style="color: #0f0;">${Math.floor(now.getTime() / 1000)}</span>`;
+                }
+
+                // Default: friendly local time with a slight glow
+                const options = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                };
+                const formatted = now.toLocaleDateString('en-US', options);
+                return `<span style="color: #0f0; text-shadow: 0 0 5px #0f0;">📅 ${formatted}</span>`;
+            },
             'spinner': () => {
                 if (spinnerInterval) return 'A neural-link is already active. Type stopspinner to halt.';
 
@@ -3935,8 +4242,10 @@
                     if (el) {
                         el.textContent = `🌀 [ ${spinChars[i % spinChars.length]} ] Establishing Neural Uplink...`;
                         i++;
-                        cmdOutput.scrollTop = cmdOutput.scrollHeight;
                     }
+                    // Auto‑scroll only if user was already near the bottom
+                    const atBottom = (cmdOutput.scrollTop + cmdOutput.clientHeight) >= (cmdOutput.scrollHeight - 20);
+                    if (atBottom) cmdOutput.scrollTop = cmdOutput.scrollHeight;
                 }, 100);
 
                 return 'Accessing Akashic Records… Type "stopspinner" to disconnect.';
@@ -3952,7 +4261,7 @@
             'ascii': (args) => {
                 const arts = [
                     // 1. TERMINAL POWER – J_OS (magenta)
-                        `<pre style="color: #ff00ff; font-size: 10px; line-height: 1.2; text-shadow: 0 0 5px #ff00ff;">
+                        `<pre class="ascii-art" style="color: #ff00ff; font-size: 10px; line-height: 1.2; text-shadow: 0 0 5px #ff00ff;">
                         ╔══════════════════╗
                         ║  TERMINAL POWER  ║
                         ╚══════════════════╝
@@ -3965,7 +4274,7 @@
                         </pre>`,
 
                     // 2. // Kali Linux Dragon
-                        `<pre style="color: #3498db; font-size: 9px; line-height: 1; text-shadow: 0 0 3px #3498db; font-family: monospace;">
+                        `<pre class="ascii-art" style="color: #3498db; font-size: 10px; line-height: 1; text-shadow: 0 0 3px #3498db; font-family: monospace;">
                          ..........
                                     ..,;:ccc,.
                                  ......''';lxO.
@@ -4256,7 +4565,7 @@
 
                         // --- REAL SHA-256 HASH ---
                         if (sub === 'hash') {
-                            if (!rest) return 'Usage: kali hash <text>';
+                            if (!rest) return 'Usage: kali hash [text]';
                             const msgUint8 = new TextEncoder().encode(rest);
                             const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
                             const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
@@ -4265,7 +4574,7 @@
 
                         // --- ASYNC PORT SCAN (professional table) ---
                         if (sub === 'scan') {
-                            if (!rest) return 'Usage: kali scan <ip>';
+                            if (!rest) return 'Usage: kali scan [ip]';
                             appendCommandOutput(`[+] Initiating Nmap-style scan on ${rest}...`);
                             await delay(800);
                             appendCommandOutput('[+] Discovering open ports...');
@@ -4286,7 +4595,7 @@
 
                 // --- ENTROPY CRACKER (visual) ---
                 if (sub === 'crack') {
-                    if (!rest) return 'Usage: kali crack <hash>';
+                    if (!rest) return 'Usage: kali crack [hash]';
                     appendCommandOutput(`[~] Brute-forcing hash: ${rest.substring(0, 8)}...`);
                     appendCommandOutput('[~] Dictionary: rockyou.txt');
                     await delay(1500);
@@ -4297,7 +4606,7 @@
 
                 // --- INJECT with suspense ---
                 if (sub === 'inject') {
-                    if (!rest) return 'Usage: kali inject <target>';
+                    if (!rest) return 'Usage: kali inject [target]';
                     appendCommandOutput(`[*] Crafting payload for ${rest}...`);
                     await delay(800);
                     appendCommandOutput('[*] Encoding shellcode...');
@@ -4330,7 +4639,7 @@
             },
             'cipher': () => {
                 return `
-                <div style="border: 1px solid #00ffff; padding: 12px; background: rgba(0, 255, 255, 0.03); border-radius: 8px; line-height: 1.4;">
+                <div style="border: 1px solid #00ffff; padding: 12px; background: rgba(0, 255, 255, 0.03); border-radius: 8px; font-size:9px; line-height: 1;">
                 <strong style="color: #00ffff;">📜 AKASHIC CIPHER MANUAL</strong><br>
                 <span style="color: #888;">How to encrypt &amp; decrypt every message type</span><br>
                 <br>
@@ -4386,7 +4695,7 @@
             // ========== AKASHIC CIPHER SUITE ==========
             // 1. Base64 ENCODE
             'encode': (args) => {
-                if (args.length === 0) return 'Usage: encode <message>\nExample: encode hello world';
+                if (args.length === 0) return 'Usage: encode [message]\nExample: encode hello world';
                 const str = args.join(' ');
                 try {
                     // Unicode‑safe Base64
@@ -4399,7 +4708,7 @@
 
             // 2. Base64 DECODE
             'decode': (args) => {
-                if (args.length === 0) return 'Usage: decode <base64_string>\nExample: decode aGVsbG8gV29ybGQ=';
+                if (args.length === 0) return 'Usage: decode [base64_string]\nExample: decode aGVsbG8gV29ybGQ=';
                 try {
                     const decoded = decodeURIComponent(escape(atob(args[0])));
                     return `[ DECODING COMPLETE ]<br><span style="color: #0f0;">${decoded}</span>`;
@@ -4410,7 +4719,7 @@
 
             // 3. Caesar SHIFT (letters + digits wrap)
             'shift': (args) => {
-                if (args.length < 2) return 'Usage: shift <number> <message>\nExample: shift 3 Hello 007';
+                if (args.length < 2) return 'Usage: shift [number] [message]\nExample: shift 3 Hello 007';
                 const shiftAmt = parseInt(args[0], 10);
                 const text = args.slice(1).join(' ');
                 if (isNaN(shiftAmt)) return '⚠️ The first argument must be a number.';
@@ -4435,7 +4744,7 @@
 
             // 4. KRYPTOS – Binary/Hex stream
             'kryptos': (args) => {
-                if (args.length < 2) return 'Usage: kryptos <enc|dec> <bin|hex> <message/stream>\nExamples:\n  kryptos hex hello\n  kryptos dec bin 01101000 01100101 01101100 01101100 01101111';
+                if (args.length < 2) return 'Usage: kryptos [enc|dec] [bin|hex] [message/stream]\nExamples:\n  kryptos hex hello\n  kryptos dec bin 01101000 01100101 01101100 01101100 01101111';
                 const mode = args[0];         // 'enc' or 'dec'
                 const type = args[1];         // 'bin' or 'hex'
                 const data = args.slice(2).join(' ');
@@ -4491,7 +4800,10 @@
                 const text = args.slice(2).join(' ');
                 
                 if (!['enc', 'dec'].includes(mode) || !key || !text) 
-                    return 'Usage: vigenere <enc|dec> <keyword> <message>\nExample: vigenere enc secret hello world';
+                    return `Usage: vigenere [enc|dec] [keyword] [message]
+                    Encrypt: vigenere enc secret hello world
+                    Decrypt: vigenere dec secret [ciphertext]
+                    The same keyword must be used for both encryption and decryption.`;
 
                 let result = "";
                 for (let i = 0, j = 0; i < text.length; i++) {
@@ -4518,7 +4830,7 @@
             // 6. MIRROR (Atbash cipher)
             'mirror': (args) => {
                 const text = args.join(' ');
-                if (!text) return 'Usage: mirror <message>\nExample: mirror hello';
+                if (!text) return 'Usage: mirror [message]\nExample: mirror hello';
                 
                 const flip = (c, base) => String.fromCharCode(base + 25 - (c.charCodeAt(0) - base));
                 const result = text.replace(/[a-z]/g, c => flip(c, 97)).replace(/[A-Z]/g, c => flip(c, 65));
@@ -4527,7 +4839,7 @@
 
             // 7. HANDSHAKE – store/retrieve personal key (private, local)
             'handshake': (args) => {
-                if (args.length === 0) return 'Usage: handshake <set|clear> [key]\nExample: handshake set mySecretKey';
+                if (args.length === 0) return 'Usage: handshake [set|clear] [key]\nExample: handshake set mySecretKey';
                 const cmd = args[0].toLowerCase();
                 if (cmd === 'set') {
                     const key = args.slice(1).join(' ');
@@ -4539,7 +4851,7 @@
                     localStorage.removeItem('akashic_handshake_key');
                     return '🤝 Handshake key cleared.';
                 }
-                return `⚠️ Unknown subcommand. Use 'set <key>' or 'clear'.`;
+                return `⚠️ Unknown subcommand. Use 'set [key]' or 'clear'.`;
             },
 
             // 8. VAULT – AES‑256‑GCM via Web Crypto (with handshake fallback)
@@ -4557,7 +4869,13 @@
                     pw = args[1];
                     text = args.slice(2).join(' ');
                 } else {
-                    return 'Usage: vault <enc|dec> [password] <message/hex>\nExample: vault enc secret hello';
+                    return `Usage: vault [enc|dec] [password] [message/hex]
+                    If a handshake key is set, password can be omitted.
+                    Examples:
+                    vault enc secret hello
+                    vault dec secret [hex_cipher]
+                    vault enc hello      (uses stored handshake key)
+                    vault dec <hex>      (uses stored handshake key)`;
                 }
                 if (!['enc', 'dec'].includes(mode)) return '⚠️ Mode must be "enc" or "dec".';
 
@@ -4919,10 +5237,24 @@
                 appendCommandOutput(`📡 Tuning visual feed to ${channel.name}...`, false);
                 return commands['play'](['youtube', channel.url]);
             },
+            'about': () => {
+                return `
+                    <div style="border-left: 2px solid #ff00ff; padding: 8px 12px; line-height: 1.5;">
+                        <span style="color: #ff00ff; font-weight: bold; text-shadow: 0 0 5px #ff00ff;">// AKASHIC ORIGIN //</span><br>
+                        <span style="color: #ccc;">J_OS began as a simple ambient clock. Its creator, <strong style="color: #fff;">Johan</strong>, wanted a single screen that could tell time, show beauty, and respond like a real operating system.</span><br><br>
+                        <span style="color: #ccc;">Soon it grew:</span>
+                        <span style="color: #00f0ff;">Cistercian numerals</span> met <span style="color: #ffaa00;">live NASA feeds</span>.
+                        <span style="color: #0f0;">Tao Te Ching chapters</span> were woven into neural <span style="color: #ff00ff;">"Intersect" flashes</span>.
+                        <span style="color: #ff0;">Radio streams</span> and <span style="color: #0ff;">global news feeds</span> became channels on a cybernetic console.<br><br>
+                        <span style="color: #0f0;;">Today, <strong style="color: #fff;">J_OS</strong> is a digital sanctuary for high‑speed information retrieval – a hacker's command center, a philosopher's scroll, and an artist's canvas.</span><br><br>
+                        <span style="color: #888;">Type <span style="color: #0f0;">help</span> to explore.</span>
+                    </div>
+                `;
+            },
             'login': () => {
                 isAuthorized = true;
                 return `
-                <pre style="color: #00ff00; font-size: 11px; line-height: 1.2; text-shadow: 0 0 5px #00ff00;">
+                <pre class="login-art" style="color: #00ff00; text-shadow: 0 0 5px #00ff00;">
                                     <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">/\\</span>
                                     <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">/  \\</span>
                                     <span style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">/    \\</span>
@@ -5000,7 +5332,7 @@
             },
             'define': async (args) => {
                 const word = args.join(' ');
-                if (!word) return 'Usage: define <word>';
+                if (!word) return 'Usage: define [word]';
 
                 try {
                     const resp = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
@@ -5169,8 +5501,18 @@
                 try {
                     const resp = await fetch(url);
                     const text = await resp.text();
-                    // Transparency ensures the main background remains visible
-                    return `<pre style="font-family: monospace; margin: 8px 0; color: #0f0; background: transparent; border: none; overflow: hidden; white-space: pre-wrap; word-break: break-word;">${text}</pre>`;
+                    return `<pre style="
+                        font-family: monospace;
+                        margin: 8px 0;
+                        color: #0f0;
+                        background: transparent;
+                        border: none;
+                        white-space: pre-wrap;
+                        word-break: break-word;
+                        overflow-wrap: break-word;
+                        max-width: 100%;
+                        overflow-x: auto;
+                    ">${text}</pre>`;
                 } catch (e) {
                     return '⚠️ Weather service unavailable.';
                 }

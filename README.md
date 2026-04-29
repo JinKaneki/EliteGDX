@@ -1,7 +1,7 @@
 # Elite Gems Dashboard: Persistent Ambient Dashboard Fancy Analog/Digital/Cistercian Clock AOD 🕰️
 
 **An "Always-On" productivity clock and personal gallery engineered for professional workspaces.**
-**An ambient, cyber‑punk inspired dashboard with multiple clock faces, a rotating image gallery, and a powerful built‑in terminal command runner.**
+**An ambient, cyber‑punk inspired dashboard with multiple clock faces, a rotating image gallery, and a powerful built‑in terminal command runner(CLI).**
 
 Live at : [https://jinkaneki.github.io/AnalogClockHost/]
 
@@ -140,7 +140,7 @@ I set the following CSS custom properties to achieve the **rainbow line effect**
     README.md                      # This file
 ---
 
-## ⌨️ Terminal Command Reference
+## ⌨️ CLI Reference
   "You know how some people have a clock screensaver? I made something way cooler. It's a web page I keep open that not only tells time but also lets me type commands. I can type 'weather Tokyo' and it shows me the forecast. I can type 'tv nasa' and it plays a live stream from the space station. It also shows inspirational quotes, plays music, and even has a secret 'Intersect' flash. It's like my own little command center." **-Jin Kaneki**
 ### 💻 J_OS // AKASHIC ZERO-POINT KRYPTOS NEURAL CENTER (AZKNC)
 The built‑in command runner—a full‑featured terminal emulator with over 40 commands, fullscreen support, and a cyber‑mystical aesthetic.
@@ -148,111 +148,118 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 ### Command Categories
 
 **⚡ System & Utility**  
-`help` `about` `clear` `echo` `whoami` `ls` `history` `shutdown` `sudo` `motd` `login` `sytem` `ping` `date` `spinner` `stopspinner` `timer` `nuke`
+`help` `about` `clear` `echo` `whoami` `ls` `history` `shutdown` `sudo` `login` `sytem` `ping` `date` `spinner` `stopspinner` `timer` `stoptimer` `nuke`
 
 **🎨 Theme & UI**  
-`theme` `pause` `fetch` `fastfetch` `neofetch`
+`theme` `pause` `fetchpanel` `fastfetch` `fetch` `neofetch`
 
 **📰 News & Information**  
 `news` `hackernews` `technology` `weather`
 
 **📚 Learning & Reference**  
-`define` `physics` `electronics` `biology` `space` `cstip` `learn` `fortune` `akashic`
+`define` `physics` `electronics` `biology` `space` `cstip` `learn` `fortune` `motd`
 
-**🔐 AKASHIC CIPHER SUITE & CYBER OPS 🕵️**  
- `kali` `cipher`
+**🔐 Akashic Cipher Suite**   
+`cipher`
+
+**🕵️ Cyber Ops**   
+`kali`
 
 **🧘 Wisdom & Spirituality**  
 `tao` `wisdom` `sutra` `buddha` `koan` `stoic` `bible` `verse`
 
 **🎭 Fun & Entertainment**  
-`joke` `riddle` `poem` `ascii` `poetry` `anime` `qr` `radio` `tv` `play youtube` `play audio` `stop` `cowsay [text]` `hack` `htop` `react`
+`joke` `riddle` `poem` `ascii` `poetry` `anime` `qr` `radio` `tv` `play youtube` `play audio` `stop` `cowsay [text]` `hack` `htop` `react` `rotate`
 
 **🖼️ Visuals & Effects**  
 `image` `walls` `matrix` `scroll` `intersect` `intersectslow`
 
 **Type `help` to see the full list.**
+## 💻 Terminal Command Runner(CLI)
 
 | Command               | Description |
 |-----------------------|-------------|
 | `help`                | List all available commands |
-| `about`               | The story behind J_OS and its Akashic origin |
-| `theme [name]`        | Switch color profile (cyan, magenta, amber, matrix) |
-| `fortune`             | Random Unix / coding fortune |
+| `about`               | Read the story behind J_OS and its Akashic origin |
 | `clear`               | Clear terminal output |
-| `sudo`                | Try to make a sandwich (say please)|
-| `system`              | Unified neural link status: user auth, audio feed, uptime, system stability |
-| `play youtube <id/url>` | Embed YouTube video player in the terminal |
-| `play audio <url>`      | Play direct audio file (MP3, OGG, WAV) or live stream URL |
-| `radio [channel]`       | Tune into a curated Akashic radio frequency (see channel list below) |
-| `tv [channel]`          | Watch a curated live TV feed: Gumball, nasa, iss, lofi, and more |
-| `stop`                  | Stop all currently playing media (YouTube and audio) |
-| `fetch`               | Display system info panel (cyber‑fetch terminal) |
-| `neofetch`            | Manually trigger the RUN JOHAN_OS system info panel |
-| `whoami`              | Show user identity: Rotating cyber‑spiritual persona |
-| `ls`                  | List fake directories |
 | `echo [text]`         | Print text |
-| `shutdown`            | Enter Magic Mirror mode |
+| `whoami`              | Rotating cyber‑spiritual persona |
+| `ls`                  | List fake directories |
+| `sudo`                | Try to make a sandwich (say please) |
 | `history`             | Show command history |
-| `pause`               | Freeze/unfreeze background |
-| `matrix`              | Activate glitch effect for 10 seconds |
-| `motd`                | Message of the Day – random mystical status from the Akashic terminal |
-| `tao`                 | Random chapter from Tao Te Ching |
-| `wisdom`              | Random inspirational quote (DummyJSON) |
-| `hackernews`          | Top 5 Hacker News stories |
-| `news`                | BBC World News headlines |
-| `define [word]`       | Full dictionary entry with phonetics, definitions, synonyms, antonyms |
-| `image`               | Display a random Picsum photo |
-| `walls`               | Fetch a random wallpaper from [0xnotkyo/walls](https://github.com/0xnotkyo/walls) |
-| `weather [city]`      | Terminal‑style forecast from wttr.in |
-| `joke`                | Random dad joke |
-| `riddle`              | Random riddle with a hidden answer (click to reveal) |
-| `learn`               | Random educational fact / "Did you know?" |
-| `qr [text]`           | Generate a scannable QR code |
-| `anime`               | Top 10 anime + currently airing (Jikan API) |
-| `technology`          | Curated tech news (The Verge, Ars Technica, TechCrunch, Wired) |
-| `poem`                | Random classic poem with title and author |
+| `fetch`               | Open the original gem‑logo system panel |
+| `neofetch`            | Trigger the JOHAN_OS system info |
+| `fastfetch`           | Display system info with a random Linux logo (Debian, Arch, Kali) |
+| `fetchpanel`          | Show the fastfetch panel floating outside the terminal |
+| `shutdown`            | Enter Magic Mirror mode |
+| `motd`                | Message of the Day – random mystical status |
+| `system`              | Unified neural link status (auth, audio feed, uptime) |
 | `ping`                | Test network latency to Google |
-| `date`                | Display the current date and time |
+| `date` [utc\|iso\|unix] | Display current date/time with optional formats |
 | `spinner`             | Start a terminal spinner animation |
 | `stopspinner`         | Stop the running spinner |
-| `timer [seconds]`     | Start a countdown timer that beeps on completion |
-| `ascii`               | Display a random J_OS ASCII art |
+| `timer [seconds]`     | Start a countdown with Morse beeps (bigger font) |
+| `stoptimer`           | Cancel a running countdown |
+| `theme [name]`        | Switch color profile (cyan, magenta, amber, matrix) |
+| `pause`               | Freeze/unfreeze background |
+| `news`                | BBC World News headlines |
+| `hackernews`          | Top 5 Hacker News stories |
+| `technology`          | Curated tech news (Verge, Ars Technica, TechCrunch, Wired) |
+| `weather [city]`      | Terminal‑style forecast from wttr.in |
+| `define [word]`       | Full dictionary entry with phonetics, definitions, synonyms, antonyms |
+| `learn`               | Random educational fact |
+| `physics`             | Random physics/math formula |
+| `electronics`         | Electronics formulas and hardware facts |
+| `engineering`         | Engineering marvels and history |
+| `biology`             | Fascinating biology facts |
+| `space`               | Random astronomy fact |
+| `cstip`               | Computer science tip |
+| `fortune`             | Unix/coding fortune |
+| `cipher`              | Full usage manual for all ciphers (encrypt/decrypt) |
+| `case`                | Engineering diagnostics (resistor, decode, Ohm's Law, etc.) |
+| `encode [msg]`        | Base64 encode a message |
+| `decode [b64]`        | Decode a Base64 string |
+| `shift [n] [msg]`     | Caesar cipher (letters and digits wrap) |
+| `kryptos [enc\|dec] [bin\|hex] [text]` | Convert text to/from binary or hex stream |
+| `vigenere [enc\|dec] [key] [msg]` | Vigenère cipher |
+| `mirror [msg]`        | Atbash mirror cipher (self‑inverse) |
+| `vault [enc\|dec] [pw] [msg]` | AES‑256‑GCM encryption (real, password‑based) |
+| `handshake [set\|clear] [key]` | Store or clear a personal encryption key locally |
+| `steg [hide\|reveal] "cover" "secret"` | Steganography – hide & extract secret messages inside normal text |
+| `tag [set\|get\|clear\|view] [key] [value]` | Cipher dictionary – store, retrieve, list, or delete hidden key‑value pairs |
+| `kali [module]`       | Pentest toolbox: hash, scan, crack, inject, genkey, banner, arch |
+| `nuke`                | Factory reset – clears localStorage, stops animations, resets terminal |
+| `tao`                 | Random Tao Te Ching chapter |
+| `wisdom`              | Inspirational quote |
+| `sutra`               | Buddhist teaching from the Pali Canon |
+| `buddha`              | Quote from Buddha, Dogen, Thich Nhat Hanh |
+| `koan`                | Random Zen koan |
+| `stoic`               | Stoic wisdom (Marcus Aurelius, Seneca) |
+| `bible` / `verse`     | Random Bible verse |
+| `joke`                | Random dad joke |
+| `riddle`              | Riddle with hidden answer (click to reveal) |
+| `poem` / `poetry`     | Classic poetry |
+| `anime`               | Top 10 anime + currently airing |
+| `qr [text]`           | Generate scannable QR code |
+| `play youtube <id/url>`   | Embed YouTube video player in the terminal |
+| `play audio <url>`    | Play direct audio file or stream(url must end with .mp3) |
+| `radio [channel]`     | Tune into a curated radio channel |
+| `tv [channel]`        | Watch a curated live TV feed (NASA, ISS, Lofi, Gumball) |
+| `stop`                | Stop all currently playing media (YouTube and audio) |
 | `cowsay [text]`       | An ASCII cow speaks your message |
-| `hack`                | Simulate a fake hacking sequence (animated bars) |
+| `ascii [1‑7]`         | Display specific cyber‑mystical ASCII art (random if no number) |
+| `hack`                | Simulate a fake hacking sequence (animated) |
 | `htop`                | Show a fake system monitor (CPU, memory, processes) |
 | `react`               | Simulate a React build process |
-| `poetry`              | Short poetry excerpt (first 6 lines) |
-| `bible`               | Random Bible verse (labs.bible.org) |
-| `verse`               | Same as `bible` – random sacred verse |
-| `physics`             | Random physics or math formula with explanation |
+| `rotate`              | Matrix‑style character scrambler animation |
+| `image`               | Display a random Picsum photo |
+| `walls`               | Fetch a random wallpaper from 0xnotkyo/walls |
+| `matrix`              | Activate glitch effect for 10 seconds |
 | `scroll`              | Bouncy terminal scroll animation |
-| `biology`             | Fascinating biology facts |
-| `space`               | Random astronomy / space fact |
-| `cstip`               | Computer science tip or historical fact |
-| `koan`                | Random Zen koan |
-| `stoic`               | Stoic wisdom quote (Marcus Aurelius, Seneca, Epictetus) |
-| `buddha`              | Buddhist wisdom quote (Buddha, Dogen, Thich Nhat Hanh, Dalai Lama) |
-| `sutra`               | Authentic teaching from the Pali Canon (Dhammapada, Suttas) |
-| `electronics`         | Electronics formulas, laws, and fascinating hardware facts |
-| `engineering`         | Fascinating engineering facts and historical marvels |
-| `case`                | Engineering diagnostics: resistor calc, color decode, Ohm's Law, voltage divider, capacitor codes         |
-| `intersect`           | Neural‑link flash sequence (Chuck‑style Intersect) |
-| `intersectslow`       | Neural‑link flash sequence (for 60 seconds of meditative state) |
+| `intersect`           | Neural‑link flash sequence (45 sec) |
+| `intersectslow`       | Deep slower neural integration (60 sec) |
 | `login`               | Display the J_OS Akashic Zero‑Point Kryptos Neural Center splash screen |
-| `cipher`              | Display the complete Cipher usage manual with examples |
-| `encode [message]`    | Base64 encode a message |
-| `decode [base64]`     | Decode a Base64 string |
-| `shift [n] [message]` | Caesar cipher (letters & digits wrap) |
-| `vigenere [enc\|dec] [key] [message]` | Vigenère cipher |
-| `mirror [message]`    | Atbash mirror cipher |
-| `handshake [set\|clear] [key]` | Store or clear a personal encryption key locally |
-| `vault [enc\|dec] [password] [msg/hex]` | AES‑256‑GCM encryption (real, password‑based) |
-| `nuke`                | Factory reset: clears localStorage, terminal, and stops all animations (never use this unless necessary and you want to clear all stored data) |
-| `kryptos [enc\|dec] [bin\|hex] [text/stream]` | Convert text to/from binary or hex |
-| `tag [set\|get\|clear\|view] [key] [value]` | Cipher dictionary – store, retrieve, list, or delete hidden key‑value pairs |
-| `steg [hide\|reveal] "cover" "secret"`      | Steganography – hide & extract secret messages inside normal text |
-| `kali [module]`       | Pentest toolbox with real SHA-256, port scan, brute-force, and more |
+
 
 ### 🎧 Media Playback
 
