@@ -226,7 +226,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 | `handshake [set\|clear] [key]` | Store or clear a personal encryption key locally |
 | `steg [hide\|reveal] "cover" "secret"` | Steganography – hide & extract secret messages inside normal text |
 | `tag [set\|get\|clear\|view] [key] [value]` | Cipher dictionary – store, retrieve, list, or delete hidden key‑value pairs |
-| `kali [module]`       | Pentest toolbox: hash, scan, crack, inject, genkey, arch |
+| `kali [module]`       | Pentest toolbox: hash, scan, crack, inject, genkey, dragon, arch |
 | `nuke`                | Factory reset – clears localStorage, stops animations, resets terminal |
 | `tao`                 | Random Tao Te Ching chapter |
 | `wisdom`              | Inspirational quote |
