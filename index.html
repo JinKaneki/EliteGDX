@@ -3746,7 +3746,7 @@
                 theme [cyan|magenta|amber|matrix], pause<br>
                 <br>
                 <strong style="color: var(--accent-color);">📰 NEWS & INFORMATION</strong><br>
-                news, hackernews, technology, weather [city]<br>
+                news, hackernews, technology<br>
                 <br>
                 <strong style="color: var(--accent-color);">📚 LEARNING & REFERENCE</strong><br>
                 define [word], learn, physics, electronics, engineering, biology, space, cstip, fortune, motd<br>
@@ -5246,7 +5246,7 @@
                         <span style="color: #00f0ff;">Cistercian numerals</span> met <span style="color: #ffaa00;">live NASA feeds</span>.
                         <span style="color: #0f0;">Tao Te Ching chapters</span> were woven into neural <span style="color: #ff00ff;">"Intersect" flashes</span>.
                         <span style="color: #ff0;">Radio streams</span> and <span style="color: #0ff;">global news feeds</span> became channels on a cybernetic console.<br><br>
-                        <span style="color: #0f0;;">Today, <strong style="color: #fff;">J_OS</strong> is a digital sanctuary for high‑speed information retrieval – a hacker's command center, a philosopher's scroll, and an artist's canvas.</span><br><br>
+                        <span style="color: #ccc;;">Today, <strong style="color: #fff;">J_OS</strong> is a digital sanctuary for high‑speed information retrieval – a hacker's command center, a philosopher's scroll, and an artist's canvas.</span><br><br>
                         <span style="color: #888;">Type <span style="color: #0f0;">help</span> to explore.</span>
                     </div>
                 `;
@@ -5491,30 +5491,6 @@
                 } catch (error) {
                     console.error('Walls catastrophic error:', error);
                     return '⚠️ CONNECTION LOST: Could not sync wallpapers.';
-                }
-            },
-            'weather': async (args) => {
-                const city = args.join(' ') || '';
-                const url = city ? `https://wttr.in/${encodeURIComponent(city)}?format=%l:+%c+%t+%w+%h&m` 
-                                : `https://wttr.in/?format=%l:+%c+%t+%w+%h&m`;
-
-                try {
-                    const resp = await fetch(url);
-                    const text = await resp.text();
-                    return `<pre style="
-                        font-family: monospace;
-                        margin: 8px 0;
-                        color: #0f0;
-                        background: transparent;
-                        border: none;
-                        white-space: pre-wrap;
-                        word-break: break-word;
-                        overflow-wrap: break-word;
-                        max-width: 100%;
-                        overflow-x: auto;
-                    ">${text}</pre>`;
-                } catch (e) {
-                    return '⚠️ Weather service unavailable.';
                 }
             },
             'joke': async () => {
