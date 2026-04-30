@@ -1068,7 +1068,7 @@
 
         #cmd-output {
             flex: 1;
-            height: 230px;                /* 180 increased for better visibility */
+            height: 240px;                /* 180 increased for better visibility */
             overflow-y: auto;
             overflow-x: hidden;
             font-family: 'Courier New', Courier, monospace;
@@ -1406,8 +1406,8 @@
 
         .d-pad {
             display: grid;
-            grid-template-columns: repeat(3, 40px);
-            grid-template-rows: repeat(3, 40px);
+            grid-template-columns: repeat(3, 48px);   /* was 40px */
+            grid-template-rows: repeat(3, 48px);
             gap: 5px;
         }
 
@@ -1417,6 +1417,7 @@
             color: #0f0;
             font-weight: bold;
             font-family: monospace;
+            font-size: 13px;                        /* slightly bigger */
             cursor: pointer;
             border-radius: 4px;
             display: flex;
@@ -1442,14 +1443,15 @@
         }
 
         .game-action-btn {
-            width: 60px;
-            height: 60px;
+            width: 65px;          /* was 60px */
+            height: 65px;
             border-radius: 50%;
             background: rgba(0, 255, 0, 0.1);
             border: 1px solid #0f0;
             color: #0f0;
             font-weight: bold;
             font-family: monospace;
+            font-size: 15px;
             cursor: pointer;
         }
         .game-action-btn:active {
@@ -7756,37 +7758,93 @@
             const canvas = document.getElementById(canvasId);
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
+            const gridSize = 15;
             canvas.width = 300;
             canvas.height = 400;
-
-            const gridSize = 15;
             const cols = canvas.width / gridSize;
             const rows = canvas.height / gridSize;
 
-            let snake = [{x:5, y:7}, {x:4, y:7}, {x:3, y:7}];
-            let dir = {x:1, y:0};
-            let food = {x:10, y:7};
-            let score = 0;
-            let gameOver = false;
-            let gameInterval = null;
-            let speed = 120;
+            let snake, food, currentDir, score, gameOver, speed, gameInterval;
 
-            // Input handler called by on‑screen pad or keyboard
-            window._activeGame = {
-                handleInput: (d) => {
-                    if (gameOver) return;
-                    if (d === 'UP'    && dir.y === 0) dir = {x:0, y:-1};
-                    if (d === 'DOWN'  && dir.y === 0) dir = {x:0, y:1};
-                    if (d === 'LEFT'  && dir.x === 0) dir = {x:-1, y:0};
-                    if (d === 'RIGHT' && dir.x === 0) dir = {x:1, y:0};
-                    if (d === 'ACTION' && gameOver) {
-                        reset();
-                        gameInterval = setInterval(tick, speed);
-                    }
+            const reset = () => {
+                snake = [{x:5,y:7},{x:4,y:7},{x:3,y:7}];
+                currentDir = {x:1,y:0};
+                food = {x:10,y:7};
+                score = 0;
+                gameOver = false;
+                speed = 130;
+                placeFood();
+                render();
+                clearInterval(gameInterval);
+                gameInterval = setInterval(tick, speed);
+            };
+
+            const placeFood = () => {
+                do {
+                    food = {
+                        x: Math.floor(Math.random() * cols),
+                        y: Math.floor(Math.random() * rows)
+                    };
+                } while (snake.some(s => s.x === food.x && s.y === food.y));
+            };
+
+            const tick = () => {
+                if (gameOver) return;
+                const head = {x: snake[0].x + currentDir.x, y: snake[0].y + currentDir.y};
+                if (head.x < 0 || head.x >= cols || head.y < 0 || head.y >= rows) {
+                    gameOver = true; clearInterval(gameInterval); render(); return;
+                }
+                if (snake.some(s => s.x === head.x && s.y === head.y)) {
+                    gameOver = true; clearInterval(gameInterval); render(); return;
+                }
+                snake.unshift(head);
+                if (head.x === food.x && head.y === food.y) {
+                    score++;
+                    placeFood();
+                    if (speed > 50) speed -= 1;
+                    clearInterval(gameInterval);
+                    gameInterval = setInterval(tick, speed);
+                } else {
+                    snake.pop();
+                }
+                render();
+            };
+
+            const render = () => {
+                ctx.fillStyle = '#111';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#0f0';
+                snake.forEach(s => ctx.fillRect(s.x * gridSize, s.y * gridSize, gridSize-1, gridSize-1));
+                ctx.fillStyle = '#f00';
+                ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize-1, gridSize-1);
+                ctx.fillStyle = '#fff';
+                ctx.font = '14px monospace';
+                ctx.fillText('Score: ' + score, 10, 20);
+                if (gameOver) {
+                    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#f00';
+                    ctx.font = '22px monospace';
+                    ctx.fillText('GAME OVER', 70, canvas.height/2);
+                    ctx.font = '14px monospace';
+                    ctx.fillText('Press ACT or Space', 70, canvas.height/2 + 25);
                 }
             };
 
-            // Keyboard listener
+            // ── Bridge – the fixed part ──
+            window._activeGame = {
+                handleInput: (dir) => {
+                    if (!gameOver) {
+                        if (dir === 'UP'    && currentDir.y === 0) currentDir = {x:0, y:-1};
+                        if (dir === 'DOWN'  && currentDir.y === 0) currentDir = {x:0, y:1};
+                        if (dir === 'LEFT'  && currentDir.x === 0) currentDir = {x:-1, y:0};
+                        if (dir === 'RIGHT' && currentDir.x === 0) currentDir = {x:1, y:0};
+                    }
+                    if (dir === 'ACTION' && gameOver) reset();
+                }
+            };
+
+            // Keyboard
             const keyHandler = (e) => {
                 const k = e.key.toLowerCase();
                 if (k === 'arrowup'    || k === 'w') window._activeGame.handleInput('UP');
@@ -7797,17 +7855,14 @@
             };
             document.addEventListener('keydown', keyHandler);
 
-            // Swipe support (inside canvas)
+            // Swipe
             let touchStartX = 0, touchStartY = 0;
             canvas.addEventListener('touchstart', e => {
-                const t = e.touches[0];
-                touchStartX = t.clientX;
-                touchStartY = t.clientY;
-            }, {passive: true});
+                const t = e.touches[0]; touchStartX = t.clientX; touchStartY = t.clientY;
+            }, {passive:true});
             canvas.addEventListener('touchend', e => {
                 const t = e.changedTouches[0];
-                const dx = t.clientX - touchStartX;
-                const dy = t.clientY - touchStartY;
+                const dx = t.clientX - touchStartX, dy = t.clientY - touchStartY;
                 if (Math.abs(dx) < 20 && Math.abs(dy) < 20) return;
                 if (Math.abs(dx) > Math.abs(dy)) {
                     window._activeGame.handleInput(dx > 0 ? 'RIGHT' : 'LEFT');
@@ -7816,193 +7871,16 @@
                 }
             });
 
-            function placeFood() {
-                do {
-                    food = {
-                        x: Math.floor(Math.random() * cols),
-                        y: Math.floor(Math.random() * rows)
-                    };
-                } while (snake.some(s => s.x === food.x && s.y === food.y));
-            }
-
-            function tick() {
-                if (gameOver) return;
-                const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
-                // Wall collision
-                if (head.x < 0 || head.x >= cols || head.y < 0 || head.y >= rows) {
-                    gameOver = true;
-                    clearInterval(gameInterval);
-                }
-                // Self collision
-                if (snake.some(s => s.x === head.x && s.y === head.y)) {
-                    gameOver = true;
-                    clearInterval(gameInterval);
-                }
-                if (gameOver) {
-                    render();
-                    return;
-                }
-                snake.unshift(head);
-                if (head.x === food.x && head.y === food.y) {
-                    score++;
-                    placeFood();
-                    if (speed > 40) speed -= 2;
-                    clearInterval(gameInterval);
-                    gameInterval = setInterval(tick, speed);
-                } else {
-                    snake.pop();
-                }
-                render();
-            }
-
-            function render() {
-                ctx.fillStyle = '#111';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                // Snake
-                ctx.fillStyle = '#0f0';
-                snake.forEach((s, i) => {
-                    ctx.fillRect(s.x * gridSize, s.y * gridSize, gridSize-1, gridSize-1);
-                });
-                // Food
-                ctx.fillStyle = '#f00';
-                ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize-1, gridSize-1);
-                // Score
-                ctx.fillStyle = '#fff';
-                ctx.font = '14px monospace';
-                ctx.fillText('Score: ' + score, 10, 20);
-                if (gameOver) {
-                    ctx.fillStyle = 'rgba(0,0,0,0.7)';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.fillStyle = '#f00';
-                    ctx.font = '22px monospace';
-                    ctx.fillText('GAME OVER', 70, canvas.height/2);
-                }
-            }
-
-            function reset() {
-                snake = [{x:5,y:7},{x:4,y:7},{x:3,y:7}];
-                dir = {x:1, y:0};
-                score = 0;
-                gameOver = false;
-                speed = 120;
-                placeFood();
-                render();
-            }
-
-            render();
-            gameInterval = setInterval(tick, speed);
-
-            // Cleanup when terminal clears or game is removed
             const cleanup = () => {
                 clearInterval(gameInterval);
                 document.removeEventListener('keydown', keyHandler);
                 window._activeGame = null;
             };
             canvas.addEventListener('DOMNodeRemoved', cleanup);
+
+            reset();
         }
         
-        function startDodgeGame(canvasId) {
-            const canvas = document.getElementById(canvasId);
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            canvas.width = 300;
-            canvas.height = 400;
-
-            let player = { x: 135, y: 350, width: 30, height: 30 };
-            let obstacles = [];
-            let score = 0;
-            let isPlaying = true;
-            let frameCount = 0;
-            let gamma = 0; // tilt angle
-
-            const handleOrientation = (e) => { gamma = e.gamma || 0; };
-
-            const gameLoop = () => {
-                if (!isPlaying) return;
-                frameCount++;
-
-                // Clear
-                ctx.fillStyle = '#111';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                // Player movement with gamma
-                player.x += gamma * 0.5;
-                if (player.x < 0) player.x = 0;
-                if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
-
-                // Spawn obstacles
-                if (frameCount % 30 === 0) {
-                    obstacles.push({
-                        x: Math.random() * (canvas.width - 30),
-                        y: -30,
-                        width: 30,
-                        height: 30,
-                        speed: 3 + (score / 5)
-                    });
-                }
-
-                // Draw & update obstacles
-                for (let i = 0; i < obstacles.length; i++) {
-                    let o = obstacles[i];
-                    o.y += o.speed;
-                    ctx.fillStyle = '#f00';
-                    ctx.fillRect(o.x, o.y, o.width, o.height);
-
-                    // Collision
-                    if (player.x < o.x + o.width &&
-                        player.x + player.width > o.x &&
-                        player.y < o.y + o.height &&
-                        player.y + player.height > o.y) {
-                        isPlaying = false;
-                    }
-
-                    if (o.y > canvas.height) {
-                        score++;
-                        obstacles.splice(i, 1);
-                        i--;
-                    }
-                }
-
-                // Draw player
-                ctx.fillStyle = '#0f0';
-                ctx.fillRect(player.x, player.y, player.width, player.height);
-                ctx.fillStyle = '#fff';
-                ctx.font = '20px monospace';
-                ctx.fillText('SCORE: ' + score, 10, 30);
-
-                if (isPlaying) {
-                    requestAnimationFrame(gameLoop);
-                } else {
-                    ctx.fillStyle = 'rgba(0,0,0,0.7)';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.fillStyle = '#f00';
-                    ctx.font = '30px monospace';
-                    ctx.fillText('CRITICAL HIT', 45, 200);
-                    window.removeEventListener('deviceorientation', handleOrientation);
-                }
-            };
-
-            // Permission handling for iOS
-            if (typeof DeviceOrientationEvent !== 'undefined' &&
-                typeof DeviceOrientationEvent.requestPermission === 'function') {
-                DeviceOrientationEvent.requestPermission()
-                    .then(state => {
-                        if (state === 'granted') {
-                            window.addEventListener('deviceorientation', handleOrientation);
-                            gameLoop();
-                        } else {
-                            ctx.fillStyle = '#f00';
-                            ctx.font = '16px monospace';
-                            ctx.fillText('Gyroscope permission denied.', 30, 200);
-                        }
-                    })
-                    .catch(console.error);
-            } else {
-                window.addEventListener('deviceorientation', handleOrientation);
-                gameLoop();
-            }
-        }
-
         function startMarbleGame(canvasId) {
             const canvas = document.getElementById(canvasId);
             if (!canvas) return;
@@ -8016,40 +7894,31 @@
 
             const handleOrientation = (e) => {
                 if (!won) {
-                    ball.vx += e.gamma * 0.1; // left/right
-                    ball.vy += e.beta * 0.1;  // forward/back
+                    ball.vx += e.gamma * 0.1;
+                    ball.vy += e.beta * 0.1;
                 }
             };
 
             const update = () => {
-                if (!canvas.isConnected) return; // stop if canvas removed
-
-                // Physics
+                if (!canvas.isConnected) return;
                 ball.x += ball.vx; ball.y += ball.vy;
                 ball.vx *= 0.95; ball.vy *= 0.95;
 
-                // Wall bounce
                 if (ball.x - ball.r < 0) { ball.x = ball.r; ball.vx *= -0.8; }
                 if (ball.x + ball.r > canvas.width) { ball.x = canvas.width - ball.r; ball.vx *= -0.8; }
                 if (ball.y - ball.r < 0) { ball.y = ball.r; ball.vy *= -0.8; }
                 if (ball.y + ball.r > canvas.height) { ball.y = canvas.height - ball.r; ball.vy *= -0.8; }
 
-                // Goal detection
                 const dx = ball.x - goal.x, dy = ball.y - goal.y;
                 if (Math.sqrt(dx*dx + dy*dy) < ball.r + goal.r) {
                     won = true;
                     window.removeEventListener('deviceorientation', handleOrientation);
                 }
 
-                // Draw
                 ctx.fillStyle = '#111';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                // Goal
                 ctx.fillStyle = '#f0f';
                 ctx.beginPath(); ctx.arc(goal.x, goal.y, goal.r, 0, Math.PI*2); ctx.fill();
-
-                // Ball
                 ctx.fillStyle = '#fff';
                 ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2); ctx.fill();
 
@@ -8059,13 +7928,11 @@
                     ctx.fillStyle = '#0f0';
                     ctx.font = '22px monospace';
                     ctx.fillText('GOAL REACHED!', 55, canvas.height/2);
-                    return; // stop animation
+                    return;
                 }
-
                 requestAnimationFrame(update);
             };
 
-            // iOS 13+ permission handling
             if (typeof DeviceOrientationEvent !== 'undefined' &&
                 typeof DeviceOrientationEvent.requestPermission === 'function') {
                 DeviceOrientationEvent.requestPermission()
@@ -8076,7 +7943,7 @@
                         } else {
                             ctx.fillStyle = '#f00';
                             ctx.font = '16px monospace';
-                            ctx.fillText('Gyroscope permission denied.', 30, 200);
+                            ctx.fillText('Gyroscope denied.', 30, 200);
                         }
                     })
                     .catch(console.error);
@@ -8084,10 +7951,8 @@
                 window.addEventListener('deviceorientation', handleOrientation);
                 update();
             }
-
-            // Reset the ball and goal when canvas is removed or game restarted (handled by the button)
         }
-
+        
         function initAsteroids(canvasId) {
             const canvas = document.getElementById(canvasId);
             if (!canvas) return;
@@ -8095,21 +7960,27 @@
             canvas.width = 300;
             canvas.height = 400;
 
-            let ship = { x: 90, y: 360, w: 20, h: 20 };
-            let asteroids = [];
-            let score = 0;
-            let active = true;
+            let ship, asteroids, score, active, readyCountdown, gameStarted;
 
+            const reset = () => {
+                ship = { x: 140, y: 370, w: 20, h: 20 };
+                asteroids = [];
+                score = 0;
+                active = true;
+                readyCountdown = 3;
+                gameStarted = false;
+            };
+            reset();
+
+            // Bridge – keep alive even after game over
             window._activeGame = {
                 handleInput: (dir) => {
-                    if (dir === 'LEFT' && ship.x > 0) ship.x -= 15;
-                    if (dir === 'RIGHT' && ship.x < canvas.width - ship.w) ship.x += 15;
+                    if (active && gameStarted) {
+                        if (dir === 'LEFT'  && ship.x > 0) ship.x -= 12;
+                        if (dir === 'RIGHT' && ship.x < canvas.width - ship.w) ship.x += 12;
+                    }
                     if (dir === 'ACTION' && !active) {
-                        // restart
-                        ship.x = 90;
-                        asteroids = [];
-                        score = 0;
-                        active = true;
+                        reset();
                         update();
                     }
                 }
@@ -8117,22 +7988,44 @@
 
             const keyHandler = (e) => {
                 const k = e.key.toLowerCase();
-                if (k === 'arrowleft' || k === 'a') window._activeGame.handleInput('LEFT');
+                if (k === 'arrowleft'  || k === 'a') window._activeGame.handleInput('LEFT');
                 if (k === 'arrowright' || k === 'd') window._activeGame.handleInput('RIGHT');
-                if (k === ' ' && !active) window._activeGame.handleInput('ACTION');
+                if (k === ' ' && !active)             window._activeGame.handleInput('ACTION');
             };
             document.addEventListener('keydown', keyHandler);
 
             function spawn() {
-                if (Math.random() < 0.05) {
-                    asteroids.push({ x: Math.random() * canvas.width, y: -20, s: 2 + Math.random() * 4, r: 5 + Math.random() * 10 });
+                if (Math.random() < 0.03) {
+                    asteroids.push({
+                        x: Math.random() * canvas.width,
+                        y: -20,
+                        s: 1.5 + Math.random() * 2.5,
+                        r: 5 + Math.random() * 8
+                    });
                 }
             }
 
             function update() {
-                if (!active) return;
+                if (!canvas.isConnected) {                  // clean up when canvas removed
+                    document.removeEventListener('keydown', keyHandler);
+                    return;
+                }
                 ctx.fillStyle = '#000';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                if (!gameStarted) {
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '24px monospace';
+                    ctx.fillText('READY: ' + readyCountdown, 80, 200);
+                    if (readyCountdown <= 0) {
+                        gameStarted = true;
+                        requestAnimationFrame(update);
+                        return;
+                    }
+                    readyCountdown--;
+                    setTimeout(update, 1000);
+                    return;
+                }
 
                 // Ship
                 ctx.fillStyle = '#0ff';
@@ -8150,14 +8043,12 @@
                     ctx.beginPath();
                     ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
                     ctx.fill();
-
-                    // Collision
                     const dx = (ship.x + 10) - a.x;
                     const dy = (ship.y + 10) - a.y;
-                    if (Math.sqrt(dx * dx + dy * dy) < a.r + 10) {
+                    if (Math.sqrt(dx*dx + dy*dy) < a.r + 8) {
                         active = false;
+                        gameStarted = false;
                     }
-
                     if (a.y > canvas.height) {
                         asteroids.splice(i, 1);
                         score++;
@@ -8166,7 +8057,7 @@
 
                 ctx.fillStyle = '#fff';
                 ctx.font = '16px monospace';
-                ctx.fillText(`SCR: ${score}`, 10, 20);
+                ctx.fillText('SCR: ' + score, 10, 20);
 
                 if (active) {
                     requestAnimationFrame(update);
@@ -8175,9 +8066,8 @@
                     ctx.font = '22px monospace';
                     ctx.fillText("HULL BREACHED", 40, 200);
                     ctx.font = '14px monospace';
-                    ctx.fillText("Press ACT or SPACE to restart", 40, 230);
-                    document.removeEventListener('keydown', keyHandler);
-                    window._activeGame = null;
+                    ctx.fillText("Press ACT or Space", 40, 230);
+                    // Do NOT nullify game or remove listener – ACT will restart
                 }
             }
 
@@ -8191,89 +8081,85 @@
             canvas.width = 300;
             canvas.height = 400;
 
-            let bird = { y: 200, v: 0, g: 0.5 };
-            let pipes = [];
-            let frame = 0;
-            let active = true;
-            let score = 0;
+            let bird, pipes, frame, active, score, gameStarted;
 
+            const reset = () => {
+                bird = { y: 200, v: 0 };
+                pipes = [];
+                frame = 0;
+                score = 0;
+                active = true;
+                gameStarted = false;
+            };
+            reset();
+
+            // Bridge – stays alive after crash
             window._activeGame = {
                 handleInput: (dir) => {
-                    if ((dir === 'UP' || dir === 'ACTION') && active) {
-                        bird.v = -8;
-                    }
-                    if (dir === 'ACTION' && !active) {
-                        // restart
-                        bird = { y: 200, v: 0, g: 0.5 };
-                        pipes = [];
-                        frame = 0;
-                        score = 0;
-                        active = true;
-                        update();
-                    }
+                    if ((dir === 'UP' || dir === 'ACTION') && active && gameStarted) bird.v = -7;
+                    if ((dir === 'UP' || dir === 'ACTION') && !gameStarted) gameStarted = true;
+                    if (dir === 'ACTION' && !active) { reset(); update(); }
                 }
             };
 
             const keyHandler = (e) => {
                 const k = e.key.toLowerCase();
                 if (k === 'arrowup' || k === 'w' || k === ' ') {
-                    window._activeGame.handleInput('UP');
+                    window._activeGame.handleInput('UP');      // UP also works to start the game
                 }
             };
             document.addEventListener('keydown', keyHandler);
 
             function update() {
-                if (!active) return;
+                if (!canvas.isConnected) {
+                    document.removeEventListener('keydown', keyHandler);
+                    return;
+                }
+                if (!gameStarted) {
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#ff0';
+                    ctx.fillRect(20, bird.y, 20, 20);
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '20px monospace';
+                    ctx.fillText('TAP OR PRESS A KEY', 40, 200);
+                    return;
+                }
+
                 ctx.fillStyle = '#000';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Bird physics
-                bird.v += bird.g;
+                bird.v += 0.45;
                 bird.y += bird.v;
 
-                // Pipe generation
-                if (frame++ % 90 === 0) {
-                    let h = Math.random() * 200 + 50;
-                    pipes.push({ x: canvas.width, top: h, bottom: h + 100 });
+                if (frame++ % 100 === 0) {
+                    let h = Math.random() * 180 + 50;
+                    pipes.push({ x: canvas.width, top: h, bottom: h + 120 });
                 }
 
-                // Draw and move pipes
                 for (let i = pipes.length - 1; i >= 0; i--) {
                     const p = pipes[i];
-                    p.x -= 2;
-
+                    p.x -= 1.8;
                     ctx.fillStyle = '#0f0';
                     ctx.fillRect(p.x, 0, 30, p.top);
                     ctx.fillRect(p.x, p.bottom, 30, canvas.height);
-
-                    // Collision with pipe
-                    if (
-                        p.x < 40 && p.x + 30 > 20 &&
-                        (bird.y < p.top || bird.y + 20 > p.bottom)
-                    ) {
+                    if (p.x < 40 && p.x + 30 > 20 && (bird.y < p.top || bird.y + 20 > p.bottom)) {
                         active = false;
+                        gameStarted = false;
                     }
-
-                    // Pipe passed
-                    if (p.x < -30) {
-                        pipes.splice(i, 1);
-                        score++;
-                    }
+                    if (p.x < -30) { pipes.splice(i, 1); score++; }
                 }
 
-                // Ground/ceiling collision
                 if (bird.y + 20 > canvas.height || bird.y < 0) {
                     active = false;
+                    gameStarted = false;
                 }
 
-                // Draw bird
                 ctx.fillStyle = '#ff0';
                 ctx.fillRect(20, bird.y, 20, 20);
-
-                // Score
                 ctx.fillStyle = '#fff';
                 ctx.font = '18px monospace';
-                ctx.fillText(`${score}`, 10, 30);
+                ctx.fillText(score, 10, 30);
 
                 if (active) {
                     requestAnimationFrame(update);
@@ -8282,15 +8168,15 @@
                     ctx.font = '22px monospace';
                     ctx.fillText("SYSTEM CRASH", 60, 200);
                     ctx.font = '14px monospace';
-                    ctx.fillText("Press ACT or SPACE to restart", 60, 230);
-                    document.removeEventListener('keydown', keyHandler);
-                    window._activeGame = null;
+                    ctx.fillText("Press ACT or Space", 60, 230);
+                    // Bridge stays alive – restart via ACT works
                 }
             }
 
             update();
         }
 
+        
         // 1. Request it as soon as the page loads
         requestWakeLock();
 
