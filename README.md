@@ -169,7 +169,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 `tao` `wisdom` `sutra` `buddha` `koan` `stoic` `bible` `verse`
 
 **🎭 Fun & Entertainment**  
-`joke` `riddle` `poem` `ascii` `poetry` `anime` `qr` `radio` `tv` `play youtube` `play audio` `stop` `cowsay [text]` `hack` `htop` `react` `rotate`
+`joke` `riddle` `game` `poem` `ascii` `poetry` `anime` `qr` `radio` `tv` `play youtube` `play audio` `stop` `cowsay [text]` `hack` `htop` `react` `rotate`
 
 **🖼️ Visuals & Effects**  
 `image` `walls` `glitch` `scroll` `intersect` `intersectslow`
@@ -269,6 +269,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 | `intersect`           | Neural‑link flash sequence (45 sec) |
 | `intersectslow`       | Deep slower neural integration (60 sec) |
 | `login`               | Display the J_OS Akashic Zero‑Point Kryptos Neural Center splash screen |
+| `game [snake\|dodge\|marble\|asteroids\|flappy]` | Play interactive canvas games (Snake, Gyro Dodge, Ball Maze, Asteroids, Cyber‑Bird) with D‑pad and gyro controls |
 
 
 ### 🎧 Media Playback
