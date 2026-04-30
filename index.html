@@ -1068,7 +1068,7 @@
 
         #cmd-output {
             flex: 1;
-            height: 240px;                /* 180 increased for better visibility */
+            height: 250px;                /* 180 increased for better visibility */
             overflow-y: auto;
             overflow-x: hidden;
             font-family: 'Courier New', Courier, monospace;
@@ -8081,7 +8081,10 @@
             canvas.width = 300;
             canvas.height = 400;
 
-            let bird, pipes, frame, active, score, gameStarted;
+            let bird, pipes, frame, active, score;
+            let readyCountdown = 3;   // 3‑second wait
+            let gameStarted = false;
+            let gameOver = false;
 
             const reset = () => {
                 bird = { y: 200, v: 0 };
@@ -8089,23 +8092,30 @@
                 frame = 0;
                 score = 0;
                 active = true;
+                gameOver = false;
+                readyCountdown = 3;
                 gameStarted = false;
             };
             reset();
 
-            // Bridge – stays alive after crash
             window._activeGame = {
                 handleInput: (dir) => {
-                    if ((dir === 'UP' || dir === 'ACTION') && active && gameStarted) bird.v = -7;
-                    if ((dir === 'UP' || dir === 'ACTION') && !gameStarted) gameStarted = true;
-                    if (dir === 'ACTION' && !active) { reset(); update(); }
+                    // Flap during play
+                    if ((dir === 'UP' || dir === 'ACTION') && gameStarted && !gameOver) {
+                        bird.v = -7;
+                    }
+                    // Restart after death
+                    if (dir === 'ACTION' && gameOver) {
+                        reset();
+                        update();
+                    }
                 }
             };
 
             const keyHandler = (e) => {
                 const k = e.key.toLowerCase();
                 if (k === 'arrowup' || k === 'w' || k === ' ') {
-                    window._activeGame.handleInput('UP');      // UP also works to start the game
+                    window._activeGame.handleInput('UP');
                 }
             };
             document.addEventListener('keydown', keyHandler);
@@ -8115,61 +8125,79 @@
                     document.removeEventListener('keydown', keyHandler);
                     return;
                 }
-                if (!gameStarted) {
-                    ctx.fillStyle = '#000';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.fillStyle = '#ff0';
-                    ctx.fillRect(20, bird.y, 20, 20);
-                    ctx.fillStyle = '#fff';
-                    ctx.font = '20px monospace';
-                    ctx.fillText('TAP OR PRESS A KEY', 40, 200);
-                    return;
-                }
 
                 ctx.fillStyle = '#000';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+                // ── Countdown before game starts ──
+                if (!gameStarted) {
+                    ctx.fillStyle = '#ff0';
+                    ctx.fillRect(20, bird.y, 20, 20);   // show bird at rest
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '24px monospace';
+                    ctx.fillText('READY: ' + readyCountdown, 80, 200);
+                    ctx.font = '14px monospace';
+                    ctx.fillText('Tap ACT or press Space', 60, 230);
+
+                    if (readyCountdown <= 0) {
+                        gameStarted = true;
+                        requestAnimationFrame(update);
+                        return;
+                    }
+                    readyCountdown--;
+                    setTimeout(update, 1000);
+                    return;
+                }
+
+                // ── Game loop ──
                 bird.v += 0.45;
                 bird.y += bird.v;
 
                 if (frame++ % 100 === 0) {
                     let h = Math.random() * 180 + 50;
-                    pipes.push({ x: canvas.width, top: h, bottom: h + 120 });
+                    pipes.push({ x: canvas.width, top: h, bottom: h + 130 }); // wider gap
                 }
 
+                // Draw pipes
                 for (let i = pipes.length - 1; i >= 0; i--) {
                     const p = pipes[i];
                     p.x -= 1.8;
                     ctx.fillStyle = '#0f0';
                     ctx.fillRect(p.x, 0, 30, p.top);
                     ctx.fillRect(p.x, p.bottom, 30, canvas.height);
+
+                    // Collision
                     if (p.x < 40 && p.x + 30 > 20 && (bird.y < p.top || bird.y + 20 > p.bottom)) {
-                        active = false;
+                        gameOver = true;
                         gameStarted = false;
                     }
                     if (p.x < -30) { pipes.splice(i, 1); score++; }
                 }
 
+                // Ground / ceiling
                 if (bird.y + 20 > canvas.height || bird.y < 0) {
-                    active = false;
+                    gameOver = true;
                     gameStarted = false;
                 }
 
+                // Bird
                 ctx.fillStyle = '#ff0';
                 ctx.fillRect(20, bird.y, 20, 20);
+
+                // Score
                 ctx.fillStyle = '#fff';
                 ctx.font = '18px monospace';
                 ctx.fillText(score, 10, 30);
 
-                if (active) {
-                    requestAnimationFrame(update);
-                } else {
+                if (gameOver) {
                     ctx.fillStyle = '#f00';
                     ctx.font = '22px monospace';
                     ctx.fillText("SYSTEM CRASH", 60, 200);
                     ctx.font = '14px monospace';
                     ctx.fillText("Press ACT or Space", 60, 230);
-                    // Bridge stays alive – restart via ACT works
+                    // Bridge stays alive – restart via ACT
+                } else {
+                    requestAnimationFrame(update);
                 }
             }
 
