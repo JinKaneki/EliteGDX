@@ -163,7 +163,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 `cipher`
 
 **🕵️ Cyber Ops**   
-`kali` `hashcat` `wifite` `flipper` `nmap` `airmon` 
+`kali` `hashcat` `wifite` `flipper` `nmap` `airmon` `raspberry` `gpio`
 
 **🧘 Wisdom & Spirituality**  
 `tao` `wisdom` `sutra` `buddha` `koan` `stoic` `bible` `verse`
@@ -236,6 +236,8 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 | `nmap [target]`       | Nmap scan simulation |
 | `hashcat`             | Cinematic hash cracking |
 | `flipper [subghz\|nfc\|badusb\|off]` | Flipper Zero emulator |
+| `raspberry`           | Virtual Raspberry Pi system dashboard (temps, uptime, GPIO) |
+| `gpio [status\|on\|off] [pin]` | Raspberry Pi GPIO pin simulator |
 | `nuke`                | Factory reset – clears localStorage, stops animations, resets terminal |
 | `tao`                 | Random Tao Te Ching chapter |
 | `wisdom`              | Inspirational quote |

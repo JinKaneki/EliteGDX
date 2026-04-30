@@ -1522,7 +1522,7 @@
             }
             #cyber-fetch-terminal.fastfetch-mode #fetch-content > div {
                 font-size: 8px !important;
-                line-height: 1 !important;
+                line-height: 1.1 !important;
                 margin-left: 4px !important;   /* tiny left margin to not stick */
             }
 
@@ -1666,7 +1666,7 @@
                 font-size: inherit; /* reset the inline sizes so we can use the new ones below */
             }
             .terminal-title :nth-child(1) { /* AKASHIC */
-                font-size: 0.6rem !important;
+                font-size: 0.5rem !important;
             }
             .terminal-title :nth-child(2) { /* // */
                 font-size: 1rem !important;
@@ -1677,7 +1677,7 @@
             .terminal-title :nth-child(4),
             .terminal-title :nth-child(5),
             .terminal-title :nth-child(6) { /* ZERO-POINT, KRYPTOS, NEURAL CENTER */
-                font-size: 0.6rem !important;
+                font-size: 0.5rem !important;
             }
 
             .site-footer {
@@ -3057,20 +3057,19 @@
                 </div>`;
 
             const info = `<div class="fastfetch-info" style="display: flex; flex-direction: column; gap: 2px; margin-left: 15px;">
-                <div style="font-size: 9px; color: #00ff00; font-weight: bold; margin-bottom: 4px;">Johan@Akashic</div>
-                ${infoRow('OS:', os)}
-                ${infoRow('Host:', 'Elite Gems Engine')}
-                ${infoRow('Shell:', 'Akashic J_OS Shell')}
-                ${infoRow('Uptime:', uptimeStr)}
-                ${infoRow('Packages:', packageCount)}
-                ${infoRow('Resolution:', resolution)}
-                ${infoRow('Terminal:', browser)}
-                ${infoRow('CPU:', `${cores} core${cores > 1 ? 's' : ''}`)}
-                ${infoRow('GPU:', gpu)}
-                ${infoRow('Memory:', ram)}
-                ${infoRow('Network:', conn)}
-                ${infoRow('Status:', sacredStatus, '#ff00ff')}
-                <div style="margin-top: 4px;">
+                    ${infoRow('OS:', os)}
+                    ${infoRow('Host:', 'Elite Gems Engine')}
+                    ${infoRow('Shell:', 'Akashic J_OS Shell')}
+                    ${infoRow('Uptime:', uptimeStr)}
+                    ${infoRow('Packages:', packageCount)}
+                    ${infoRow('Resolution:', resolution)}
+                    ${infoRow('Terminal:', browser)}
+                    ${infoRow('CPU:', `${cores} core${cores > 1 ? 's' : ''}`)}
+                    ${infoRow('GPU:', gpu)}
+                    ${infoRow('Memory:', ram)}
+                    ${infoRow('Network:', conn)}
+                    ${infoRow('Status:', sacredStatus, '#ff00ff')}
+                    <div style="margin-top: 4px;">
                     <span style="color:#ff5733;">██</span><span style="color:#ffd733;">██</span><span style="color:#33ff57;">██</span><span style="color:#00f0ff;">██</span><span style="color:#3357ff;">██</span><span style="color:#f033ff;">██</span>
                 </div>
             </div>`;
@@ -3939,7 +3938,7 @@
                 cipher, encode [msg], decode [b64], shift [n] [msg], kryptos [enc|dec] [bin|hex] [text], vigenere [enc|dec] [key] [msg], mirror [msg], vault [enc|dec] [pw] [msg], handshake [set|clear] [key]<br>
                 <br>
                 <strong style="color: var(--accent-color);">🕵️ CYBER OPS</strong><br>
-                kali, steg [hide|reveal] [cover] [secret], tag [set|get|clear|view] [key] [value], kali [hash|scan|crack|inject|genkey|dragon|arch], wifite, airmon [iface], nmap [target], hashcat, flipper [subghz|nfc|badusb|off]<br>
+                kali, steg [hide|reveal] [cover] [secret], tag [set|get|clear|view] [key] [value], kali [hash|scan|crack|inject|genkey|dragon|arch], wifite, airmon [iface], nmap [target], hashcat, flipper [subghz|nfc|badusb|off], raspberry, gpio [status|on|off] [pin]<br>
                 <br>
                 <strong style="color: var(--accent-color);">🧘 WISDOM & SPIRITUALITY</strong><br>
                 tao, wisdom, sutra, buddha, koan, stoic, bible, verse<br>
@@ -5231,7 +5230,7 @@
             },
             'glitch': () => {
                 document.body.classList.add('matrix-glitch');
-                setTimeout(() => document.body.classList.remove('matrix-glitch'), 10000);
+                setTimeout(() => document.body.classList.remove('matrix-glitch'), 60000);
                 return 'Entering the Matrix...';
             },
             'image': () => {
@@ -5741,9 +5740,10 @@
                 <pre>
                     .-------.
                    /   o   o \\
-                              |    _____  |   -- Hello!
+                   |    _____  |
                    \\  '-----' /
                     '-------'
+                <-- "Hack the planet!"
                 </pre>
                 <b>FLIPPER ZERO – SUB‑GHZ EMULATOR</b><br>
                 Frequency: 433.92 MHz<br>
@@ -5760,14 +5760,78 @@
                 }
 
                 if (sub === 'nfc') {
-                    return '<span style="color: #0f0;">[~] NFC Reader active. Place tag on Flipper…</span><br>[+] UID: 04 A1 B2 C3 D4 E5<br>[+] SAK: 08 (MIFARE Classic 1K)';
+                    return `
+                    <div style="color: #ff8200; font-family: monospace; line-height: 1.1; text-align: center;">
+                        <pre style="color: #ff8200; display: inline-block; text-align: left;">
+                        (•)
+                         |
+                      ___|___
+                     |  ___  |
+                     | |___| |
+                     |_______|
+                        </pre>
+                        <br>
+                        <b>NFC READER ACTIVE</b><br>
+                        [~] Place tag on Flipper…<br>
+                        [+] UID: 04 A1 B2 C3 D4 E5<br>
+                        [+] SAK: 08 (MIFARE Classic 1K)<br>
+                        <span style="color: #ff0;">Type <b>flipper off</b> to exit Flipper mode.</span>
+                    </div>`;
                 }
 
                 if (sub === 'badusb') {
-                    return '<span style="color: #ff0;">[!] BadUSB mode: injecting payload…</span><br>[*] Opening reverse shell on attacker IP…<br>[+] Connection established.';
-                }
+                    return`
+                        <div style="color: #ff8200; font-family: monospace; line-height: 1.1; text-align: center;">
+                        <pre style="color: #ff8200; display: inline-block; text-align: left;">
+                     _________________________
+                    | [  ]               (O) |
+                    |      _____________     |
+                    |     |             |    |
+                    |     |  FLIPPER    |  ^ |
+                    |     |   ZERO      | < >|
+                    |     |_____________|  v |
+                    |________________________|
+                        </pre>
+                        <br>
+                        <b>BADUSB MODE ACTIVE</b><br>
+                        [!] Injecting payload…<br>
+                        [*] Opening reverse shell on attacker IP…<br>
+                        [+] Connection established.<br>
+                        <span style="color: #ff0;">Type <b>flipper off</b> to exit Flipper mode.</span>
+                    </div>`;
+                    }
 
-                return 'Usage: flipper [subghz|nfc|badusb|off]';
+                return `
+                    <div style="color: #ff8200; font-family: monospace; line-height: 1.1; text-align: center;">
+                        <pre style="color: #ff8200; display: inline-block; text-align: left;">
+                      .-~~~-.
+                     /       \\
+                    |  O   O  |
+                    |    ^    |
+                      \\_____/
+                        </pre>
+                        <br>
+                        <b>FLIPPER ZERO – MULTI‑TOOL</b><br>
+                        <span style="color: #fff;">Available modules:</span><br>
+                        <span style="color: #0f0;">subghz</span> – Sub‑GHz emulator<br>
+                        <span style="color: #0f0;">nfc</span> – NFC card reader<br>
+                        <span style="color: #0f0;">badusb</span> – BadUSB injector<br>
+                        <span style="color: #0f0;">off</span> – Exit Flipper mode<br>
+                        <br>
+                        <span style="color: #888;">Example: flipper subghz</span>
+                        <br><br>
+                        <pre style="color: #ff8200; display: inline-block; text-align: left;">
+                        __________      _                           
+                       / ____/ / /___  ____  ___  _____            
+                      / /_  / / / __ \\/ __ \\/ _ \\/ ___/            
+                     / __/ / / / /_/ / /_/ /  __/ /                
+                    /_/   /_/_/ .___/ .___/\\___/_/  _____  ____  ____ 
+                             /_/   /_/             /__  / / __ \\/ __ \\
+                                                     / / / /_/ / /_/ /
+                                                    / /_/ ____/ ____/ 
+                                                /____/_/   /_/     
+                        </pre>
+                    </div>`;
             },
             'zoom': (args) => {
                 const mode = args[0];
@@ -5806,6 +5870,66 @@
                 }
 
                 return `Usage: mode <${allModes.join('|')}|off>`;
+            },
+            'raspberry': () => {
+                const cpuTemp = (Math.random() * 20 + 35).toFixed(1);
+                const gpuTemp = (Math.random() * 15 + 33).toFixed(1);
+                const uptime = `${Math.floor(Math.random() * 30)} days ${Math.floor(Math.random() * 24)} hours`;
+                const coreVolt = (Math.random() * 0.3 + 1.1).toFixed(2);
+                return `
+            <div style="border-left: 3px solid #c51a4a; padding-left: 10px;">
+                <pre style="color: #c51a4a; line-height: 1.2; font-size: 9px;">
+                .~~.   .~~.
+                '. \\ ' ' / .'
+                 .~ .~~~..~.
+                : .~.'~'.~. :
+                ~ (   ) (   ) ~
+                ( : '~'.~.'~' : )
+                ~ .~ (   ) ~. ~
+                 (  : '~' :  )
+                 '~ .~~~. ~'
+                '~'
+                </pre>
+                <span style="color: #0f0;">CPU Temp:</span> ${cpuTemp}°C<br>
+                <span style="color: #0f0;">GPU Temp:</span> ${gpuTemp}°C<br>
+                <span style="color: #0f0;">Core Volt:</span> ${coreVolt}V<br>
+                <span style="color: #0f0;">Uptime:</span> ${uptime}<br>
+                <span style="color: #0f0;">GPIO Status:</span> 17 pins available<br>
+            </div>`;
+            },
+            'gpio': (args) => {
+                const sub = args[0]?.toLowerCase();
+                if (sub === 'status' || !sub) {
+                    const pins = [];
+                    for (let i = 1; i <= 40; i++) {
+                        const state = Math.random() > 0.6 ? 'HIGH' : 'LOW';
+                        pins.push(`Pin ${i.toString().padStart(2)}: ${state}`);
+                    }
+                    return `
+            <div style="color: #0f0; font-family: monospace; line-height: 1.1;">
+                <pre style="color: #0f0; font-size: 8px; line-height: 1;">
+            +----------------------------+
+             |()2#################40() +---+
+             | 1#################39    |USB|
+             |#D  Pi Model B+ / 4  +-+ +---+
+             |#I       \\/      +--+| | +---+
+             |#S  ()()         |CAM+-+ |USB|
+             |#P  ()           +--+#   +---+
+             |#Y  #     +----+     |       |
+             |()+---+   |HDMI|   +-+  +--+ |
+             +--|PWR|---+----+---|V|--|NET|+
+              +---+            +-+  +--+
+                </pre>
+                <strong style="color: #00ff00;">GPIO STATUS</strong><br>
+                ${pins.slice(0, 10).join('<br>')}<br>
+                <span style="color: #888;">… and 30 more pins</span>
+            </div>`;
+                }
+                if (sub === 'on' || sub === 'off') {
+                    const pin = args[1] || '?';
+                    return `<span style="color: #0f0;">[+] Pin ${pin} set to ${sub.toUpperCase()}.</span>`;
+                }
+                return 'Usage: gpio [status|on|off] [pin]';
             },
             'walls': async () => {
                 const getFileName = (url) => {
@@ -7142,8 +7266,8 @@
         }
 
         // Button listeners
-        document.getElementById('zoom-in-btn')?.addEventListener('click', () => zoomTerm(2));
-        document.getElementById('zoom-out-btn')?.addEventListener('click', () => zoomTerm(-2));
+        document.getElementById('zoom-in-btn')?.addEventListener('click', () => zoomTerm(1));
+        document.getElementById('zoom-out-btn')?.addEventListener('click', () => zoomTerm(-1));
         
             
 
