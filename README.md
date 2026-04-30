@@ -151,19 +151,19 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 `help` `about` `clear` `echo` `whoami` `ls` `history` `shutdown` `sudo` `login` `sytem` `ping` `date` `spinner` `stopspinner` `timer` `stoptimer` `nuke`
 
 **🎨 Theme & UI**  
-`theme` `pause` `fetchpanel` `fastfetch` `fetch` `neofetch`
+`theme` `pause` `fetchpanel` `fastfetch` `fetch` `neofetch` `zoom` `mode`
 
 **📰 News & Information**  
-`news` `hackernews` `technology`
+`news` `hackernews` `technology` `crypto`
 
 **📚 Learning & Reference**  
-`define` `physics` `electronics` `biology` `space` `cstip` `learn` `fortune` `motd`
+`define` `wiki` `physics` `electronics` `biology` `space` `cstip` `learn` `fortune` `motd`
 
 **🔐 Akashic Cipher Suite**   
 `cipher`
 
 **🕵️ Cyber Ops**   
-`kali`
+`kali` `hashcat` `wifite` `flipper` `nmap` `airmon` 
 
 **🧘 Wisdom & Spirituality**  
 `tao` `wisdom` `sutra` `buddha` `koan` `stoic` `bible` `verse`
@@ -172,7 +172,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 `joke` `riddle` `poem` `ascii` `poetry` `anime` `qr` `radio` `tv` `play youtube` `play audio` `stop` `cowsay [text]` `hack` `htop` `react` `rotate`
 
 **🖼️ Visuals & Effects**  
-`image` `walls` `matrix` `scroll` `intersect` `intersectslow`
+`image` `walls` `glitch` `scroll` `intersect` `intersectslow`
 
 **Type `help` to see the full list.**
 ## 💻 Terminal Command Runner(CLI)
@@ -201,11 +201,15 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 | `timer [seconds]`     | Start a countdown with Morse beeps (bigger font) |
 | `stoptimer`           | Cancel a running countdown |
 | `theme [name]`        | Switch color profile (cyan, magenta, amber, matrix) |
+| `mode [name\|off]`    | Terminal theme (flipper, midnight, matrix, crimson, cyber) |
+| `zoom [in\|out\|reset]` | Adjust output text size |
 | `pause`               | Freeze/unfreeze background |
 | `news`                | BBC World News headlines |
 | `hackernews`          | Top 5 Hacker News stories |
+| `crypto [coin]`       | Live cryptocurrency price |
 | `technology`          | Curated tech news (Verge, Ars Technica, TechCrunch, Wired) |
 | `define [word]`       | Full dictionary entry with phonetics, definitions, synonyms, antonyms |
+| `wiki [topic]`        | Wikipedia summary lookup |
 | `learn`               | Random educational fact |
 | `physics`             | Random physics/math formula |
 | `electronics`         | Electronics formulas and hardware facts |
@@ -227,6 +231,11 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 | `steg [hide\|reveal] "cover" "secret"` | Steganography – hide & extract secret messages inside normal text |
 | `tag [set\|get\|clear\|view] [key] [value]` | Cipher dictionary – store, retrieve, list, or delete hidden key‑value pairs |
 | `kali [module]`       | Pentest toolbox: hash, scan, crack, inject, genkey, dragon, arch |
+| `wifite`              | Wi‑Fi attack simulation |
+| `airmon [iface]`      | Monitor mode simulation |
+| `nmap [target]`       | Nmap scan simulation |
+| `hashcat`             | Cinematic hash cracking |
+| `flipper [subghz\|nfc\|badusb\|off]` | Flipper Zero emulator |
 | `nuke`                | Factory reset – clears localStorage, stops animations, resets terminal |
 | `tao`                 | Random Tao Te Ching chapter |
 | `wisdom`              | Inspirational quote |
@@ -253,7 +262,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 | `rotate`              | Matrix‑style character scrambler animation |
 | `image`               | Display a random Picsum photo |
 | `walls`               | Fetch a random wallpaper from 0xnotkyo/walls |
-| `matrix`              | Activate glitch effect for 10 seconds |
+| `glitch`              | Activate glitch effect for 10 seconds |
 | `scroll`              | Bouncy terminal scroll animation |
 | `intersect`           | Neural‑link flash sequence (45 sec) |
 | `intersectslow`       | Deep slower neural integration (60 sec) |

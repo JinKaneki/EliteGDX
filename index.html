@@ -795,7 +795,7 @@
         }
     
         .text-wrapper {
-            height: 220px;                /* Adjust this value to match your text height */
+            height: 220px;               
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -1050,6 +1050,7 @@
 
         /* Command Runner Terminal Styling */
         #command-runner {
+            position: relative;
             display: flex;                
             flex-direction: column;       
             box-sizing: border-box;
@@ -1268,6 +1269,130 @@
 
 
 
+        /* Floating controls for fullscreen mode */
+        .term-controls {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            display: flex;
+            gap: 10px;
+            z-index: 9999;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+        .term-controls:hover { opacity: 1; }
+
+        .zoom-btn {
+            background: rgba(0,0,0,0.7);
+            color: rgb(255, 200, 0);
+            border: 1px solid #0f0;
+            padding: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            border-radius: 4px;
+        }
+        .mini-zoom {
+            font-size: 10px !important;
+            padding: 2px 6px !important;
+            min-width: 10px !important;
+            line-height: 1;
+            border-radius: 3px;
+        }
+        #cmd-output,
+        #cmd-output * {
+            font-size: var(--term-font-size, 8px) !important;
+        }
+
+        /* Flipper Zero orange theme */
+        .flipper-theme #cmd-output {
+            background-color: #ff8200 !important;
+            text-shadow: none !important;
+        }
+        .flipper-theme #cmd-output * {
+            color: #000 !important;
+            text-shadow: none !important;
+        }
+        .flipper-theme #cmd-input {
+            color: #fff !important;          /* white text */
+            background-color: #cc6600 !important; /* darker orange for contrast */
+        }
+        /* ===== TERMINAL MODE THEMES ===== */
+
+        /* Flipper Orange */
+        #command-runner.mode-flipper {
+            --mode-accent: #ff8200;
+            --mode-bg: #1a0f00;
+            --mode-border: #ff8200;
+        }
+        #command-runner.mode-flipper #cmd-input {
+            color: #fff !important;
+            background: #331900 !important;
+        }
+
+        /* Midnight Blue */
+        #command-runner.mode-midnight {
+            --mode-accent: #1e3a8a;
+            --mode-bg: #0a1128;
+            --mode-border: #1e3a8a;
+        }
+        #command-runner.mode-midnight #cmd-input {
+            color: #fff !important;
+            background: #0a1628 !important;
+        }
+
+        /* Matrix Green */
+        #command-runner.mode-matrix {
+            --mode-accent: #00ff00;
+            --mode-bg: #0a0f0a;
+            --mode-border: #00ff00;
+        }
+        #command-runner.mode-matrix #cmd-input {
+            color: #fff !important;
+            background: #0a1a0a !important;
+        }
+
+        /* Crimson Red */
+        #command-runner.mode-crimson {
+            --mode-accent: #dc143c;
+            --mode-bg: #1a0a0a;
+            --mode-border: #dc143c;
+        }
+        #command-runner.mode-crimson #cmd-input {
+            color: #fff !important;
+            background: #2a0a0a !important;
+        }
+
+        /* Cyber Purple */
+        #command-runner.mode-cyber {
+            --mode-accent: #ff00ff;
+            --mode-bg: #0f0a1a;
+            --mode-border: #ff00ff;
+        }
+        #command-runner.mode-cyber #cmd-input {
+            color: #fff !important;
+            background: #1a0a2a !important;
+        }
+
+        /* Apply the variables when ANY mode class is present */
+        #command-runner[class*="mode-"] {
+            background: var(--mode-bg) !important;
+            border-color: var(--mode-border) !important;
+            box-shadow: 0 0 15px var(--mode-accent) !important;
+        }
+
+        /* Change the title colour to the mode accent */
+        #command-runner[class*="mode-"] .terminal-title span {
+            color: var(--mode-accent) !important;
+        }
+        /* Make the separator and smaller words slightly dimmed */
+        #command-runner[class*="mode-"] .terminal-title span:nth-child(2),
+        #command-runner[class*="mode-"] .terminal-title span:nth-child(4),
+        #command-runner[class*="mode-"] .terminal-title span:nth-child(5),
+        #command-runner[class*="mode-"] .terminal-title span:nth-child(6) {
+            opacity: 0.8;
+        }
+
 
         /* MOBILE-FRIENDLY TWEAKS */
         @media (max-width: 600px) {
@@ -1441,7 +1566,7 @@
                 width: 95% !important;
                 padding: 12px !important;
                 margin: 10px auto !important;
-                border-radius: 16px !important;
+                border-radius: 24px !important;
                 display: flex;
                 flex-direction: column !important;
                 height: 90dvh !important;  /* Use dynamic viewport, not 100% to leave some space */
@@ -1537,6 +1662,23 @@
                 line-height: 1.2;
             }*/
 
+            .terminal-title span {
+                font-size: inherit; /* reset the inline sizes so we can use the new ones below */
+            }
+            .terminal-title :nth-child(1) { /* AKASHIC */
+                font-size: 0.6rem !important;
+            }
+            .terminal-title :nth-child(2) { /* // */
+                font-size: 1rem !important;
+            }
+            .terminal-title :nth-child(3) { /* J_OS */
+                font-size: 1.3rem !important;
+            }
+            .terminal-title :nth-child(4),
+            .terminal-title :nth-child(5),
+            .terminal-title :nth-child(6) { /* ZERO-POINT, KRYPTOS, NEURAL CENTER */
+                font-size: 0.6rem !important;
+            }
 
             .site-footer {
             width: 100%;
@@ -2297,16 +2439,20 @@
     </div>
     <!-- Command runner -->
     <div id="command-runner" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-            <div style="display: flex; align-items: baseline; gap: 6px;">
-                <span style="color: var(--accent-color); font-size: 1.2rem; font-weight: bold; letter-spacing: 1px;">J_OS</span>
-                <span style="color: #888; font-size: 0.8rem;">//</span>
-                <span style="color: #ffaa00; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px;">AKASHIC</span>
-                <span style="color: #888; font-size: 0.6rem;">ZERO-POINT</span>
-                <span style="color: #00f0ff; font-size: 0.6rem;">KRYPTOS</span>
-                <span style="color: #ff00ff; font-size: 0.6rem;">NEURAL CENTER</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2px;">
+            <div class="terminal-title" style="display: flex; align-items: baseline; gap: 6px;">
+                <span style="color: #ffaa00; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px;">AKASHIC</span>
+                <span style="color: #ffffff; font-size: 1.7rem;">./</span>
+                <span style="color: var(--accent-color); font-size: 2rem; font-weight: bold; letter-spacing: 1px;">J_OS</span>
+                <span style="color: #888; font-size: 1.2rem;">ZERO-POINT</span>
+                <span style="color: #00f0ff; font-size: 1.2rem;">KRYPTOS</span>
+                <span style="color: #ff00ff; font-size: 1.2rem;">NEURAL CENTER</span>
             </div>
-            <button id="terminal-fullscreen-btn" class="hide-controls-btn" style="padding: 4px 10px; font-size: 0.7rem;" title="Toggle Fullscreen">⛶ Fullscreen</button>
+            <div style="position: absolute; top: 10px; right: 24px; display: flex; gap: 2px; z-index: 10;">
+                <button id="zoom-out-btn" class="zoom-btn mini-zoom" title="Zoom Out">−</button>
+                <button id="zoom-in-btn" class="zoom-btn mini-zoom" title="Zoom In">+</button>
+                <button id="terminal-fullscreen-btn" class="zoom-btn mini-zoom" title="Toggle Fullscreen">⛶</button>
+            </div>
         </div>
         <div id="cmd-output"></div>
         <div style="display: flex;">
@@ -3778,22 +3924,22 @@
                 help, about, clear, echo [text], whoami, ls, sudo, history, fastfetch, fetchpanel, fetch, neofetch, system, shutdown, ping, date [utc\|iso\|unix], spinner, stopspinner, timer [seconds], stoptimer, nuke :(factory reset)<br>
                 <br>
                 <strong style="color: var(--accent-color);">🎨 THEME & UI</strong><br>
-                theme [cyan|magenta|amber|matrix], pause<br>
+                theme [cyan|magenta|amber|matrix], pause, mode [flipper|midnight|matrix|crimson|cyber|off], zoom [in|out|reset]<br>
                 <br>
                 <strong style="color: var(--accent-color);">📰 NEWS & INFORMATION</strong><br>
-                news, hackernews, technology<br>
+                news, hackernews, technology, crypto [coin]<br>
                 <br>
                 <strong style="color: var(--accent-color);">📚 LEARNING & REFERENCE</strong><br>
-                define [word], learn, physics, electronics, engineering, biology, space, cstip, fortune, motd<br>
+                define [word], learn, physics, electronics, engineering, biology, space, cstip, wiki [topic], fortune, motd<br>
                 <br>
                 <strong style="color: var(--accent-color);">⚙️ ENGINEERING TOOLS</strong><br>
                 case  -> interactive diagnostics: resistor calc, color decode, Ohm's Law, voltage divider, capacitor codes<br>
                 <br>
                 <strong style="color: var(--accent-color);">🔐 AKASHIC CIPHER SUITE</strong><br>
-                cipher, encode <msg>, decode <b64>, shift <n> <msg>, kryptos <enc|dec> <bin|hex> <text>, vigenere <enc|dec> <key> <msg>, mirror <msg>, vault <enc|dec> [pw] <msg>, handshake <set|clear> [key]<br>
+                cipher, encode [msg], decode [b64], shift [n] [msg], kryptos [enc|dec] [bin|hex] [text], vigenere [enc|dec] [key] [msg], mirror [msg], vault [enc|dec] [pw] [msg], handshake [set|clear] [key]<br>
                 <br>
                 <strong style="color: var(--accent-color);">🕵️ CYBER OPS</strong><br>
-                kali, steg <hide|reveal> "cover" "secret", tag <set|get|clear|view> [key] [value], kali [hash|scan|crack|inject|genkey|dragon|arch], nuke<br>
+                kali, steg [hide|reveal] [cover] [secret], tag [set|get|clear|view] [key] [value], kali [hash|scan|crack|inject|genkey|dragon|arch], wifite, airmon [iface], nmap [target], hashcat, flipper [subghz|nfc|badusb|off]<br>
                 <br>
                 <strong style="color: var(--accent-color);">🧘 WISDOM & SPIRITUALITY</strong><br>
                 tao, wisdom, sutra, buddha, koan, stoic, bible, verse<br>
@@ -3802,7 +3948,7 @@
                 joke, riddle, poem, poetry, anime, ascii, qr [text], radio [channel], tv [channel], play youtube [url], play audio, stop, cowsay [text], hack, htop, react, rotate<br>
                 <br>
                 <strong style="color: var(--accent-color);">🖼️ VISUALS & EFFECTS</strong><br>
-                image, walls, matrix, scroll, intersect, intersectslow<br>
+                image, walls, glitch, scroll, intersect, intersectslow<br>
                 <br>
                 <span style="color: #888;">Type any command to execute.</span>
                 `;
@@ -4112,7 +4258,7 @@
             'motd': () => {
                 const motds = [
                     "🌀 The Dharma Terminal awaits your command.",
-                    "📡 Akashic Records: Access Granted.",
+                    "🐬 Akashic Records: Access Granted.",
                     "📡 Neon Link stable. Proceed.",
                     "📡 Zero-Point energy fluctuations nominal.",
                     "📡 KRYPTOS encryption: ACTIVE.",
@@ -5042,13 +5188,13 @@
                 return '⚠️ Unknown mode. Use "hide" or "reveal".';
             },
             'tag': (args) => {
-                if (args.length === 0) return 'Usage: tag <set|get|clear|view> [key] [value]\nExamples:\n  tag set Apple Banana\n  tag get Apple\n  tag clear Apple\n  tag view';
+                if (args.length === 0) return 'Usage: tag [set|get|clear|view] [key] [value]\nExamples:\n  tag set Apple Banana\n  tag get Apple\n  tag clear Apple\n  tag view';
                 const cmd = args[0].toLowerCase();
                 const key = args[1];
                 const value = args.slice(2).join(' ');
 
                 if (cmd === 'set') {
-                    if (!key || !value) return 'Usage: tag set <key> <secret>';
+                    if (!key || !value) return 'Usage: tag set [key] [secret]';
                     const db = JSON.parse(localStorage.getItem('akashic_tags') || '{}');
                     db[key] = value;
                     localStorage.setItem('akashic_tags', JSON.stringify(db));
@@ -5056,14 +5202,14 @@
                 }
 
                 if (cmd === 'get') {
-                    if (!key) return 'Usage: tag get <key>';
+                    if (!key) return 'Usage: tag get [key]';
                     const db = JSON.parse(localStorage.getItem('akashic_tags') || '{}');
                     if (db[key]) return `🔖 Secret for "${key}": <span style="color: #0f0;">${db[key]}</span>`;
                     return '<span style="color: #888;">No secret tagged under that word.</span>';
                 }
 
                 if (cmd === 'clear') {
-                    if (!key) return 'Usage: tag clear <key>  (or "all" to wipe everything)';
+                    if (!key) return 'Usage: tag clear [key]  (or "all" to wipe everything)';
                     if (key === 'all') {
                         localStorage.removeItem('akashic_tags');
                         return '🗑️ All tags erased.';
@@ -5083,7 +5229,7 @@
 
                 return `⚠️ Unknown subcommand. Use <span style="color: #0f0;">set</span>, <span style="color: #0f0;">get</span>, <span style="color: #0f0;">clear</span>, or <span style="color: #0f0;">view</span>.`;
             },
-            'matrix': () => {
+            'glitch': () => {
                 document.body.classList.add('matrix-glitch');
                 setTimeout(() => document.body.classList.remove('matrix-glitch'), 10000);
                 return 'Entering the Matrix...';
@@ -5419,6 +5565,247 @@
                 } catch (e) {
                     return `Could not define "${word}".`;
                 }
+            },
+            'wiki': async (args) => {
+                const query = args.join(' ');
+                if (!query) return 'Usage: wiki [topic]';
+                commands['spinner']();
+                try {
+                    const resp = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`);
+                    const data = await resp.json();
+                    if (data.type === 'disambiguation' || !data.extract) {
+                        commands['stopspinner']();
+                        return '⚠️ Topic too broad or not found.';
+                    }
+                    commands['stopspinner']();
+                    return `<div style="border-left: 3px solid #3498db; padding-left: 10px; line-height: 1.4;">
+                                <b style="color: #3498db; font-size: 1.2em;">${data.title}</b><br><br>
+                                <span style="color: #ccc;">${data.extract}</span>
+                            </div>`;
+                } catch (e) {
+                    commands['stopspinner']();
+                    return '⚠️ Wikipedia uplink failed.';
+                }
+            },
+            'crypto': async (args) => {
+                const coin = args[0]?.toLowerCase() || 'bitcoin';
+                commands['spinner']();
+                try {
+                    const resp = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coin}&vs_currencies=usd&include_24hr_change=true`);
+                    const data = await resp.json();
+                    if (!data[coin]) {
+                        commands['stopspinner']();
+                        return '⚠️ Coin not found. Try bitcoin, ethereum, dogecoin...';
+                    }
+                    const price = data[coin].usd;
+                    const change = data[coin].usd_24h_change?.toFixed(2) || '0.00';
+                    const color = change >= 0 ? '#0f0' : '#f00';
+                    commands['stopspinner']();
+                    return `📈 ${coin.toUpperCase()}: $${price} <span style="color: ${color};">(${change}%)</span>`;
+                } catch (e) {
+                    commands['stopspinner']();
+                    return '⚠️ Market data unavailable.';
+                }
+            },
+            'wifite': async () => {
+                commands['spinner']();
+                appendCommandHTML('<span style="color: #0f0;">[+] Initializing Wifite v2.1.0…</span>');
+                await new Promise(r => setTimeout(r, 1500));
+                appendCommandHTML('<span style="color: #888;">[*] Scanning for wireless targets…</span>');
+                await new Promise(r => setTimeout(r, 2500));
+                commands['stopspinner']();
+                return `<pre style="color: #0ff; font-size: 10px;">
+            NUM  ESSID                   CH  ENCR  POWER   CLIENTS
+            ---  ----------------------  --  ----  -----   -------
+            [1]  Home_Network_5G         6   WPA2  -42db   3
+            [2]  Starbucks_WiFi          11  OPEN  -68db   12
+            [3]  Tesla_Guest             1   WPA2  -80db   0
+            [4]  Airport_Free_WiFi       36  OPEN  -55db   8
+            </pre>
+            <span style="color: #ffff00;">[!] Select target index to begin handshake capture…</span>`;
+            },
+            'airmon': async (args) => {
+                const iface = args[0] || 'wlan0';
+                const output = document.getElementById('cmd-output');
+
+                // Start spinner for the heavy lifting
+                if (typeof commands['spinner'] === 'function') commands['spinner']();
+
+                // Step 1 – Check for interfering processes
+                const step1 = document.createElement('div');
+                step1.style.color = '#0f0';
+                step1.textContent = `[*] Checking for interfering processes on ${iface}…`;
+                output.appendChild(step1);
+                await new Promise(r => setTimeout(r, 800));
+
+                // Step 2 – Stop network managers (fake)
+                step1.textContent = `[*] Stopping network-manager and wpa_supplicant…`;
+                await new Promise(r => setTimeout(r, 1000));
+
+                // Step 3 – Bring the interface down
+                step1.textContent = `[*] Bringing ${iface} down…`;
+                await new Promise(r => setTimeout(r, 600));
+
+                // Step 4 – Change mode
+                step1.textContent = `[*] Setting ${iface} to monitor mode…`;
+                await new Promise(r => setTimeout(r, 700));
+
+                // Step 5 – Bring it back up
+                step1.textContent = `[*] Bringing ${iface}mon up…`;
+                await new Promise(r => setTimeout(r, 400));
+
+                // Stop spinner
+                if (typeof commands['stopspinner'] === 'function') commands['stopspinner']();
+
+                // Final result
+                return `<span style="color: #00ff00;">[+] ${iface} is now in Monitor Mode (${iface}mon).</span>
+                        <br><span style="color: #888;">[+] Use <b>airodump-ng ${iface}mon</b> to capture packets.</span>`;
+            },
+            'hashcat': async () => {
+                const hashes = [
+                    { hash: '5f4dcc3b5aa765d61d8327deb882cf99', pass: 'password123' },
+                    { hash: 'e99a18c428cb38d5f260853678922e03', pass: 'aRmONyx' },
+                    { hash: 'd8578edf8458ce06fbc5bb76a58c5ca4', pass: '@dAeMonSystmd' }
+                ];
+                
+                const output = document.getElementById('cmd-output');
+                const statusLine = document.createElement('div');
+                statusLine.style.color = '#0f0';
+                statusLine.textContent = '[*] Launching hashcat v6.2.6…';
+                output.appendChild(statusLine);
+                
+                await new Promise(r => setTimeout(r, 800));
+                statusLine.textContent = '[*] Dictionary: rockyou.txt (14.3M passwords)';
+                await new Promise(r => setTimeout(r, 1200));
+                
+                // Animate password attempts
+                const attempts = ['123456', 'password123', 'admin', 'letmein', 'monkey', 'aRmONyx', '@dAeMonSystmd', 'iloveyou'];
+                for (const attempt of attempts) {
+                    statusLine.textContent = `[*] Trying: ${attempt}…`;
+                    await new Promise(r => setTimeout(r, 200 + Math.random() * 300));
+                }
+                
+                // Build result with scramble reveal (like rotate but fast)
+                let resultHtml = '<span style="color: #00ff00;">[+] Cracked hashes:</span><br>';
+                for (const item of hashes) {
+                    // Brief scramble of the password before settling
+                    const scrambledChars = ['!','@','#','$','%','^','&','*','(',')','_','+','-','=','[',']','{','}','|',';',':','.',',','<','>','/','?'];
+                    let scrambled = '';
+                    for (let i = 0; i < item.pass.length; i++) {
+                        scrambled += scrambledChars[Math.floor(Math.random() * scrambledChars.length)];
+                    }
+                    const hashLine = document.createElement('div');
+                    hashLine.innerHTML = `${item.hash} : <span style="color: #ffaa00;">${scrambled}</span>`;
+                    output.appendChild(hashLine);
+                    // Lock in each character
+                    for (let i = 0; i < item.pass.length; i++) {
+                        let current = scrambled.split('');
+                        current[i] = item.pass[i];
+                        scrambled = current.join('');
+                        hashLine.innerHTML = `${item.hash} : <span style="color: #ffaa00;">${scrambled}</span>`;
+                        await new Promise(r => setTimeout(r, 60));
+                    }
+                    // Final stable reveal
+                    hashLine.innerHTML = `${item.hash} : <span style="color: #ffaa00;">${item.pass}</span>`;
+                }
+                
+                return '<span style="color: #00ff00;">[+] All hashes cracked. Secret phrases revealed.</span>';
+            },
+            'nmap': async (args) => {
+                const target = args[0] || '192.168.1.1';
+                commands['spinner']();
+                appendCommandHTML(`<span style="color: #0f0;">[>] Starting Nmap 7.95 ( https://nmap.org ) at ${new Date().toLocaleTimeString()}</span>`);
+                await new Promise(r => setTimeout(r, 2000));
+                appendCommandHTML(`<span style="color: #0ff;">[~] Nmap scan report for ${target}</span>`);
+                await new Promise(r => setTimeout(r, 1500));
+                commands['stopspinner']();
+                return `<pre style="color: #0f0; font-size: 10px;">
+            PORT      STATE    SERVICE
+            22/tcp    open     ssh
+            80/tcp    open     http
+            443/tcp   closed   https
+            3306/tcp  open     mysql
+            8080/tcp  filtered http-proxy
+            MAC Address: XX:XX:XX:XX:XX:XX (Unknown)
+            </pre>
+            <span style="color: #0ff;">[!] Scan finished: 3 open ports.</span>`;
+            },
+            'flipper': (args) => {
+                const sub = args[0]?.toLowerCase();
+                const terminal = document.getElementById('command-runner');  // or 'cyber-fetch-terminal'
+
+                if (sub === 'subghz') {
+                    terminal.classList.add('flipper-theme');
+                    return `
+            <div class="ascii-art" style="text-align: center;">
+                <pre>
+                    .-------.
+                   /   o   o \\
+                              |    _____  |   -- Hello!
+                   \\  '-----' /
+                    '-------'
+                </pre>
+                <b>FLIPPER ZERO – SUB‑GHZ EMULATOR</b><br>
+                Frequency: 433.92 MHz<br>
+                [~] Reading raw signal…<br>
+                [+] Signal captured: "Tesla_Charge_Open"<br>
+                [!] Emulating…<br>
+                <span style="color: #ff0;">Theme active. Type <b>flipper off</b> to exit.</span>
+            </div>`;
+                }
+
+                if (sub === 'off') {
+                    terminal.classList.remove('flipper-theme');
+                    return 'Flipper theme deactivated. Terminal restored.';
+                }
+
+                if (sub === 'nfc') {
+                    return '<span style="color: #0f0;">[~] NFC Reader active. Place tag on Flipper…</span><br>[+] UID: 04 A1 B2 C3 D4 E5<br>[+] SAK: 08 (MIFARE Classic 1K)';
+                }
+
+                if (sub === 'badusb') {
+                    return '<span style="color: #ff0;">[!] BadUSB mode: injecting payload…</span><br>[*] Opening reverse shell on attacker IP…<br>[+] Connection established.';
+                }
+
+                return 'Usage: flipper [subghz|nfc|badusb|off]';
+            },
+            'zoom': (args) => {
+                const mode = args[0];
+                if (mode === 'in' || mode === '+') return zoomTerm(2);
+                if (mode === 'out' || mode === '-') return zoomTerm(-2);
+                if (mode === 'reset') {
+                    currentTermFontSize = 8;
+                    document.documentElement.style.setProperty('--term-font-size', '8px');
+                    return '[ SYSTEM ] Zoom reset to 8px.';
+                }
+                return 'Usage: zoom [in|out|reset]';
+            },
+            'mode': (args) => {
+                const terminal = document.getElementById('command-runner');
+                const mode = args[0]?.toLowerCase();
+                const allModes = ['flipper', 'midnight', 'matrix', 'crimson', 'cyber'];
+                const classNames = allModes.map(m => `mode-${m}`);
+
+                // Helper: clear all mode classes from terminal
+                const clearModes = () => classNames.forEach(c => terminal.classList.remove(c));
+
+                if (mode === 'off') {
+                    clearModes();
+                    // Re‑apply the current dashboard theme so the terminal matches immediately
+                    const savedTheme = localStorage.getItem('elite-color-profile') || 'cyan';
+                    if (typeof applyColorTheme === 'function') {
+                        applyColorTheme(savedTheme);
+                    }
+                    return '✅ Terminal mode cleared. Back to default theme.';
+                }
+
+                if (allModes.includes(mode)) {
+                    clearModes();
+                    terminal.classList.add(`mode-${mode}`);
+                    return `✅ Terminal mode set to <span style="color: ${getComputedStyle(terminal).getPropertyValue('--mode-accent').trim() || 'inherit'};">${mode.toUpperCase()}</span>.`;
+                }
+
+                return `Usage: mode <${allModes.join('|')}|off>`;
             },
             'walls': async () => {
                 const getFileName = (url) => {
@@ -6711,6 +7098,7 @@
                 appendCommandOutput(`Error: ${error.message}`, true);
             }
         });
+
         // --- FULLSCREEN TOGGLE FOR TERMINAL ---
         const fullscreenBtn = document.getElementById('terminal-fullscreen-btn');
         const terminalContainer = document.getElementById('command-runner');
@@ -6718,34 +7106,45 @@
         if (fullscreenBtn && terminalContainer) {
             fullscreenBtn.addEventListener('click', () => {
                 if (!document.fullscreenElement) {
-                    // Enter fullscreen
-                    terminalContainer.requestFullscreen().catch(err => {
-                        console.warn(`Fullscreen error: ${err.message}`);
-                    });
-                    fullscreenBtn.textContent = '✕ Exit Fullscreen';
+                    terminalContainer.requestFullscreen().catch(err => console.warn(err));
+                    fullscreenBtn.textContent = '✕';          // tiny exit symbol
+                    fullscreenBtn.title = 'Exit Fullscreen';
                 } else {
-                    // Exit fullscreen
                     document.exitFullscreen();
-                    fullscreenBtn.textContent = '⛶ Fullscreen';
+                    fullscreenBtn.textContent = '⛶';          // tiny enter symbol
+                    fullscreenBtn.title = 'Toggle Fullscreen';
                 }
             });
 
-            // Listen for fullscreen change events (e.g., user presses ESC)
+            // Listen for fullscreen change (Esc key, etc.)
             document.addEventListener('fullscreenchange', () => {
                 if (!document.fullscreenElement) {
-                    fullscreenBtn.textContent = '⛶ Fullscreen';
+                    fullscreenBtn.textContent = '⛶';
+                    fullscreenBtn.title = 'Toggle Fullscreen';
                 }
             });
-            
-            // For Safari / older browsers
             document.addEventListener('webkitfullscreenchange', () => {
                 if (!document.webkitFullscreenElement) {
-                    fullscreenBtn.textContent = '⛶ Fullscreen';
+                    fullscreenBtn.textContent = '⛶';
+                    fullscreenBtn.title = 'Toggle Fullscreen';
                 }
             });
         }
         
+        let currentTermFontSize = 8; // 14 matches default
 
+        function zoomTerm(delta) {
+            currentTermFontSize += delta;
+            if (currentTermFontSize < 2) currentTermFontSize = 2;
+            if (currentTermFontSize > 30) currentTermFontSize = 30;
+            document.documentElement.style.setProperty('--term-font-size', currentTermFontSize + 'px');
+            return `[ ZOOM ] ${currentTermFontSize}px`;
+        }
+
+        // Button listeners
+        document.getElementById('zoom-in-btn')?.addEventListener('click', () => zoomTerm(2));
+        document.getElementById('zoom-out-btn')?.addEventListener('click', () => zoomTerm(-2));
+        
             
 
         // --- CISTERCIAN ALARM (continuous tone until dismissed) ---
