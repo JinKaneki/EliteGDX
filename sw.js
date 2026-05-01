@@ -1,8 +1,9 @@
-const CACHE_NAME = 'elite-gems-v1';
+const CACHE_NAME = 'elite-gems-v2';
 const urlsToCache = [
     './index.html',
     './manifest.json',
     './TTC/tao-te-ching.json',
+    './sounds/civil-defense-siren.mp3',
     'https://unpkg.com/cistercian-numerals',
     // Pre‑cached 7 essential images
     './images/indepedentBG/ORIGINBACKG.jpeg',

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <link rel="manifest" href="manifest.json">
+    <link rel="canonical" href="https://jinkaneki.github.io/EliteGDX/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#000000">
@@ -13,36 +14,35 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
 
-    <!--BASIC SEO-->
-    <meta name="description" content="Elite Gems Dashboard : an ambient display with Cistercian clock, analog clock, and image slideshow.">
+    <!-- Primary SEO -->
+    <meta name="description" content="EliteGDX – Akashic Zero-Point Kryptos Neural Center. An ambient cyber-deck dashboard with Cistercian clock, terminal command runner, cipher suite, media playback, games, and neural tools.">
     <meta name="keywords" content="Cistercian numerals, clock, dashboard, medieval numerals, web components">
     <meta name="author" content="Jin Kaneki">
-    <meta property="og:title" content="Elite Gems Dashboard">
-    <meta property="og:description" content="Cistercian clock & ambient dashboard">
-    <meta property="og:image" content="https://jinkaneki.github.io/AnalogClockHost/preview.jpg">
-    <meta property="og:url" content="https://jinkaneki.github.io/AnalogClockHost/">
+
+    <!-- Open Graph / Social -->
+    <meta property="og:title" content="EliteGDX – Akashic Neural Center">
+    <meta property="og:description" content="Ambient cyber-deck dashboard with Cistercian clock, terminal, cipher suite, media playback & neural tools.">
+    <meta property="og:image" content="https://jinkaneki.github.io/EliteGDX/preview.jpg">
+    <meta property="og:url" content="https://jinkaneki.github.io/EliteGDX/">
     <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Structured Data -->
     <script type="application/ld+json">
-        {
+    {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "Elite Gems Dashboard",
-        "description": "An interactive clock dashboard with Cistercian numerals, analog and digital clocks, and a rotating image gallery.",
-        "author": {
-            "@type": "Person",
-            "name": "JinKaneki "
-        },
+        "name": "EliteGDX – Elite Gems Dashboard",
+        "description": "An ambient cyber-deck dashboard with Cistercian numerals, analog & digital clocks, a full terminal command runner, cipher suite, media playback, games, and neural tools.",
+        "author": { "@type": "Person", "name": "Jin Kaneki" },
         "applicationCategory": "Multimedia",
         "operatingSystem": "All",
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
-        }
-        }
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
     </script>
 
-    <title>Elite Gems Dashboard</title>
+    <title>EliteGDX – Akashic Neural Center</title>
+
+</head>
     <style>
         /* Upgraded Color Palettes */
         :root {
@@ -2533,7 +2533,7 @@
     <footer class="site-footer">
             <div class="footer-line"></div>
             <div style="margin-top: 15px;">
-                <a href="https://github.com/JinKaneki/AnalogClockHost" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none; margin: 0 10px;">GitHub</a>
+                <a href="https://github.com/JinKaneki/EliteGDX" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none; margin: 0 10px;">GitHub</a>
                 <a href="https://youtube.com/@jinkaneki01?si=6zFtEGHjjxkAz1kn" target="_blank"  rel="noopener noreferrer" style="color: inherit; text-decoration: none; margin: 0 10px;">Youtube</a>
                 <a href="https://linkedin.com/in/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none; margin: 0 10px;">LinkedIn</a>
             </div>
@@ -4020,7 +4020,7 @@
                 tao, wisdom, sutra, buddha, koan, stoic, bible, verse<br>
                 <br>
                 <strong style="color: var(--accent-color);">🎭 FUN & ENTERTAINMENT</strong><br>
-                joke, riddle, poem, poetry, anime, ascii, game [snake|dodge|marble|asteroids|flappy], run, piano, qr [text], homing, siren, radio [channel], tv [channel], play youtube [url], play audio, stop, cowsay [text], hack, htop, react, rotate<br>
+                joke, riddle, poem, poetry, anime, ascii, run, piano, game [snake|dodge|marble|asteroids|flappy], qr [text], homing, siren, radio [channel], tv [channel], play youtube [url], play audio, stop, cowsay [text], hack, htop, react, rotate<br>
                 <br>
                 <strong style="color: var(--accent-color);">🖼️ VISUALS & EFFECTS</strong><br>
                 image, walls, glitch, scroll, intersect, intersectslow<br>
@@ -5586,9 +5586,8 @@
                     window._sirenAudio.pause();
                     window._sirenAudio = null;
                 }
-                const audio = new Audio('sounds/civil-defense-siren.mp3');
+                const audio = new Audio('./sounds/civil-defense-siren.mp3');
                 audio.loop = false;           // play once (1 minute)
-                audio.volume = currentVolume; // respects your global volume slider
                 audio.play().catch(e => {
                     appendCommandOutput(`⚠️ Siren failed: ${e.message}`, true);
                 });
@@ -6186,7 +6185,7 @@
                     return `✅ Terminal mode set to <span style="color: ${getComputedStyle(terminal).getPropertyValue('--mode-accent').trim() || 'inherit'};">${mode.toUpperCase()}</span>.`;
                 }
 
-                return `Usage: mode <${allModes.join('|')}|off>`;
+                return `Usage: mode [${allModes.join('|')}|off]`;
             },
             'raspberry': () => {
                 const cpuTemp = (Math.random() * 20 + 35).toFixed(1);
@@ -6454,7 +6453,7 @@
                 }
             },
             'qr': (args) => {
-                const text = args.join(' ') || 'https://github.com/JinKaneki/AnalogClockHost';
+                const text = args.join(' ') || 'https://github.com/JinKaneki/EliteGDX';
                 
                 try {
                     const qr = qrcode(0, 'M');  // type number 0, error correction 'M'

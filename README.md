@@ -3,7 +3,7 @@
 **An "Always-On" productivity clock and personal gallery engineered for professional workspaces.**
 **An ambient, cyber‑punk inspired dashboard with multiple clock faces, a rotating image gallery, and a powerful built‑in terminal command runner(CLI).**
 
-Live at : [https://jinkaneki.github.io/AnalogClockHost/]
+Live at : [https://jinkaneki.github.io/EliteGDX/]
 
 ---
 
