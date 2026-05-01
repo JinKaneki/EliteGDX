@@ -458,7 +458,7 @@ The "Akashic Update" transforms the dashboard into a comprehensive information r
 
 1. **Clone the repository**
     ```bash:
-    git clone [https://github.com/JinKaneki/AnalogClockHost.git](https://github.com/JinKaneki/AnalogClockHost.git)
+    git clone [https://github.com/JinKaneki/EliteGDX.git](https://github.com/JinKaneki/EliteGDX.git)
     cd AnalogClockHost
 ---
 
