@@ -13,6 +13,10 @@
     <script type="module" src="https://unpkg.com/cistercian-numerals"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
 
     <!-- Primary SEO -->
     <meta name="description" content="EliteGDX – Akashic Zero-Point Kryptos Neural Center. An ambient cyber-deck dashboard with Cistercian clock, terminal command runner, cipher suite, media playback, games, and neural tools.">
@@ -2548,6 +2552,21 @@
             const bootStatuses = ["J-OS BOOTING", "AKASHIC SYNC", "NEURAL LINK ACTIVE"];
             triggerGhost(bootStatuses[Math.floor(Math.random() * bootStatuses.length)]);
         });
+        // my web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZ0VgXievcXKNKQyFusrZe8ohnFn98Z8A",
+            authDomain: "firegdx.firebaseapp.com",
+            databaseURL: "https://firegdx-default-rtdb.firebaseio.com",
+            projectId: "firegdx",
+            storageBucket: "firegdx.firebasestorage.app",
+            messagingSenderId: "167830327568",
+            appId: "1:167830327568:web:da4d30c9dca57b3da11595"
+        };
+        firebase.initializeApp(firebaseConfig);
+        // Initialize Firebase
+        const db = firebase.database();
+
+
         // --- 1. AUDIO CONTEXT SETUP ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -2810,16 +2829,16 @@
 
 
         // --- Keyboard shortcuts: 'q' to toggle, 'Escape' to close ---
-        document.addEventListener('keydown', (e) => {
-            const key = e.key.toLowerCase();
-            if (key === 'q') {
-                // e.preventDefault();    prevent typing the character
-                toggleFetch();
-            }
-            if (key === 'escape' && fetchTerminal.classList.contains('active')) {
-                toggleFetch();
-            }
-        });
+        // document.addEventListener('keydown', (e) => {
+        //    const key = e.key.toLowerCase();
+        //    if (key === 'q') {
+        //         e.preventDefault();    prevent typing the character
+        //        toggleFetch();
+        //    }
+        //    if (key === 'escape' && fetchTerminal.classList.contains('active')) {
+        //         toggleFetch();
+        //    }
+        //});
 
         // --- JOHAN_OS SYSTEM INFO (NEOFETCH STYLE) ---
         const fetchContainer = document.getElementById('neofetch-container');
@@ -3425,59 +3444,14 @@
             });
 
             // Key 'B' to Freeze/Unfreeze
-            document.addEventListener('keydown', (e) => {
-                if (e.key.toLowerCase() === 'b') {
-                    isBgFrozen = !isBgFrozen;
-                    playTick(true); // Deeper 'Tock' sound for confirmation
-                    triggerGhost(isBgFrozen);
-                    if (!isBgFrozen) updateBackground();
-                }
+            //document.addEventListener('keydown', (e) => {
+            //    if (e.key.toLowerCase() === 'b') {
+            //        isBgFrozen = !isBgFrozen;
+            //        playTick(true); // Deeper 'Tock' sound for confirmation
+            //        triggerGhost(isBgFrozen);
+            //        if (!isBgFrozen) updateBackground();
+            //    }
 
-                if (e.key.toLowerCase() === 'z') {
-                //e.preventDefault();
-            
-            
-                // Cycle the style mode
-                currentModeIndex = (currentModeIndex + 1) % clockModes.length;
-                const mode = clockModes[currentModeIndex];
-
-                // Manually apply the same changes as the button click (to avoid double sound)
-                analogClock.classList.remove('zen-mode');
-                analogClock.style.display = 'flex';
-                digitalClock.style.display = 'none';
-                cistercianClock.style.display ='none';
-                styleBtn.classList.remove('zen-active');
-                styleBtn.style.borderColor = "var(--clock-border)";
-                styleBtn.style.color = "var(--text-color)";
-
-                if (mode === 'classic') {
-                    styleBtn.innerText = "🕰️ STYLE: CLASSIC";
-                } else if (mode === 'glass') {
-                    analogClock.classList.add('zen-mode');
-                    styleBtn.innerText = "💎 STYLE: GLASSIC";
-                    styleBtn.classList.add('zen-active');
-                } else if (mode === 'digital') {
-                    analogClock.style.display = 'none';
-                    digitalClock.style.display = 'flex';
-                    cistercianClock.style.display = 'none';
-                    styleBtn.innerText = "📟 STYLE: DIGITAL";
-                    styleBtn.classList.add('zen-active');
-                    styleBtn.style.borderColor = "var(--clock-border)";
-                } else if (mode === 'cistercian') {
-                    analogClock.style.display = 'none';
-                    digitalClock.style.display = 'none';
-                    cistercianClock.style.display = 'flex';
-                    styleBtn.innerText = "🧮 STYLE: CISTERCIAN";
-                    styleBtn.classList.add('zen-active');
-                    styleBtn.style.borderColor = "var(--clock-border)";
-                }
-
-                playTick(true);
-                if (typeof triggerGhost === 'function') {
-                    triggerGhost(modeMessages[mode]);
-                }
-            }
-            });
         });
 
         // Hide Controls Toggle (top-left button)
@@ -4001,6 +3975,16 @@
                 <strong style="color: var(--accent-color);">🎨 THEME & UI</strong><br>
                 theme [cyan|magenta|amber|matrix], pause, mode [flipper|midnight|matrix|crimson|cyber|off], zoom [in|out|reset]<br>
                 <br>
+                <strong style="color: var(--accent-color);">📡 NETWORK & COMMUNICATION</strong><br>
+                chat mqtt : Global public frequency (IoT style)<br>
+                chat p2p : Encrypted peer to peer tunnel<br>
+                chat firebase : Persistent mainframe archive<br>
+                status : Live connection report (MQTT, P2P, Firebase)<br>
+                disconnect : Terminate all network links safely<br>
+                mesh : Visualize a simulated LoRa mesh network<br>
+                aprsmap [fi|direct] : Live amateur radio map (choose source)<br>
+                meshmap : Live Meshtastic node map<br>
+                <br>
                 <strong style="color: var(--accent-color);">📰 NEWS & INFORMATION</strong><br>
                 news, hackernews, technology, crypto [coin]<br>
                 <br>
@@ -4025,7 +4009,6 @@
                 <strong style="color: var(--accent-color);">🖼️ VISUALS & EFFECTS</strong><br>
                 image, walls, glitch, scroll, intersect, intersectslow<br>
                 <br>
-                <span style="color: #888;">Type any command to execute.</span>
                 `;
             },
             'clear': () => {
@@ -4483,6 +4466,378 @@
                 };
                 const formatted = now.toLocaleDateString('en-US', options);
                 return `<span style="color: #0f0; text-shadow: 0 0 5px #0f0;">📅 ${formatted}</span>`;
+            },
+
+            'mesh': () => {
+                const canvasId = 'mesh-canvas-' + Date.now();
+                setTimeout(() => initMeshMap(canvasId), 100);
+                return `
+                <div style="border: 1px solid #0f0; border-radius: 6px; padding: 10px; margin-top: 10px; background: rgba(0,20,0,0.15);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <b style="color: #0f0;">[ LORA MESH TOPOLOGY ]</b>
+                        <span style="color: #888; font-size: 10px;">915 MHz • Local scan</span>
+                    </div>
+                    <div style="text-align: center; margin: 12px 0;">
+                        <canvas id="${canvasId}" style="background: #000; border: 1px solid #333; max-width: 100%;"></canvas>
+                    </div>
+                    <div style="color: #0f0; font-size: 10px; margin-top: 5px;">
+                        ● Active node   <span style="color: #444;">● Silent</span>   —   Type <span style="color:#fff;">mesh</span> to refresh
+                    </div>
+                </div>`;
+            },
+            'meshmap': () => {
+                return `
+                <div style="border: 1px solid var(--accent-color); border-radius: 8px; overflow: hidden; margin: 10px 0; background: #000;">
+                    <iframe src="https://meshtastic.liamcottle.com/"
+                        width="100%" height="400" style="border: none;" loading="lazy"
+                        sandbox="allow-scripts allow-same-origin allow-forms allow-popups">
+                    </iframe>
+                </div>
+                <span style="color: #888; font-size: 10px;">Global Meshtastic Nodes (MQTT) – meshtastic.liamcottle.com</span>`;
+                // Fallback version (inside the command, if iframe fails)
+                return `
+                <div style="…">
+                    <button onclick="window.open('https://meshtastic.liamcottle.com/','_blank')" 
+                        style="background:#0f0;color:#000;padding:8px;border:none;cursor:pointer;">
+                        Open Map in New Tab
+                    </button>
+                </div>`;
+            },
+            'aprsmap': (args) => {
+                const mode = args[0]?.toLowerCase();
+
+                // Default to aprsdirect if no argument, or if user typed 'direct'
+                if (!mode || mode === 'direct') {
+                    return `
+                    <div style="border: 1px solid var(--accent-color); border-radius: 8px; overflow: hidden; margin: 10px 0; background: #000;">
+                        <iframe src="https://www.aprsdirect.com/center/40.0,-98.0/zoom/1/time/60"
+                            width="100%" height="400" style="border: none;" loading="lazy"
+                            sandbox="allow-scripts allow-same-origin allow-forms allow-popups">
+                        </iframe>
+                    </div>
+                    <span style="color: #888; font-size: 10px;">APRS Radio Traffic – aprsdirect.com</span>`;
+                }
+
+                // aprs.fi with sandbox that prevents full‑browser redirects
+                if (mode === 'fi') {
+                    return `
+                    <div style="border: 1px solid var(--accent-color); border-radius: 8px; overflow: hidden; margin: 10px 0; background: #000;">
+                        <iframe src="https://aprs.fi/"
+                            width="100%" height="400" style="border: none;" loading="lazy"
+                            sandbox="allow-scripts allow-same-origin allow-forms allow-popups">
+                            <!-- NO allow-top-navigation → searching stays inside -->
+                        </iframe>
+                    </div>
+                    <span style="color: #888; font-size: 10px;">Live APRS Amateur Radio Map – aprs.fi (sandboxed)</span>`;
+                }
+
+                return 'Usage: aprsmap [fi|direct] – fi = aprs.fi, direct = aprsdirect.com';
+            },
+            'chat': (args) => {
+                const sub = args[0]?.toLowerCase();
+                if (!sub) {
+                    return `
+                    <div style="border-left: 3px solid var(--accent-color); padding-left: 10px;">
+                        <b style="color: var(--accent-color);">[ J_OS COMMUNICATION TRIAD ]</b><br>
+                        <span style="color: #0f0;">chat mqtt</span> – Global public frequency (IoT style)<br>
+                        <span style="color: #ff00ff;">chat p2p</span> – Encrypted peer‑to‑peer tunnel<br>
+                        <span style="color: #fca311;">chat firebase</span> – Persistent mainframe archive<br>
+                    </div>`;
+                }
+                // … the three if blocks for mqtt, p2p, firebase
+                // 1. MQTT – The Global Frequency (Green #0f0)
+                if (sub === 'mqtt') {
+                    const old = document.getElementById('mqtt-chat-box');
+                    if (old) old.remove();
+                    if (window._mqttClient) { window._mqttClient.end(); window._mqttClient = null; }
+
+                    const output = document.getElementById('cmd-output');
+                    const container = document.createElement('div');
+                    container.id = 'mqtt-chat-box';
+                    container.style.cssText = 'border:1px solid #0f0; padding:10px; margin-top:10px;';
+
+                    // Message log
+                    const logDiv = document.createElement('div');
+                    logDiv.id = 'mqtt-log';
+                    logDiv.style.cssText = 'height:150px; overflow-y:auto; font-family:monospace; font-size:12px; background:#111; color:#0f0; padding:5px; margin-bottom:8px;';
+                    container.appendChild(logDiv);
+
+                    // Input row
+                    const inputRow = document.createElement('div');
+                    inputRow.style.cssText = 'display:flex;';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.placeholder = 'Message...';
+                    input.style.cssText = 'flex:1; background:#222; border:1px solid #0f0; color:#0f0; padding:5px; font-family:monospace;';
+                    const sendBtn = document.createElement('button');
+                    sendBtn.textContent = '▶';
+                    sendBtn.style.cssText = 'background:#0f0; color:#000; border:none; padding:5px 10px; cursor:pointer; font-weight:bold;';
+                    inputRow.appendChild(input);
+                    inputRow.appendChild(sendBtn);
+                    container.appendChild(inputRow);
+
+                    output.appendChild(container);
+
+                    // Generate unique node ID
+                    const nodeId = 'NODE-' + Math.random().toString(16).slice(2, 6).toUpperCase();
+
+                    // Connect to public broker
+                    const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt');
+                    const topic = 'elitegdx/chat/public';
+
+                    client.on('connect', () => {
+                        client.subscribe(topic, (err) => {
+                            if (!err) logDiv.innerHTML += '<div style="color:#888;">Connected to global frequency…</div>';
+                        });
+                    });
+
+                    client.on('message', (topic, message) => {
+                        const msg = message.toString();
+                        if (window._mqttLastSent === msg) { window._mqttLastSent = null; return; }
+                        logDiv.innerHTML += `<div>${msg}</div>`;
+                        logDiv.scrollTop = logDiv.scrollHeight;
+                    });
+
+                    const sendMessage = () => {
+                        const text = input.value.trim();
+                        if (!text) return;
+                        const fullMsg = `[${new Date().toLocaleTimeString()}] ${nodeId}: ${text}`;
+                        window._mqttLastSent = fullMsg;
+                        client.publish(topic, fullMsg);
+                        input.value = '';
+                        input.focus();
+                    };
+
+                    sendBtn.addEventListener('click', sendMessage);
+                    input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+                    // Auto focus
+                    setTimeout(() => input.focus(), 50);
+
+                    window._mqttClient = client;
+                    return '';
+                }
+                // 2. WebRTC P2P – The Secure Tunnel (Magenta #ff00ff)
+                if (sub === 'p2p') {
+                    const old = document.getElementById('p2p-chat-box');
+                    if (old) old.remove();
+                    if (window._peer) { window._peer.destroy(); window._peer = null; }
+                    if (window._p2pConn) { window._p2pConn.close(); window._p2pConn = null; }
+
+                    const output = document.getElementById('cmd-output');
+                    const container = document.createElement('div');
+                    container.id = 'p2p-chat-box';
+                    // Encrypted tunnel look – double border, subtle glow
+                    container.style.cssText = 'border: 2px double #ff00ff; padding: 10px; margin-top: 10px; box-shadow: 0 0 15px rgba(255,0,255,0.2);';
+
+                    const statusDiv = document.createElement('div');
+                    statusDiv.style.cssText = 'color: #ff00ff; font-size: 12px; margin-bottom: 5px;';
+                    const connectRow = document.createElement('div');
+                    connectRow.style.cssText = 'display: flex; gap: 5px; margin-bottom: 10px;';
+                    const connectInput = document.createElement('input');
+                    connectInput.type = 'text';
+                    connectInput.placeholder = 'Peer ID';
+                    connectInput.style.cssText = 'flex:1; background:#222; border:1px solid #ff00ff; color:#ff00ff; padding:5px; font-family:monospace;';
+                    const connectBtn = document.createElement('button');
+                    connectBtn.textContent = 'Tunnel';
+                    connectBtn.style.cssText = 'background:#ff00ff; color:#000; border:none; padding:5px 10px; cursor:pointer; font-weight:bold;';
+                    connectRow.appendChild(connectInput);
+                    connectRow.appendChild(connectBtn);
+                    container.appendChild(statusDiv);
+                    container.appendChild(connectRow);
+
+                    const logDiv = document.createElement('div');
+                    logDiv.id = 'p2p-log';
+                    logDiv.style.cssText = 'height:150px; overflow-y:auto; font-family:monospace; font-size:12px; background:#111; color:#ff00ff; padding:5px; margin-bottom:8px;';
+                    container.appendChild(logDiv);
+
+                    const msgRow = document.createElement('div');
+                    msgRow.style.cssText = 'display:flex;';
+                    const msgInput = document.createElement('input');
+                    msgInput.type = 'text';
+                    msgInput.placeholder = 'Message…';
+                    msgInput.style.cssText = 'flex:1; background:#222; border:1px solid #ff00ff; color:#ff00ff; padding:5px; font-family:monospace;';
+                    const sendBtn = document.createElement('button');
+                    sendBtn.textContent = '▶';
+                    sendBtn.style.cssText = 'background:#ff00ff; color:#000; border:none; padding:5px 10px; cursor:pointer; font-weight:bold;';
+                    msgRow.appendChild(msgInput);
+                    msgRow.appendChild(sendBtn);
+                    container.appendChild(msgRow);
+
+                    output.appendChild(container);
+
+                    // Generate a node ID for display
+                    const nodeId = 'P2P-' + Math.random().toString(16).slice(2, 5).toUpperCase();
+
+                    const peer = new Peer(undefined, { debug: 0 });
+                    window._peer = peer;
+                    let conn = null;
+
+                    peer.on('open', (id) => {
+                        statusDiv.innerHTML = `Your Peer ID: <b style="color:#fff;">${id}</b> (${nodeId})`;
+                    });
+
+                    connectBtn.addEventListener('click', () => {
+                        const remoteId = connectInput.value.trim();
+                        if (!remoteId) return;
+                        conn = peer.connect(remoteId, { reliable: true });
+                        setupConn(conn);
+                    });
+
+                    peer.on('connection', (incomingConn) => {
+                        conn = incomingConn;       // critical – updates the shared conn variable
+                        setupConn(conn);
+                        logDiv.innerHTML += '<div style="color:#888;">Encrypted tunnel established.</div>';
+                    });
+
+                    const setupConn = (connection) => {
+                        window._p2pConn = connection;
+                        connection.on('open', () => {
+                            logDiv.innerHTML += '<div style="color:#888;">Direct link active.</div>';
+                        });
+                        connection.on('data', (data) => {
+                            logDiv.innerHTML += `<div>${data}</div>`;
+                            logDiv.scrollTop = logDiv.scrollHeight;
+                        });
+                    };
+
+                    const sendP2PMessage = () => {
+                        if (!window._p2pConn) { alert('No active tunnel.'); return; }
+                        const text = msgInput.value.trim();
+                        if (!text) return;
+                        const msg = `[${new Date().toLocaleTimeString()}] ${nodeId}: ${text}`;
+                        window._p2pConn.send(msg);
+                        logDiv.innerHTML += `<div style="color:#ccc;">You: ${text}</div>`;
+                        logDiv.scrollTop = logDiv.scrollHeight;
+                        msgInput.value = '';
+                        msgInput.focus();
+                    };
+
+                    sendBtn.addEventListener('click', sendP2PMessage);
+                    msgInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendP2PMessage(); });
+
+                    setTimeout(() => msgInput.focus(), 50);
+
+                    return '';
+                }
+                // 3. Firebase – The Mainframe Archive (Amber #fca311)
+                if (sub === 'firebase') {
+                    const old = document.getElementById('firebase-chat-box');
+                    if (old) {
+                        // Critical: remove previous listener to prevent duplicate messages
+                        if (window._chatRef) window._chatRef.off();
+                        old.remove();
+                    }
+
+                    if (typeof db === 'undefined') {
+                        appendCommandOutput('Firebase not configured. Add your config to index.html.', true);
+                        return '';
+                    }
+
+                    const output = document.getElementById('cmd-output');
+                    const container = document.createElement('div');
+                    container.id = 'firebase-chat-box';
+                    container.style.cssText = 'border: 1px solid #fca311; padding: 10px; margin-top: 10px;';
+
+                    const logDiv = document.createElement('div');
+                    logDiv.id = 'firebase-log';
+                    logDiv.style.cssText = 'height:150px; overflow-y:auto; font-family:monospace; font-size:12px; background:#111; color:#fca311; padding:5px; margin-bottom:8px;';
+                    container.appendChild(logDiv);
+
+                    const msgRow = document.createElement('div');
+                    msgRow.style.cssText = 'display:flex;';
+                    const msgInput = document.createElement('input');
+                    msgInput.type = 'text';
+                    msgInput.placeholder = 'Message…';
+                    msgInput.style.cssText = 'flex:1; background:#222; border:1px solid #fca311; color:#fca311; padding:5px; font-family:monospace;';
+                    const sendBtn = document.createElement('button');
+                    sendBtn.textContent = '▶';
+                    sendBtn.style.cssText = 'background:#fca311; color:#000; border:none; padding:5px 10px; cursor:pointer; font-weight:bold;';
+                    msgRow.appendChild(msgInput);
+                    msgRow.appendChild(sendBtn);
+                    container.appendChild(msgRow);
+
+                    output.appendChild(container);
+
+                    // Node ID for the archive
+                    const nodeId = 'ARCH-' + Math.random().toString(16).slice(2, 5).toUpperCase();
+
+                    // Reference to chat messages
+                    const chatRef = db.ref('elitegdx/chat');
+                    window._chatRef = chatRef;
+
+                    chatRef.limitToLast(20).on('child_added', (snap) => {
+                        const msg = snap.val();
+                        logDiv.innerHTML += `<div><span style="color:#888;">[${msg.time}]</span> <b style="color:#fff;">${msg.user}:</b> ${msg.text}</div>`;
+                        logDiv.scrollTop = logDiv.scrollHeight;
+                    });
+
+                    const sendMessage = () => {
+                        const text = msgInput.value.trim();
+                        if (!text) return;
+                        chatRef.push({
+                            user: nodeId,
+                            text: text,
+                            time: new Date().toLocaleTimeString()
+                        });
+                        msgInput.value = '';
+                        msgInput.focus();
+                    };
+
+                    sendBtn.addEventListener('click', sendMessage);
+                    msgInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+                    return '';
+                }
+            },
+            'status': () => {
+                const mqttActive = window._mqttClient && window._mqttClient.connected ?
+                    '<span style="color:#0f0;">ONLINE</span>' : '<span style="color:#555;">OFFLINE</span>';
+                const p2pActive = window._p2pConn && window._p2pConn.open ?
+                    '<span style="color:#ff00ff;">ACTIVE TUNNEL</span>' : '<span style="color:#555;">IDLE</span>';
+                const firebaseActive = window._chatRef ?
+                    '<span style="color:#fca311;">SYNCED</span>' : '<span style="color:#555;">DISCONNECTED</span>';
+
+                return `
+                <div style="border: 1px solid #444; padding: 10px; background: rgba(255,255,255,0.05); font-family: monospace;">
+                    <b style="color: var(--accent-color);">[ J_OS SUBSYSTEM REPORT ]</b><br>
+                    ------------------------------------<br>
+                    <span style="color: #0f0;">> NETWORK GATEWAY (MQTT):</span> ${mqttActive}<br>
+                    <span style="color: #ff00ff;">> P2P MESH LINK (WEBRTC):</span> ${p2pActive}<br>
+                    <span style="color: #fca311;">> ARCHIVE ARCHITECTURE:</span> ${firebaseActive}<br>
+                    ------------------------------------<br>
+                    <span style="color: #888;">CPU UTILIZATION:</span> ${Math.floor(Math.random() * 15) + 2}%<br>
+                    <span style="color: #888;">UPTIME:</span> ${Math.floor(performance.now() / 1000)}s<br>
+                    <span style="color: #888;">LOCATION:</span> <span style="color:#fff;">[REDACTED]</span>
+                </div>`;
+            },
+            'disconnect': () => {
+                // MQTT
+                if (window._mqttClient) {
+                    window._mqttClient.end();
+                    window._mqttClient = null;
+                }
+                // P2P
+                if (window._p2pConn) {
+                    window._p2pConn.close();
+                    window._p2pConn = null;
+                }
+                if (window._peer) {
+                    window._peer.destroy();
+                    window._peer = null;
+                }
+                // Firebase listener
+                if (window._chatRef) {
+                    window._chatRef.off();
+                    window._chatRef = null;
+                }
+                // Clear any active chat UI boxes
+                const boxes = ['mqtt-chat-box', 'p2p-chat-box', 'firebase-chat-box'];
+                boxes.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.remove();
+                });
+                return '🔌 All network links terminated. Type <span style="color:#0f0;">chat</span> to reconnect.';
             },
             'spinner': () => {
                 if (spinnerInterval) return 'A neural-link is already active. Type stopspinner to halt.';
@@ -7837,6 +8192,28 @@
             }
         }
 
+        // Alarm siren functions
+        let alarmSirenAudio = null;
+
+        function startAlarmSiren() {
+            if (alarmSirenAudio) {
+                alarmSirenAudio.pause();
+                alarmSirenAudio = null;
+            }
+            alarmSirenAudio = new Audio('./sounds/civil-defense-siren.mp3');
+            alarmSirenAudio.loop = true;
+            alarmSirenAudio.play().catch(e => console.warn('Alarm siren failed:', e));
+        }
+
+        function stopAlarmSiren() {
+            if (alarmSirenAudio) {
+                alarmSirenAudio.pause();
+                alarmSirenAudio.currentTime = 0;
+                alarmSirenAudio = null;
+            }
+        }
+
+
         // 5. Function to show the full‑screen alarm overlay with the Cistercian numeral
         function showAlarmOverlay() {
             // Remove any existing overlay to avoid duplicates
@@ -7870,7 +8247,7 @@
             
             // What happens when Dismiss is clicked:
             dismissBtn.onclick = () => {
-                stopContinuousTone();        // stop the beeeeeep
+                stopAlarmSiren();            // stop the siren
                 alarmDiv.remove();           // remove the overlay from the page
                 currentAlarmDiv = null;      // clear the reference
                 
@@ -7900,7 +8277,7 @@
                 // ALARM TRIGGERED!
                 alarmStatusDiv.innerText = '🔔 ALARM!';
                 
-                startContinuousTone();      // start the steady beeeeeeeep
+                startAlarmSiren();          // start the steady siren
                 showAlarmOverlay();         // show the full‑screen overlay with Dismiss button
                 
                 // Stop the checking interval – the alarm only triggers once
@@ -7935,12 +8312,12 @@
             if (alarmCheckInterval) clearInterval(alarmCheckInterval);
             alarmCheckInterval = null;
             alarmTime = null;
-            stopContinuousTone();            // just in case a tone is playing (though unlikely)
+            stopAlarmSiren();
             alarmStatusDiv.innerText = 'Alarm stopped.';
             setAlarmBtn.disabled = false;
             stopAlarmBtn.disabled = true;
         });
-        
+        s
 
 
        // --- MAGIC MIRROR MODE (with spacer & full restoration) ---
@@ -8737,6 +9114,97 @@
                 draw();
             });
             draw();
+        }
+
+        function initMeshMap(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = 300;
+            canvas.height = 300;
+
+            // ── Realistic Meshtastic‑style node IDs ──
+            const hex = () => Math.floor(Math.random()*16).toString(16);
+            const randomId = () => `!${Array.from({length:4},hex).join('')}`;
+            
+            const numNodes = 14;
+            let nodes = [];
+            for (let i = 0; i < numNodes; i++) {
+                nodes.push({
+                    id: randomId(),
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 0.8,
+                    vy: (Math.random() - 0.5) * 0.8,
+                    active: Math.random() > 0.2,
+                    lastPing: Math.random() * 100       // staggered ping animation
+                });
+            }
+
+            let isRunning = true;
+            const maxLinkDistance = 100;                // shorter links = more realistic mesh
+
+            const draw = () => {
+                if (!isRunning) return;
+                ctx.fillStyle = '#0a0a0a';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // ── Draw connections (the mesh) ──
+                for (let i = 0; i < nodes.length; i++) {
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        const dx = nodes[i].x - nodes[j].x;
+                        const dy = nodes[i].y - nodes[j].y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        if (dist < maxLinkDistance && nodes[i].active && nodes[j].active) {
+                            const alpha = 1 - (dist / maxLinkDistance);
+                            ctx.beginPath();
+                            ctx.moveTo(nodes[i].x, nodes[i].y);
+                            ctx.lineTo(nodes[j].x, nodes[j].y);
+                            ctx.strokeStyle = `rgba(0,255,100,${alpha})`;
+                            ctx.lineWidth = 0.8;
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                // ── Draw nodes ──
+                const now = Date.now();
+                nodes.forEach(node => {
+                    // Slow drift
+                    node.x += node.vx;
+                    node.y += node.vy;
+                    if (node.x < 5 || node.x > canvas.width-5) node.vx *= -1;
+                    if (node.y < 5 || node.y > canvas.height-5) node.vy *= -1;
+
+                    // Ping animation – flash every 2‑4 seconds
+                    const pingPhase = Math.floor(now / 3000 + node.lastPing) % 2;
+                    const glow = pingPhase === 0 ? '#0f0' : '#3f3';
+
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, node.active ? 4 : 3, 0, Math.PI*2);
+                    ctx.fillStyle = node.active ? glow : '#444';
+                    ctx.fill();
+
+                    // ID label
+                    if (node.active) {
+                        ctx.fillStyle = '#0f0';
+                        ctx.font = '9px monospace';
+                        ctx.fillText(node.id, node.x + 6, node.y - 3);
+                    }
+                });
+
+                // ── Radar sweep bar ──
+                const sweepY = (Date.now() * 60) % canvas.height;
+                ctx.fillStyle = 'rgba(0,255,0,0.08)';
+                ctx.fillRect(0, sweepY, canvas.width, 2);
+
+                requestAnimationFrame(draw);
+            };
+
+            draw();
+
+            // Cleanup on removal
+            canvas.addEventListener('DOMNodeRemoved', () => { isRunning = false; });
         }
         
         // 1. Request it as soon as the page loads

@@ -29,8 +29,8 @@ Live at : [https://jinkaneki.github.io/EliteGDX/]
   - **Full Clean:** Both text and images hidden – only the clock floats on the wallpaper.
 - **Stealth Controls (Ghost UI):**
   - **Double‑Click Background:** Freezes/Unfreezes the background immediately.
-  - **Key `B`:** Keyboard shortcut for the same stealth freeze.
-  - **Key `Z`:** Cycles through clock styles (classic → glass → digital).
+  - **Key ``:** Keyboard shortcut for the same stealth freeze.
+  - **Key ``:** Cycles through clock styles (classic → glass → digital).
   - **Visual Feedback:** Temporary "Ghost Indicator" appears for state confirmation.
 - **Mechanical Sound Engine:** Web Audio API generated ticks/tocks with adjustable volume and instant mute.
 
@@ -63,7 +63,7 @@ UI transitions are synchronized with the system clock, occurring precisely at `0
 - **Custom ASCII art** – displays a bold **JOHAN_OS** banner with a **maple leaf** for a unique, personal touch.
 - **Real system data** – shows OS, browser, resolution, uptime, CPU cores, approximate RAM, network type, and theme mode.
 - **Privacy‑safe fallbacks** – if a browser blocks any API (e.g., `deviceMemory`, `connection`), the terminal shows `"Unknown"` or `"Protected"` – **no crashes**.
-- **Toggle with button or keyboard** – press `q` (or click the `🖥️ System Info` button) to open/close the terminal. `Escape` closes it.
+- **Toggle with button or keyboard** – press ` ` (or click the `🖥️ System Info` button) to open/close the terminal. `Escape` closes it.
 - **Glass‑morphic design** – semi‑transparent background with backdrop‑blur, matching the dashboard’s cyber aesthetic.
 - **Responsive** – on mobile, the ASCII art shrinks and the panel uses horizontal scrolling (or wraps gracefully) to fit small screens.
 
@@ -88,8 +88,8 @@ hides/shows all five control buttons:
 
 
 #### Cycle Clock Styles
-- Use the `STYLE` button or press `Z` to cycle through **Classic → Glass → Digital → Cistercian**.
-- PRESS `B` to freeze or pause Background Image or on Android double TAP on your screen on an empty space on the webpage, AVOID any element on the webpage while doing it.
+- Use the `STYLE` button or press ` ` to cycle through **Classic → Glass → Digital → Cistercian**.
+- PRESS ` ` to freeze or pause Background Image or on Android double TAP on your screen on an empty space on the webpage, AVOID any element on the webpage while doing it.
 
 ### 🧮 Cistercian Numerals – Technical Details
 
@@ -143,7 +143,7 @@ I set the following CSS custom properties to achieve the **rainbow line effect**
 ## ⌨️ CLI Reference
   "You know how some people have a clock screensaver? I made something way cooler. It's a web page I keep open that not only tells time but also lets me type commands. I can type 'weather Tokyo' and it shows me the forecast. I can type 'tv nasa' and it plays a live stream from the space station. It also shows inspirational quotes, plays music, and even has a secret 'Intersect' flash. It's like my own little command center." **-Jin Kaneki**
 ### 💻 J_OS // AKASHIC ZERO-POINT KRYPTOS NEURAL CENTER (AZKNC)
-The built‑in command runner—a full‑featured terminal emulator with over 40 commands, fullscreen support, and a cyber‑mystical aesthetic.
+The built‑in command runner—a full‑featured terminal emulator with over 50 commands, fullscreen support, and a cyber‑mystical aesthetic.
 
 ### Command Categories
 
@@ -152,6 +152,9 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 
 **🎨 Theme & UI**  
 `theme` `pause` `fetchpanel` `fastfetch` `fetch` `neofetch` `zoom` `mode`
+
+**📡 NETWORK & COMMUNICATION**
+`chat` `status` `disconect` `mesh` `aprsmap` `meshmap`
 
 **📰 News & Information**  
 `news` `hackernews` `technology` `crypto`
@@ -238,6 +241,14 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 | `flipper [subghz\|nfc\|badusb\|off]` | Flipper Zero emulator |
 | `raspberry`           | Virtual Raspberry Pi system dashboard (temps, uptime, GPIO) |
 | `gpio [status\|on\|off] [pin]` | Raspberry Pi GPIO pin simulator |
+| `chat mqtt`           | Global public frequency chat (IoT / radio vibe) |
+| `chat p2p`         n  | Encrypted peer‑to‑peer direct tunnel |
+| `chat firebase`       | Persistent chat archive with message history |
+| `status`              | Show live connection status for all chat protocols |
+| `disconnect`          | Gracefully shut down all network connections |
+| `mesh`                | Animated LoRa mesh topology simulator (canvas) |
+| `aprsmap [fi\|direct]` | Live APRS amateur radio map (choose source) |
+| `meshmap`             | Live Meshtastic node map (MQTT network) |
 | `nuke`                | Factory reset – clears localStorage, stops animations, resets terminal |
 | `tao`                 | Random Tao Te Ching chapter |
 | `wisdom`              | Inspirational quote |
@@ -378,10 +389,11 @@ The **J_OS // AKASHIC ZERO-POINT KRYPTOS NEURAL CENTER** console now supports:
 - 🧠 **System introspection** (`fastfetch`, `system`, `whoami`, `about`, `ping`, `date`, `spinner`, `stopspinner`, `timer`, `history`, `motd`, `login`, `nuke`)
 - 🔐 **Akashic Cipher Suite** (`encode`/`decode`, `shift`, `kryptos`, `vigenere`, `mirror`, `vault`, `handshake`)
 - 🕵️ **Cyber Ops** (`steg`, `tag`, `kali`)
+- 📡 **Network & Communication** (`chat mqtt`, `chat p2p`, `chat firebase`, `status`, `disconnect`, `mesh`, `aprsmap`, `meshmap`)
 - 🎭 **Fun & Entertainment** (`joke`, `riddle`, `poem`, `poetry`, `anime`, `qr`, `cowsay`, `ascii`, `hack`, `react`, `htop`, `fortune`, `rotate`)
 - ⚙️ **Utilities** (`theme`, `clear`, `sudo`, `fetch`, `neofetch`, `history`, `pause`, `shutdown`, `echo`, `ls`, `whoami`)
 
-It is functionally complete, aesthetically cohesive, and ready for daily use as an ambient always‑on companion for your workspace or as a fast information retrieval tool.
+It is functionally complete, aesthetically cohesive, and ready for daily use as an ambient always‑on companion for your workspace or as a fast information retrieval and communication tool.
 
 ## version 1.0 Change Log(Base)
 ## 📜 Version 2.1 Change Log(Aesthetics) (March 2026)
@@ -404,7 +416,7 @@ The "Elite Update" focuses on UI symmetry, stealth interactions, and advanced st
 | Date | Change |
 |------|--------|
 | 2026‑04‑11 | Added Cyber‑Fetch terminal with JOHAN_OS ASCII + maple leaf |
-| 2026‑04‑11 | Added `q` keyboard shortcuts to toggle System Info panel |
+| 2026‑04‑11 | Added ` ` keyboard shortcuts to toggle System Info panel |
 | 2026‑04‑11 | Made terminal bulletproof with try/catch and fallbacks |
 | 2026‑04‑11 | Fixed mobile overflow – horizontal scrolling or size reduction |
 | 2026‑04‑10 | Added Hide Controls button (top‑left) |
