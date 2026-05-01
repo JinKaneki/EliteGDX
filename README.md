@@ -1,6 +1,6 @@
 # Elite Gems Dashboard: Persistent Ambient Dashboard Fancy Analog/Digital/Cistercian Clock AOD 🕰️
 
-**An "Always-On" productivity and Comtemplative clock and personal gallery engineered for professional workspaces.**
+**An "Always-On" productivity clock and personal gallery engineered for professional workspaces.**
 **An ambient, cyber‑punk inspired dashboard with multiple clock faces, a rotating image gallery, and a powerful built‑in terminal command runner(CLI).**
 
 Live at : [https://jinkaneki.github.io/EliteGDX/]
@@ -154,7 +154,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 `theme` `pause` `fetchpanel` `fastfetch` `fetch` `neofetch` `zoom` `mode`
 
 **📡 NETWORK & COMMUNICATION**
-`chat` `status` `disconect` `mesh` `aprsmap`
+`chat` `status` `disconect` `mesh` `aprsmap` `meshmap`
 
 **📰 News & Information**  
 `news` `hackernews` `technology` `crypto`
@@ -248,6 +248,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 | `disconnect`          | Gracefully shut down all network connections |
 | `mesh`                | Animated LoRa mesh topology simulator (canvas) |
 | `aprsmap [fi\|direct]` | Live APRS amateur radio map (choose source) |
+| `meshmap`             | Live Meshtastic node map (MQTT network) |
 | `nuke`                | Factory reset – clears localStorage, stops animations, resets terminal |
 | `tao`                 | Random Tao Te Ching chapter |
 | `wisdom`              | Inspirational quote |

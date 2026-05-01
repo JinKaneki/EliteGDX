@@ -4690,25 +4690,28 @@
                 if (sub === 'p2p') {
                     const old = document.getElementById('p2p-chat-box');
                     if (old) old.remove();
+                    if (window._p2pCleanup) window._p2pCleanup();
+                    // Destroy old peer and connection
                     if (window._peer) { window._peer.destroy(); window._peer = null; }
                     if (window._p2pConn) { window._p2pConn.close(); window._p2pConn = null; }
+                    if (window._p2pPingInterval) { clearInterval(window._p2pPingInterval); window._p2pPingInterval = null; }
 
                     const output = document.getElementById('cmd-output');
                     const container = document.createElement('div');
                     container.id = 'p2p-chat-box';
                     container.style.cssText = 'border: 2px double #ff00ff; padding: 10px; margin-top: 10px; box-shadow: 0 0 15px rgba(255,0,255,0.2);';
 
-                    // Simple status line
+                    // ── Status indicator ──
                     const statusDiv = document.createElement('div');
-                    statusDiv.style.cssText = 'color: #ff00ff; font-size: 12px; margin-bottom: 5px;';
-                    const setStatus = (text, color = '#ff00ff') => {
-                        statusDiv.textContent = text;
+                    statusDiv.style.cssText = 'color: #ff0; font-size: 12px; margin-bottom: 5px;';
+                    const setStatus = (text, color = '#ff0') => {
+                        statusDiv.innerHTML = `🔗 ${text}`;
                         statusDiv.style.color = color;
                     };
                     setStatus('Initialising…', '#888');
                     container.appendChild(statusDiv);
 
-                    // Connect row
+                    // ── Connect row ──
                     const connectRow = document.createElement('div');
                     connectRow.style.cssText = 'display: flex; gap: 5px; margin-bottom: 10px;';
                     const connectInput = document.createElement('input');
@@ -4717,17 +4720,21 @@
                     const connectBtn = document.createElement('button');
                     connectBtn.textContent = 'Tunnel';
                     connectBtn.style.cssText = 'background:#ff00ff; color:#000; border:none; padding:5px 10px; cursor:pointer; font-weight:bold;';
+                    const reconnectBtn = document.createElement('button');
+                    reconnectBtn.textContent = '↻ Reconnect';
+                    reconnectBtn.style.cssText = 'background:#444; color:#ff00ff; border:1px solid #ff00ff; padding:5px 10px; cursor:pointer; font-weight:bold; display:none;';
                     connectRow.appendChild(connectInput);
                     connectRow.appendChild(connectBtn);
+                    connectRow.appendChild(reconnectBtn);
                     container.appendChild(connectRow);
 
-                    // Message log
+                    // ── Message log ──
                     const logDiv = document.createElement('div');
                     logDiv.id = 'p2p-log';
                     logDiv.style.cssText = 'height:150px; overflow-y:auto; font-family:monospace; font-size:12px; background:#111; color:#ff00ff; padding:5px; margin-bottom:8px;';
                     container.appendChild(logDiv);
 
-                    // Message input
+                    // ── Message input ──
                     const msgRow = document.createElement('div'); msgRow.style.cssText = 'display:flex;';
                     const msgInput = document.createElement('input');
                     msgInput.type = 'text'; msgInput.placeholder = 'Message…';
@@ -4739,45 +4746,78 @@
                     container.appendChild(msgRow);
                     output.appendChild(container);
 
+                    // Node identity
                     const nodeId = 'P2P-' + Math.random().toString(16).slice(2, 5).toUpperCase();
-                    let conn = null;
 
-                    // Create peer (no keepalive, no reconnect button)
-                    const peer = new Peer(undefined, { debug: 0 });
-                    window._peer = peer;
+                    // ── Peer + connection management ──
+                    let conn = null, keepaliveInterval = null;
+                    let lastPong = Date.now();
+                    let activeConnection = false;
 
-                    peer.on('open', (id) => {
-                        setStatus(`Your Peer ID: ${id} (${nodeId})`, '#fff');
-                    });
+                    const stopKeepalive = () => {
+                        if (keepaliveInterval) { clearInterval(keepaliveInterval); keepaliveInterval = null; }
+                    };
 
-                    peer.on('connection', (incomingConn) => {
-                        conn = incomingConn;
-                        setupConn(conn);
-                        logDiv.innerHTML += '<div style="color:#888;">🔗 Encrypted tunnel established.</div>';
-                        setStatus('Connected', '#0f0');
-                    });
+                    const createPeer = () => {
+                        const peer = new Peer(undefined, { debug: 0 });
+                        window._peer = peer;
 
-                    peer.on('error', (err) => {
-                        logDiv.innerHTML += `<div style="color:#f00;">⚠️ Peer error: ${err.type || 'unknown'}</div>`;
-                        setStatus('Error', '#f00');
-                    });
+                        peer.on('open', (id) => {
+                            statusDiv.innerHTML = `Your Peer ID: <b style="color:#fff;">${id}</b> (${nodeId})<br><span style="color:#888;">Share this ID with your partner.</span>`;
+                        });
 
-                    peer.on('disconnected', () => {
-                        setStatus('Disconnected', '#f00');
-                        if (conn) { conn.close(); conn = null; }
-                    });
+                        peer.on('connection', (incomingConn) => {
+                            conn = incomingConn;
+                            setupConn(conn);
+                            logDiv.innerHTML += '<div style="color:#888;">🔗 Encrypted tunnel established.</div>';
+                            setStatus('Connected', '#0f0');
+                            activeConnection = true;
+                            reconnectBtn.style.display = 'none';
+                        });
 
-                    peer.on('close', () => {
-                        setStatus('Closed', '#888');
-                        if (conn) { conn.close(); conn = null; }
-                    });
+                        peer.on('error', (err) => {
+                            logDiv.innerHTML += `<div style="color:#f00;">⚠️ Peer error: ${err.type || 'unknown'}</div>`;
+                            setStatus('Error', '#f00');
+                        });
 
+                        peer.on('disconnected', () => {
+                            setStatus('Disconnected from server', '#f00');
+                            reconnectBtn.style.display = 'inline-block';
+                            stopKeepalive();
+                            activeConnection = false;
+                        });
+
+                        peer.on('close', () => {
+                            setStatus('Closed', '#888');
+                            stopKeepalive();
+                            activeConnection = false;
+                        });
+
+                        return peer;
+                    };
+
+                    let peer = createPeer();
+
+                    // Connect button
                     connectBtn.addEventListener('click', () => {
                         const remoteId = connectInput.value.trim();
                         if (!remoteId) return;
                         conn = peer.connect(remoteId, { reliable: true });
                         setupConn(conn);
                         logDiv.innerHTML += '<div style="color:#888;">📡 Dialling peer…</div>';
+                        setStatus('Dialling…', '#ff0');
+                    });
+
+                    // Reconnect – destroy old and create fresh (reconnect() is buggy)
+                    reconnectBtn.addEventListener('click', () => {
+                        logDiv.innerHTML += '<div style="color:#ff0;">🔄 Creating new peer identity…</div>';
+                        stopKeepalive();
+                        if (conn) { conn.close(); conn = null; }
+                        if (peer) { peer.destroy(); peer = null; }
+                        peer = createPeer();
+                        setStatus('Fresh identity ready. Re‑enter the Peer ID.', '#ff0');
+                        connectInput.value = '';
+                        connectInput.focus();
                     });
 
                     const setupConn = (connection) => {
@@ -4785,36 +4825,73 @@
                         connection.on('open', () => {
                             logDiv.innerHTML += '<div style="color:#888;">✅ Direct link active.</div>';
                             setStatus('Connected', '#0f0');
+                            activeConnection = true;
+                            reconnectBtn.style.display = 'none';
+                            // Start keepalive pings
+                            stopKeepalive();
+                            lastPong = Date.now();
+                            window._lastPong = Date.now();
+                            keepaliveInterval = setInterval(() => {
+                                if (!activeConnection) { stopKeepalive(); return; }
+                                try { connection.send({ __bc: 'ping' }); } catch(e) {}
+                                // Check if pong came back within 15 seconds
+                                if (Date.now() - lastPong > 15000) {
+                                    logDiv.innerHTML += '<div style="color:#f00;">⚠️ Connection stale – no response for 15s.</div>';
+                                    setStatus('Stale – tap Reconnect', '#f00');
+                                    stopKeepalive();
+                                    activeConnection = false;
+                                    reconnectBtn.style.display = 'inline-block';
+                                }
+                            }, 10000);
                         });
+
                         connection.on('data', (data) => {
+                            // Filter internal keepalive messages
+                            if (data && data.__bc === 'ping') {
+                                try { connection.send({ __bc: 'pong' }); } catch(e) {}
+                                return;
+                            }
+                            if (data && data.__bc === 'pong') {
+                                lastPong = Date.now();
+                                return;
+                            }
                             logDiv.innerHTML += `<div>${data}</div>`;
                             logDiv.scrollTop = logDiv.scrollHeight;
                         });
+
                         connection.on('close', () => {
                             logDiv.innerHTML += '<div style="color:#f00;">🔌 Tunnel closed.</div>';
                             setStatus('Disconnected', '#f00');
+                            stopKeepalive();
+                            activeConnection = false;
+                            reconnectBtn.style.display = 'inline-block';
                         });
+
                         connection.on('error', (err) => {
                             logDiv.innerHTML += `<div style="color:#f00;">⚠️ Connection error: ${err.type || 'unknown'}</div>`;
                             setStatus('Error', '#f00');
+                            stopKeepalive();
+                            activeConnection = false;
+                            reconnectBtn.style.display = 'inline-block';
                         });
                     };
 
+                    // Send message
                     const sendP2PMessage = () => {
-                        if (!conn || !conn.open) {
-                            logDiv.innerHTML += '<div style="color:#f00;">⚠️ No active tunnel – connect first.</div>';
+                        if (!window._p2pConn || !activeConnection) {
+                            setStatus('No active tunnel – reconnect first', '#f00');
                             return;
                         }
                         const text = msgInput.value.trim();
                         if (!text) return;
                         const msg = `[${new Date().toLocaleTimeString()}] ${nodeId}: ${text}`;
                         try {
-                            conn.send(msg);
+                            window._p2pConn.send(msg);
                         } catch(e) {
-                            logDiv.innerHTML += '<div style="color:#f00;">⚠️ Send failed.</div>';
+                            logDiv.innerHTML += '<div style="color:#f00;">⚠️ Send failed – connection may be dead.</div>';
+                            setStatus('Send failed', '#f00');
                             return;
                         }
-                        // Show your own message immediately
                         logDiv.innerHTML += `<div style="color:#ccc;">You: ${text}</div>`;
                         logDiv.scrollTop = logDiv.scrollHeight;
                         msgInput.value = '';
@@ -4823,6 +4900,13 @@
 
                     sendBtn.addEventListener('click', sendP2PMessage);
                     msgInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendP2PMessage(); });
+
+                    // Store cleanup reference
+                    window._p2pCleanup = () => {
+                        stopKeepalive();
+                        if (conn) { conn.close(); conn = null; }
+                        if (peer) { peer.destroy(); peer = null; }
+                    };
 
                     setTimeout(() => msgInput.focus(), 50);
                     return '';
