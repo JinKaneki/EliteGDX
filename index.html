@@ -4690,11 +4690,9 @@
                 if (sub === 'p2p') {
                     const old = document.getElementById('p2p-chat-box');
                     if (old) old.remove();
-                    if (window._p2pCleanup) window._p2pCleanup();
-                    // Destroy old peer and connection
+                    // Destroy any previous peer/connection
                     if (window._peer) { window._peer.destroy(); window._peer = null; }
                     if (window._p2pConn) { window._p2pConn.close(); window._p2pConn = null; }
-                    if (window._p2pPingInterval) { clearInterval(window._p2pPingInterval); window._p2pPingInterval = null; }
 
                     const output = document.getElementById('cmd-output');
                     const container = document.createElement('div');
@@ -4746,17 +4744,10 @@
                     container.appendChild(msgRow);
                     output.appendChild(container);
 
-                    // Node identity
                     const nodeId = 'P2P-' + Math.random().toString(16).slice(2, 5).toUpperCase();
 
-                    // ── Peer + connection management ──
-                    let conn = null, keepaliveInterval = null;
-                    let lastPong = Date.now();
-                    let activeConnection = false;
-
-                    const stopKeepalive = () => {
-                        if (keepaliveInterval) { clearInterval(keepaliveInterval); keepaliveInterval = null; }
-                    };
+                    // ── Peer + connection management (no keepalive) ──
+                    let conn = null;
 
                     const createPeer = () => {
                         const peer = new Peer(undefined, { debug: 0 });
@@ -4764,6 +4755,7 @@
 
                         peer.on('open', (id) => {
                             statusDiv.innerHTML = `Your Peer ID: <b style="color:#fff;">${id}</b> (${nodeId})<br><span style="color:#888;">Share this ID with your partner.</span>`;
+                            setStatus('Ready', '#ff0');
                         });
 
                         peer.on('connection', (incomingConn) => {
@@ -4771,7 +4763,6 @@
                             setupConn(conn);
                             logDiv.innerHTML += '<div style="color:#888;">🔗 Encrypted tunnel established.</div>';
                             setStatus('Connected', '#0f0');
-                            activeConnection = true;
                             reconnectBtn.style.display = 'none';
                         });
 
@@ -4781,16 +4772,12 @@
                         });
 
                         peer.on('disconnected', () => {
-                            setStatus('Disconnected from server', '#f00');
+                            setStatus('Disconnected', '#f00');
                             reconnectBtn.style.display = 'inline-block';
-                            stopKeepalive();
-                            activeConnection = false;
                         });
 
                         peer.on('close', () => {
                             setStatus('Closed', '#888');
-                            stopKeepalive();
-                            activeConnection = false;
                         });
 
                         return peer;
@@ -4798,7 +4785,6 @@
 
                     let peer = createPeer();
 
-                    // Connect button
                     connectBtn.addEventListener('click', () => {
                         const remoteId = connectInput.value.trim();
                         if (!remoteId) return;
@@ -4808,13 +4794,12 @@
                         setStatus('Dialling…', '#ff0');
                     });
 
-                    // Reconnect – destroy old and create fresh (reconnect() is buggy)
                     reconnectBtn.addEventListener('click', () => {
                         logDiv.innerHTML += '<div style="color:#ff0;">🔄 Creating new peer identity…</div>';
-                        stopKeepalive();
                         if (conn) { conn.close(); conn = null; }
                         if (peer) { peer.destroy(); peer = null; }
                         peer = createPeer();
+                        reconnectBtn.style.display = 'none';
                         setStatus('Fresh identity ready. Re‑enter the Peer ID.', '#ff0');
                         connectInput.value = '';
                         connectInput.focus();
@@ -4825,36 +4810,11 @@
                         connection.on('open', () => {
                             logDiv.innerHTML += '<div style="color:#888;">✅ Direct link active.</div>';
                             setStatus('Connected', '#0f0');
-                            activeConnection = true;
                             reconnectBtn.style.display = 'none';
-                            // Start keepalive pings
-                            stopKeepalive();
-                            lastPong = Date.now();
-                            window._lastPong = Date.now();
-                            keepaliveInterval = setInterval(() => {
-                                if (!activeConnection) { stopKeepalive(); return; }
-                                try { connection.send({ __bc: 'ping' }); } catch(e) {}
-                                // Check if pong came back within 15 seconds
-                                if (Date.now() - lastPong > 15000) {
-                                    logDiv.innerHTML += '<div style="color:#f00;">⚠️ Connection stale – no response for 15s.</div>';
-                                    setStatus('Stale – tap Reconnect', '#f00');
-                                    stopKeepalive();
-                                    activeConnection = false;
-                                    reconnectBtn.style.display = 'inline-block';
-                                }
-                            }, 10000);
                         });
 
                         connection.on('data', (data) => {
-                            // Filter internal keepalive messages
-                            if (data && data.__bc === 'ping') {
-                                try { connection.send({ __bc: 'pong' }); } catch(e) {}
-                                return;
-                            }
-                            if (data && data.__bc === 'pong') {
-                                lastPong = Date.now();
-                                return;
-                            }
+                            // No keepalive – just display the message
                             logDiv.innerHTML += `<div>${data}</div>`;
                             logDiv.scrollTop = logDiv.scrollHeight;
                         });
@@ -4862,33 +4822,27 @@
                         connection.on('close', () => {
                             logDiv.innerHTML += '<div style="color:#f00;">🔌 Tunnel closed.</div>';
                             setStatus('Disconnected', '#f00');
-                            stopKeepalive();
-                            activeConnection = false;
                             reconnectBtn.style.display = 'inline-block';
                         });
 
                         connection.on('error', (err) => {
                             logDiv.innerHTML += `<div style="color:#f00;">⚠️ Connection error: ${err.type || 'unknown'}</div>`;
                             setStatus('Error', '#f00');
-                            stopKeepalive();
-                            activeConnection = false;
-                            reconnectBtn.style.display = 'inline-block';
                         });
                     };
 
-                    // Send message
                     const sendP2PMessage = () => {
-                        if (!window._p2pConn || !activeConnection) {
-                            setStatus('No active tunnel – reconnect first', '#f00');
+                        if (!conn || !conn.open) {
+                            setStatus('No active tunnel – connect first', '#f00');
                             return;
                         }
                         const text = msgInput.value.trim();
                         if (!text) return;
                         const msg = `[${new Date().toLocaleTimeString()}] ${nodeId}: ${text}`;
                         try {
-                            window._p2pConn.send(msg);
+                            conn.send(msg);
                         } catch(e) {
-                            logDiv.innerHTML += '<div style="color:#f00;">⚠️ Send failed – connection may be dead.</div>';
+                            logDiv.innerHTML += '<div style="color:#f00;">⚠️ Send failed.</div>';
                             setStatus('Send failed', '#f00');
                             return;
                         }
@@ -4900,13 +4854,6 @@
 
                     sendBtn.addEventListener('click', sendP2PMessage);
                     msgInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendP2PMessage(); });
-
-                    // Store cleanup reference
-                    window._p2pCleanup = () => {
-                        stopKeepalive();
-                        if (conn) { conn.close(); conn = null; }
-                        if (peer) { peer.destroy(); peer = null; }
-                    };
 
                     setTimeout(() => msgInput.focus(), 50);
                     return '';
