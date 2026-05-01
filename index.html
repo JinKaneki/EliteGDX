@@ -4690,7 +4690,6 @@
                 if (sub === 'p2p') {
                     const old = document.getElementById('p2p-chat-box');
                     if (old) old.remove();
-                    // Destroy any previous peer/connection
                     if (window._peer) { window._peer.destroy(); window._peer = null; }
                     if (window._p2pConn) { window._p2pConn.close(); window._p2pConn = null; }
 
@@ -4699,17 +4698,17 @@
                     container.id = 'p2p-chat-box';
                     container.style.cssText = 'border: 2px double #ff00ff; padding: 10px; margin-top: 10px; box-shadow: 0 0 15px rgba(255,0,255,0.2);';
 
-                    // ── Status indicator ──
+                    // Simple status line
                     const statusDiv = document.createElement('div');
-                    statusDiv.style.cssText = 'color: #ff0; font-size: 12px; margin-bottom: 5px;';
-                    const setStatus = (text, color = '#ff0') => {
-                        statusDiv.innerHTML = `🔗 ${text}`;
+                    statusDiv.style.cssText = 'color: #ff00ff; font-size: 12px; margin-bottom: 5px;';
+                    const setStatus = (text, color = '#ff00ff') => {
+                        statusDiv.textContent = text;
                         statusDiv.style.color = color;
                     };
                     setStatus('Initialising…', '#888');
                     container.appendChild(statusDiv);
 
-                    // ── Connect row ──
+                    // Connect row
                     const connectRow = document.createElement('div');
                     connectRow.style.cssText = 'display: flex; gap: 5px; margin-bottom: 10px;';
                     const connectInput = document.createElement('input');
@@ -4718,21 +4717,17 @@
                     const connectBtn = document.createElement('button');
                     connectBtn.textContent = 'Tunnel';
                     connectBtn.style.cssText = 'background:#ff00ff; color:#000; border:none; padding:5px 10px; cursor:pointer; font-weight:bold;';
-                    const reconnectBtn = document.createElement('button');
-                    reconnectBtn.textContent = '↻ Reconnect';
-                    reconnectBtn.style.cssText = 'background:#444; color:#ff00ff; border:1px solid #ff00ff; padding:5px 10px; cursor:pointer; font-weight:bold; display:none;';
                     connectRow.appendChild(connectInput);
                     connectRow.appendChild(connectBtn);
-                    connectRow.appendChild(reconnectBtn);
                     container.appendChild(connectRow);
 
-                    // ── Message log ──
+                    // Message log
                     const logDiv = document.createElement('div');
                     logDiv.id = 'p2p-log';
                     logDiv.style.cssText = 'height:150px; overflow-y:auto; font-family:monospace; font-size:12px; background:#111; color:#ff00ff; padding:5px; margin-bottom:8px;';
                     container.appendChild(logDiv);
 
-                    // ── Message input ──
+                    // Message input
                     const msgRow = document.createElement('div'); msgRow.style.cssText = 'display:flex;';
                     const msgInput = document.createElement('input');
                     msgInput.type = 'text'; msgInput.placeholder = 'Message…';
@@ -4745,45 +4740,37 @@
                     output.appendChild(container);
 
                     const nodeId = 'P2P-' + Math.random().toString(16).slice(2, 5).toUpperCase();
-
-                    // ── Peer + connection management (no keepalive) ──
                     let conn = null;
 
-                    const createPeer = () => {
-                        const peer = new Peer(undefined, { debug: 0 });
-                        window._peer = peer;
+                    // Create peer (no keepalive, no reconnect button)
+                    const peer = new Peer(undefined, { debug: 0 });
+                    window._peer = peer;
 
-                        peer.on('open', (id) => {
-                            statusDiv.innerHTML = `Your Peer ID: <b style="color:#fff;">${id}</b> (${nodeId})<br><span style="color:#888;">Share this ID with your partner.</span>`;
-                            setStatus('Ready', '#ff0');
-                        });
+                    peer.on('open', (id) => {
+                        setStatus(`Your Peer ID: ${id} (${nodeId})`, '#fff');
+                    });
 
-                        peer.on('connection', (incomingConn) => {
-                            conn = incomingConn;
-                            setupConn(conn);
-                            logDiv.innerHTML += '<div style="color:#888;">🔗 Encrypted tunnel established.</div>';
-                            setStatus('Connected', '#0f0');
-                            reconnectBtn.style.display = 'none';
-                        });
+                    peer.on('connection', (incomingConn) => {
+                        conn = incomingConn;
+                        setupConn(conn);
+                        logDiv.innerHTML += '<div style="color:#888;">🔗 Encrypted tunnel established.</div>';
+                        setStatus('Connected', '#0f0');
+                    });
 
-                        peer.on('error', (err) => {
-                            logDiv.innerHTML += `<div style="color:#f00;">⚠️ Peer error: ${err.type || 'unknown'}</div>`;
-                            setStatus('Error', '#f00');
-                        });
+                    peer.on('error', (err) => {
+                        logDiv.innerHTML += `<div style="color:#f00;">⚠️ Peer error: ${err.type || 'unknown'}</div>`;
+                        setStatus('Error', '#f00');
+                    });
 
-                        peer.on('disconnected', () => {
-                            setStatus('Disconnected', '#f00');
-                            reconnectBtn.style.display = 'inline-block';
-                        });
+                    peer.on('disconnected', () => {
+                        setStatus('Disconnected', '#f00');
+                        if (conn) { conn.close(); conn = null; }
+                    });
 
-                        peer.on('close', () => {
-                            setStatus('Closed', '#888');
-                        });
-
-                        return peer;
-                    };
-
-                    let peer = createPeer();
+                    peer.on('close', () => {
+                        setStatus('Closed', '#888');
+                        if (conn) { conn.close(); conn = null; }
+                    });
 
                     connectBtn.addEventListener('click', () => {
                         const remoteId = connectInput.value.trim();
@@ -4791,18 +4778,6 @@
                         conn = peer.connect(remoteId, { reliable: true });
                         setupConn(conn);
                         logDiv.innerHTML += '<div style="color:#888;">📡 Dialling peer…</div>';
-                        setStatus('Dialling…', '#ff0');
-                    });
-
-                    reconnectBtn.addEventListener('click', () => {
-                        logDiv.innerHTML += '<div style="color:#ff0;">🔄 Creating new peer identity…</div>';
-                        if (conn) { conn.close(); conn = null; }
-                        if (peer) { peer.destroy(); peer = null; }
-                        peer = createPeer();
-                        reconnectBtn.style.display = 'none';
-                        setStatus('Fresh identity ready. Re‑enter the Peer ID.', '#ff0');
-                        connectInput.value = '';
-                        connectInput.focus();
                     });
 
                     const setupConn = (connection) => {
@@ -4810,21 +4785,15 @@
                         connection.on('open', () => {
                             logDiv.innerHTML += '<div style="color:#888;">✅ Direct link active.</div>';
                             setStatus('Connected', '#0f0');
-                            reconnectBtn.style.display = 'none';
                         });
-
                         connection.on('data', (data) => {
-                            // No keepalive – just display the message
                             logDiv.innerHTML += `<div>${data}</div>`;
                             logDiv.scrollTop = logDiv.scrollHeight;
                         });
-
                         connection.on('close', () => {
                             logDiv.innerHTML += '<div style="color:#f00;">🔌 Tunnel closed.</div>';
                             setStatus('Disconnected', '#f00');
-                            reconnectBtn.style.display = 'inline-block';
                         });
-
                         connection.on('error', (err) => {
                             logDiv.innerHTML += `<div style="color:#f00;">⚠️ Connection error: ${err.type || 'unknown'}</div>`;
                             setStatus('Error', '#f00');
@@ -4833,7 +4802,7 @@
 
                     const sendP2PMessage = () => {
                         if (!conn || !conn.open) {
-                            setStatus('No active tunnel – connect first', '#f00');
+                            logDiv.innerHTML += '<div style="color:#f00;">⚠️ No active tunnel – connect first.</div>';
                             return;
                         }
                         const text = msgInput.value.trim();
@@ -4843,9 +4812,9 @@
                             conn.send(msg);
                         } catch(e) {
                             logDiv.innerHTML += '<div style="color:#f00;">⚠️ Send failed.</div>';
-                            setStatus('Send failed', '#f00');
                             return;
                         }
+                        // Show your own message immediately
                         logDiv.innerHTML += `<div style="color:#ccc;">You: ${text}</div>`;
                         logDiv.scrollTop = logDiv.scrollHeight;
                         msgInput.value = '';
