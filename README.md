@@ -169,7 +169,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 `tao` `wisdom` `sutra` `buddha` `koan` `stoic` `bible` `verse`
 
 **🎭 Fun & Entertainment**  
-`joke` `riddle` `game` `poem` `ascii` `poetry` `anime` `qr` `radio` `tv` `play youtube` `play audio` `stop` `cowsay [text]` `hack` `htop` `react` `rotate`
+`joke` `riddle` `game` `poem` `ascii` `poetry` `anime` `qr` `radio` `tv` `play youtube` `play audio` `stop` `cowsay [text]` `hack` `htop` `react` `rotate`  `siren` `piano` `run` `homing`
 
 **🖼️ Visuals & Effects**  
 `image` `walls` `glitch` `scroll` `intersect` `intersectslow`
@@ -267,10 +267,16 @@ The built‑in command runner—a full‑featured terminal emulator with over 40
 | `glitch`              | Activate glitch effect for 10 seconds |
 | `scroll`              | Bouncy terminal scroll animation |
 | `intersect`           | Neural‑link flash sequence (45 sec) |
-| `intersectslow`       | Deep slower neural integration (60 sec) |
+| `homing`              | Start a continuous homing tone (bypasses volume slider) |
+| `intersectslow`       | Deep neural integration (60 sec) |
+| `siren`              | Play the 1‑minute civil defense siren (local MP3) |
 | `login`               | Display the J_OS Akashic Zero‑Point Kryptos Neural Center splash screen |
 | `game [snake\|dodge\|marble\|asteroids\|flappy]` | Play interactive canvas games (Snake, Gyro Dodge, Ball Maze, Asteroids, Cyber‑Bird) with D‑pad and gyro controls |
+| `run`                | Cyberpunk text RPG – reclaim the Akashic Mainframe |
+| `piano`              | Interactive on‑screen piano with sustain, chords, and keyboard |
 
+### 📖 Cyberpunk RPG (`run`)
+Type `run` to start a branching text adventure where you play as Neo‑J, a neural operative battling the rogue AI KRYPTOS. All game choices are entered directly in the terminal. Type `exit` to leave the RPG. Three different endings await.
 
 ### 🎧 Media Playback
 

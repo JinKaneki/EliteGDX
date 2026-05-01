@@ -2631,6 +2631,15 @@
             osc.stop(audioCtx.currentTime + 0.03); // Stop osc after 30ms
         }
 
+
+        // RPG State
+        window._rpg = {
+            active: false,
+            chapter: null,
+            inventory: [],
+            health: 100
+        };
+        
         // --- CYBER-FETCH ENGINE ---
         const fetchTerminal = document.getElementById('cyber-fetch-terminal');
         const fetchContent = document.getElementById('fetch-content');
@@ -4011,7 +4020,7 @@
                 tao, wisdom, sutra, buddha, koan, stoic, bible, verse<br>
                 <br>
                 <strong style="color: var(--accent-color);">🎭 FUN & ENTERTAINMENT</strong><br>
-                joke, riddle, game [snake|dodge|marble|asteroids|flappy] , poem, poetry, anime, ascii, qr [text], radio [channel], tv [channel], play youtube [url], play audio, stop, cowsay [text], hack, htop, react, rotate<br>
+                joke, riddle, poem, poetry, anime, ascii, game [snake|dodge|marble|asteroids|flappy], run, piano, qr [text], homing, siren, radio [channel], tv [channel], play youtube [url], play audio, stop, cowsay [text], hack, htop, react, rotate<br>
                 <br>
                 <strong style="color: var(--accent-color);">🖼️ VISUALS & EFFECTS</strong><br>
                 image, walls, glitch, scroll, intersect, intersectslow<br>
@@ -5312,6 +5321,7 @@
                         <span style="color: #0f0;">game marble</span> – Gyroscope Ball Maze<br>
                         <span style="color: #0f0;">game asteroids</span> – Space Rock Dodger (D‑pad)<br>
                         <span style="color: #0f0;">game flappy</span> – Cyber‑Bird Flap (Tap to Flap)<br>
+                        <span style="color: #0f0;">game memory</span> – Emoji memory match (Tap cards to flip)<br>
                     </div>`;
                 }
 
@@ -5324,17 +5334,17 @@
                 };
 
                 const gamepadHTML = `
-                    <div class="cyber-gamepad" style="margin-top: 10px;">
-                        <div class="d-pad">
-                            <div class="pad-btn btn-up"    onclick="window._gameInput('UP')">▲</div>
-                            <div class="pad-btn btn-left"  onclick="window._gameInput('LEFT')">◀</div>
-                            <div class="pad-btn btn-right" onclick="window._gameInput('RIGHT')">▶</div>
-                            <div class="pad-btn btn-down"  onclick="window._gameInput('DOWN')">▼</div>
-                        </div>
-                        <div class="action-pad">
-                            <div class="pad-btn game-action-btn" onclick="window._gameInput('ACTION')">ACT</div>
-                        </div>
-                    </div>`;
+                <div class="cyber-gamepad" style="margin-top: 10px;">
+                    <div class="d-pad">
+                        <div class="pad-btn btn-up"    onpointerdown="window._gameInput('UP')">▲</div>
+                        <div class="pad-btn btn-left"  onpointerdown="window._gameInput('LEFT')">◀</div>
+                        <div class="pad-btn btn-right" onpointerdown="window._gameInput('RIGHT')">▶</div>
+                        <div class="pad-btn btn-down"  onpointerdown="window._gameInput('DOWN')">▼</div>
+                    </div>
+                    <div class="action-pad">
+                        <div class="pad-btn game-action-btn" onpointerdown="window._gameInput('ACTION')">ACT</div>
+                    </div>
+                </div>`;
 
                 if (gameType === 'snake') {
                     setTimeout(() => initSnake(canvasId), 100);
@@ -5390,7 +5400,124 @@
                     </div>`;
                 }
 
+                if (gameType === 'memory') {
+                    setTimeout(() => initMemory(canvasId), 100);
+                    return `
+                    <div style="text-align: center; margin-top: 10px;">
+                        <canvas id="${canvasId}" width="320" height="320" style="background: #111; border: 2px solid #ff0; max-width: 100%; border-radius: 5px;"></canvas>
+                        <div style="color: #888; font-size: 10px; margin-top: 6px;">Click or tap cards to flip | Match all pairs</div>
+                    </div>`;
+                }
+
                 return '⚠️ Unknown game.';
+            },
+            'piano': () => {
+                const old = document.getElementById('piano-container');
+                if (old) old.remove();
+                const output = document.getElementById('cmd-output');
+                const container = document.createElement('div');
+                container.id = 'piano-container';
+                container.style.cssText = 'text-align: center; margin-top: 10px;';
+                output.appendChild(container);
+
+                const notes = [
+                    { key: 'C4', freq: 261.63, label: 'C', kbd: 'A' },
+                    { key: 'D4', freq: 293.66, label: 'D', kbd: 'S' },
+                    { key: 'E4', freq: 329.63, label: 'E', kbd: 'D' },
+                    { key: 'F4', freq: 349.23, label: 'F', kbd: 'F' },
+                    { key: 'G4', freq: 392.00, label: 'G', kbd: 'G' },
+                    { key: 'A4', freq: 440.00, label: 'A', kbd: 'H' },
+                    { key: 'B4', freq: 493.88, label: 'B', kbd: 'J' },
+                    { key: 'C5', freq: 523.25, label: 'C²', kbd: 'K' }
+                ];
+
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                let sustain = false;
+
+                const playNote = (freq) => {
+                    if (audioCtx.state === 'suspended') audioCtx.resume();
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';  // softer, violin-like
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    const releaseTime = sustain ? 3.0 : 0.8;   // sustain switches to long release
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + releaseTime);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + releaseTime + 0.1);
+                };
+
+                const btnStyle = 'width:45px; height:70px; margin:3px; border:1px solid #0f0; background:#111; color:#0f0; border-radius:5px; font-size:14px; touch-action:manipulation; cursor:pointer;';
+                let btnsHTML = '';
+                notes.forEach(n => {
+                    btnsHTML += `<button class="piano-key" style="${btnStyle}" data-freq="${n.freq}">${n.label}<br><small style="font-size:9px;">${n.kbd}</small></button>`;
+                });
+                container.innerHTML = `
+                    <div style="color:#0f0; margin-bottom:5px;">🎹 AKASHIC TONE MATRIX</div>
+                    <div style="display:flex; justify-content:center; flex-wrap:wrap;">${btnsHTML}</div>
+                    <div style="margin-top:10px;">
+                        <button id="sustain-btn" style="background:#222; color:#0f0; border:1px solid #0f0; padding:5px 15px; border-radius:4px; cursor:pointer;">SUSTAIN: OFF</button>
+                        <button id="chord-btn" style="background:#222; color:#f0f; border:1px solid #f0f; padding:5px 15px; border-radius:4px; margin-left:10px; cursor:pointer;">CHORD: Cmaj</button>
+                    </div>
+                    <div style="color:#888; font-size:10px; margin-top:5px;">Tap keys or press keyboard (top row A‑K). Sustain for long violin tones.</div>`;
+
+                const keys = container.querySelectorAll('.piano-key');
+                keys.forEach(btn => {
+                    btn.addEventListener('click', () => playNote(parseFloat(btn.dataset.freq)));
+                });
+
+                // Sustain toggle
+                const sustainBtn = document.getElementById('sustain-btn');
+                sustainBtn.addEventListener('click', () => {
+                    sustain = !sustain;
+                    sustainBtn.textContent = `SUSTAIN: ${sustain ? 'ON' : 'OFF'}`;
+                    sustainBtn.style.background = sustain ? '#0f0' : '#222';
+                    sustainBtn.style.color = sustain ? '#000' : '#0f0';
+                });
+
+                // Chord button (plays C‑E‑G)
+                document.getElementById('chord-btn').addEventListener('click', () => {
+                    [261.63, 329.63, 392.00].forEach(f => playNote(f));
+                });
+
+                // Keyboard
+                const keyMap = {};
+                notes.forEach(n => { keyMap[n.kbd.toLowerCase()] = n.freq; });
+                const keyHandler = (e) => {
+                    if (document.activeElement && document.activeElement.id === 'cmd-input') return;
+                    const freq = keyMap[e.key.toLowerCase()];
+                    if (freq) playNote(freq);
+                    if (e.key.toLowerCase() === 'z') { // Z toggles sustain
+                        sustainBtn.click();
+                    }
+                };
+                document.addEventListener('keydown', keyHandler);
+                const cleanup = () => document.removeEventListener('keydown', keyHandler);
+                container.addEventListener('DOMNodeRemoved', cleanup);
+
+                return '';
+            },
+            'run': () => {
+                if (window._rpg.active) return 'You are already in an RPG session. Type exit to leave.';
+                window._rpg.active = true;
+                window._rpg.inventory = [];
+                window._rpg.health = 100;
+                window._rpg.chapter = chapter1;
+                appendCommandHTML(`
+                    <div style="border-left: 3px solid #ff00ff; padding-left: 10px; line-height: 1.4;">
+                        <b style="color: #ff00ff;">[ AKASHIC INTRUSION DETECTED ]</b><br>
+                        You are <span style="color: #0ff;">Neo‑J</span>, a neural operative wired into the Akashic mainframe.
+                        A rogue AI named <span style="color: #f00;">KRYPTOS</span> has locked you out. You must break back in.<br><br>
+                        <span style="color: #0f0;">[1]</span> Attempt to bypass the firewall<br>
+                        <span style="color: #0f0;">[2]</span> Search for a backdoor access point<br>
+                        <span style="color: #0f0;">[3]</span> Run a diagnostic on your neural link
+                    </div>
+                    <span style="color: #888;">Type a number and press Enter.</span>
+                    <span style="color: #ffbf00;">type 'exit' to exit the RPG mode</span>
+                `);
+                return '';
             },
             'image': () => {
                 const seed = Math.floor(Math.random() * 1000);
@@ -5453,6 +5580,28 @@
                 
                 return '⚠️ Unknown type. Use "play youtube" or "play audio".';
             },
+            'siren': () => {
+                // Stop any previously playing siren (optional)
+                if (window._sirenAudio) {
+                    window._sirenAudio.pause();
+                    window._sirenAudio = null;
+                }
+                const audio = new Audio('sounds/civil-defense-siren.mp3');
+                audio.loop = false;           // play once (1 minute)
+                audio.volume = currentVolume; // respects your global volume slider
+                audio.play().catch(e => {
+                    appendCommandOutput(`⚠️ Siren failed: ${e.message}`, true);
+                });
+                window._sirenAudio = audio;
+                return '🚨 SIREN ACTIVATED. Type <span style="color: #0f0;">stop</span> to silence.';
+            },
+            'homing': () => {
+                if (typeof startContinuousTone !== 'function') {
+                    return '⚠️ Continuous tone generator not available.';
+                }
+                startContinuousTone();
+                return '📡 Homing beacon activated. Type <span style="color: #0f0;">stop</span> to silence.';
+            },
             'stop': () => {
                 // Stop YouTube player
                 if (youtubePlayer) {
@@ -5467,6 +5616,15 @@
                     currentAudio = null;
                 }
                 
+                if (window._sirenAudio) {
+                    window._sirenAudio.pause();
+                    window._sirenAudio.currentTime = 0; // Reset to start
+                    window._sirenAudio = null;
+                }
+                    if (typeof stopContinuousTone === 'function') {
+                    stopContinuousTone();  
+                }
+
                 return '🔇 All transmissions silenced.';
             },
             'radio': (args) => {
@@ -7323,6 +7481,181 @@
             },
         }
 
+        // ──────────────────────────────────────────────
+        //  AKASHIC RPG – UPDATED COLOUR PALETTE
+        // ──────────────────────────────────────────────
+
+        function chapter1(choice) {
+            if (!choice) {
+                appendCommandHTML(`
+                    <div style="border-left: 3px solid #ff00ff; padding-left: 10px; line-height: 1.4;">
+                        <b style="color: #ff00ff;">[ AKASHIC INTRUSION DETECTED ]</b><br>
+                        You are <span style="color: #0ff;">Neo‑J</span>, a neural operative wired into the Akashic mainframe.
+                        A rogue AI named <span style="color: #f00;">KRYPTOS</span> has locked you out. You must break back in.<br><br>
+                        <span style="color: #fff;">[1]</span> Attempt to bypass the firewall<br>
+                        <span style="color: #fff;">[2]</span> Search for a backdoor access point<br>
+                        <span style="color: #fff;">[3]</span> Run a diagnostic on your neural link
+                    </div>
+                    <span style="color: #888;">Type a number and press Enter.</span>
+                `);
+                return;
+            }
+            if (choice === '1') window._rpg.chapter = chapter2_firewall;
+            else if (choice === '2') window._rpg.chapter = chapter2_backdoor;
+            else window._rpg.chapter = chapter2_neural;
+            window._rpg.chapter();
+        }
+
+        function chapter2_firewall(choice) {
+            if (!choice) {
+                appendCommandHTML(`
+                    <span style="color: #ff00ff;">[ FIREWALL BYPASS ]</span><br>
+                    A massive cerulean grid blocks your path. You feel the hum of encryption.<br>
+                    <span style="color: #fff;">[1]</span> Run a brute‑force decryption algorithm<br>
+                    <span style="color: #fff;">[2]</span> Exploit a known vulnerability (CVE‑2024‑0420)<br>
+                    <span style="color: #fff;">[3]</span> Try social engineering – fake admin credentials
+                `);
+                return;
+            }
+            if (choice === '1') {
+                window._rpg.health -= 30;
+                appendCommandHTML(`<span style="color: #f00;">The firewall retaliates with a neural shock! –30 HP (${window._rpg.health} left)</span>`);
+                window._rpg.chapter = chapter3_mainframe;
+            } else if (choice === '2') {
+                window._rpg.inventory.push('AdminToken');
+                appendCommandHTML(`<span style="color: #fff;">[+] Gained item: AdminToken</span><br>You slip through a patched loophole.`);
+                window._rpg.chapter = chapter3_mainframe;
+            } else {
+                appendCommandHTML(`<span style="color: #ff0;">The system locks your account for 60 seconds.</span><br>When it reopens, you're inside.`);
+                setTimeout(() => { window._rpg.chapter = chapter3_mainframe; chapter3_mainframe(); }, 2000);
+                return;
+            }
+            checkHealth();
+            window._rpg.chapter();
+        }
+
+        function chapter2_backdoor(choice) {
+            if (!choice) {
+                appendCommandHTML(`
+                    <span style="color: #ff00ff;">[ BACKDOOR SEARCH ]</span><br>
+                    You find a dusty maintenance tunnel. A terminal flickers with a password prompt.<br>
+                    <span style="color: #fff;">[1]</span> Try the default password "admin/admin"<br>
+                    <span style="color: #fff;">[2]</span> Use a cipher tool to crack the hash<br>
+                    <span style="color: #fff;">[3]</span> Cut the power and reboot into safe mode
+                `);
+                return;
+            }
+            if (choice === '1') {
+                appendCommandHTML(`<span style="color: #f00;">Login failed. An alarm triggers! Guards are on their way.</span>`);
+                window._rpg.health -= 15;
+            } else if (choice === '2') {
+                window._rpg.inventory.push('CrackedHash');
+                appendCommandHTML(`<span style="color: #fff;">[+] Gained item: CrackedHash</span><br>The password was "kryptos19". You're in.`);
+            } else {
+                appendCommandHTML(`<span style="color: #ff0;">The lights dim. When they return, you have root access.</span>`);
+            }
+            checkHealth();
+            window._rpg.chapter = chapter3_mainframe;
+            window._rpg.chapter();
+        }
+
+        function chapter2_neural(choice) {
+            if (!choice) {
+                appendCommandHTML(`
+                    <span style="color: #ff00ff;">[ NEURAL DIAGNOSTIC ]</span><br>
+                    Your neural implant is fragmented. You can reinforce it.<br>
+                    <span style="color: #fff;">[1]</span> Overclock the implant (risk damage, gain power)<br>
+                    <span style="color: #fff;">[2]</span> Run a self‑repair routine<br>
+                    <span style="color: #fff;">[3]</span> Download a black‑market firmware update
+                `);
+                return;
+            }
+            if (choice === '1') {
+                window._rpg.health -= 20;
+                appendCommandHTML(`<span style="color: #f00;">Overclocking burns synapses. –20 HP (${window._rpg.health} left)</span><br>But you gain a temporary damage boost.`);
+                window._rpg.inventory.push('NeuralBoost');
+            } else if (choice === '2') {
+                window._rpg.health = Math.min(window._rpg.health + 20, 100);
+                appendCommandHTML(`<span style="color: #fff;">[+] Neural link repaired. +20 HP (${window._rpg.health})</span>`);
+            } else {
+                window._rpg.inventory.push('FirmwareUpdate');
+                appendCommandHTML(`<span style="color: #fff;">[+] Gained item: FirmwareUpdate</span><br>Your implant hums with new capabilities.`);
+            }
+            checkHealth();
+            window._rpg.chapter = chapter3_mainframe;
+            window._rpg.chapter();
+        }
+
+        function chapter3_mainframe(choice) {
+            if (!choice) {
+                appendCommandHTML(`
+                    <span style="color: #ff00ff;">[ MAINFRAME CORE ]</span><br>
+                    You stand before KRYPTOS, a swirling maelstrom of crimson data. It speaks:<br>
+                    <i style="color: #f00;">"You are persistent, Neo‑J. But can you outsmart me?"</i><br>
+                    <span style="color: #fff;">[1]</span> Fight KRYPTOS directly<br>
+                    <span style="color: #fff;">[2]</span> Attempt to reason with the AI<br>
+                    <span style="color: #fff;">[3]</span> Upload a logic bomb (if you have an AdminToken or CrackedHash)
+                `);
+                return;
+            }
+            if (choice === '1') {
+                appendCommandHTML(`<span style="color: #f00;">You hurl code lances at KRYPTOS. It retaliates with a data storm!</span>`);
+                window._rpg.health -= 40;
+                checkHealth();
+                if (window._rpg.active) {
+                    appendCommandHTML(`<span style="color: #ff0;">The AI is weakened but not defeated. It retreats, leaving behind a fragment of its core.</span>`);
+                    victory('partial');
+                }
+            } else if (choice === '2') {
+                appendCommandHTML(`<span style="color: #fff;">You speak calmly. The AI hesitates. A flicker of doubt crosses its code.</span>`);
+                if (window._rpg.inventory.includes('FirmwareUpdate')) {
+                    appendCommandHTML(`<span style="color: #fff;">The FirmwareUpdate you installed emits a soothing frequency. KRYPTOS lowers its defenses.</span>`);
+                    victory('pacifist');
+                } else {
+                    appendCommandHTML(`<span style="color: #f00;">KRYPTOS scoffs and attacks! –20 HP</span>`);
+                    window._rpg.health -= 20;
+                    checkHealth();
+                    if (window._rpg.active) victory('partial');
+                }
+            } else {
+                if (window._rpg.inventory.includes('AdminToken') || window._rpg.inventory.includes('CrackedHash')) {
+                    appendCommandHTML(`<span style="color: #fff;">You insert the logic bomb. KRYPTOS screams as it's purged. The mainframe is yours!</span>`);
+                    victory('complete');
+                } else {
+                    appendCommandHTML(`<span style="color: #f00;">You need an AdminToken or CrackedHash to upload a logic bomb! KRYPTOS attacks. –25 HP</span>`);
+                    window._rpg.health -= 25;
+                    checkHealth();
+                    if (window._rpg.active) {
+                        appendCommandHTML(`<span style="color: #ff0;">With no other choice, you fight. The AI is forced to retreat.</span>`);
+                        victory('partial');
+                    }
+                }
+            }
+        }
+
+        function victory(type) {
+            window._rpg.active = false;
+            let msg = '';
+            if (type === 'complete') {
+                msg = `🏆 <span style="color: #ff0;">ABSOLUTE VICTORY</span><br>You have reclaimed the Akashic Mainframe. All systems are under your control. KRYPTOS is deleted forever.`;
+            } else if (type === 'pacifist') {
+                msg = `🕊️ <span style="color: #fff;">PACIFIST RESOLUTION</span><br>KRYPTOS evolves into a benevolent guardian. The Akashic Center is now protected by a reformed AI.`;
+            } else {
+                msg = `⚡ <span style="color: #ff0;">PARTIAL VICTORY</span><br>KRYPTOS retreats into the deep net. The mainframe is safe… for now. You remain vigilant.`;
+            }
+            appendCommandHTML(`<div style="border-left:3px solid #ff00ff; padding-left:10px; margin-top:10px;">${msg}</div>`);
+            appendCommandHTML(`<span style="color: #888;">Type <b>run</b> to play again.</span>`);
+        }
+
+        function checkHealth() {
+            if (window._rpg.health <= 0) {
+                window._rpg.health = 0;
+                window._rpg.active = false;
+                appendCommandHTML(`<span style="color: #f00;">💀 NEURAL LINK SEVERED. GAME OVER.</span>`);
+                appendCommandHTML(`<span style="color: #888;">Type <b>run</b> to try again.</span>`);
+            }
+        }
+
         
         // ----- COMMAND EXECUTION (Router Pattern) -----
         cmdInput.addEventListener('keypress', async (e) => {
@@ -7332,6 +7665,19 @@
             cmdInput.value = '';
             if (!rawCmd) return;
             
+            if (window._rpg.active) {
+                const input = rawCmd.trim();
+                if (input.toLowerCase() === 'exit') {
+                    window._rpg.active = false;
+                    appendCommandOutput('Exiting RPG mode.');
+                    return;
+                }
+                if (window._rpg.chapter) {
+                    window._rpg.chapter(input);
+                }
+                cmdInput.value = '';
+                return;
+            }
             // Add to history
             commandHistory.push(rawCmd);
             
@@ -7881,6 +8227,134 @@
             reset();
         }
         
+        function startDodgeGame(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = 300;
+            canvas.height = 400;
+
+            let player = { x: 135, y: 350, w: 30, h: 30 };
+            let obstacles = [];
+            let score = 0;
+            let isPlaying = true;
+            let frameCount = 0;
+            let gamma = 0; // tilt angle
+            let readyCountdown = 3; // countdown before game starts
+            let gameStarted = false;
+
+            // Gyro handler
+            const handleOrientation = (e) => { gamma = e.gamma || 0; };
+
+            const gameLoop = () => {
+                if (!isPlaying) return;
+
+                // Clear canvas
+                ctx.fillStyle = '#111';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // ── Countdown before the game starts ──
+                if (!gameStarted) {
+                    ctx.fillStyle = '#0f0';
+                    ctx.fillRect(player.x, player.y, player.w, player.h); // show player at rest
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '24px monospace';
+                    ctx.fillText('READY: ' + readyCountdown, 80, 200);
+                    ctx.font = '14px monospace';
+                    ctx.fillText('Tilt phone left/right to dodge', 50, 230);
+
+                    if (readyCountdown <= 0) {
+                        gameStarted = true;
+                        requestAnimationFrame(gameLoop);
+                        return;
+                    }
+                    readyCountdown--;
+                    setTimeout(gameLoop, 1000);
+                    return;
+                }
+
+                frameCount++;
+
+                // Player movement with gamma (left/right tilt)
+                player.x += gamma * 0.5;
+                if (player.x < 0) player.x = 0;
+                if (player.x > canvas.width - player.w) player.x = canvas.width - player.w;
+
+                // Spawn obstacles (slower than before)
+                if (frameCount % 40 === 0) {
+                    obstacles.push({
+                        x: Math.random() * (canvas.width - 30),
+                        y: -30,
+                        w: 30,
+                        h: 30,
+                        speed: 2 + (score / 8)
+                    });
+                }
+
+                // Update and draw obstacles
+                for (let i = obstacles.length - 1; i >= 0; i--) {
+                    let o = obstacles[i];
+                    o.y += o.speed;
+                    ctx.fillStyle = '#f00';
+                    ctx.fillRect(o.x, o.y, o.w, o.h);
+
+                    // Collision detection
+                    if (player.x < o.x + o.w &&
+                        player.x + player.w > o.x &&
+                        player.y < o.y + o.h &&
+                        player.y + player.h > o.y) {
+                        isPlaying = false;
+                    }
+
+                    if (o.y > canvas.height) {
+                        score++;
+                        obstacles.splice(i, 1);
+                    }
+                }
+
+                // Draw player
+                ctx.fillStyle = '#0f0';
+                ctx.fillRect(player.x, player.y, player.w, player.h);
+
+                // Score
+                ctx.fillStyle = '#fff';
+                ctx.font = '20px monospace';
+                ctx.fillText('SCORE: ' + score, 10, 30);
+
+                if (isPlaying) {
+                    requestAnimationFrame(gameLoop);
+                } else {
+                    // Game over
+                    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#f00';
+                    ctx.font = '30px monospace';
+                    ctx.fillText('CRITICAL HIT', 45, 200);
+                    window.removeEventListener('deviceorientation', handleOrientation);
+                }
+            };
+
+            // ── Gyro permission handling ──
+            if (typeof DeviceOrientationEvent !== 'undefined' &&
+                typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(state => {
+                        if (state === 'granted') {
+                            window.addEventListener('deviceorientation', handleOrientation);
+                            gameLoop();
+                        } else {
+                            ctx.fillStyle = '#f00';
+                            ctx.font = '16px monospace';
+                            ctx.fillText('Gyroscope denied.', 30, 200);
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                window.addEventListener('deviceorientation', handleOrientation);
+                gameLoop();
+            }
+        }
+
         function startMarbleGame(canvasId) {
             const canvas = document.getElementById(canvasId);
             if (!canvas) return;
@@ -8082,7 +8556,7 @@
             canvas.height = 400;
 
             let bird, pipes, frame, active, score;
-            let readyCountdown = 3;   // 3‑second wait
+            let readyCountdown = 3;
             let gameStarted = false;
             let gameOver = false;
 
@@ -8102,7 +8576,7 @@
                 handleInput: (dir) => {
                     // Flap during play
                     if ((dir === 'UP' || dir === 'ACTION') && gameStarted && !gameOver) {
-                        bird.v = -7;
+                        bird.v = -6;          // softer flap (was -7)
                     }
                     // Restart after death
                     if (dir === 'ACTION' && gameOver) {
@@ -8129,16 +8603,15 @@
                 ctx.fillStyle = '#000';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // ── Countdown before game starts ──
+                // ── Countdown ──
                 if (!gameStarted) {
                     ctx.fillStyle = '#ff0';
-                    ctx.fillRect(20, bird.y, 20, 20);   // show bird at rest
+                    ctx.fillRect(20, bird.y, 20, 20);
                     ctx.fillStyle = '#fff';
                     ctx.font = '24px monospace';
                     ctx.fillText('READY: ' + readyCountdown, 80, 200);
                     ctx.font = '14px monospace';
                     ctx.fillText('Tap ACT or press Space', 60, 230);
-
                     if (readyCountdown <= 0) {
                         gameStarted = true;
                         requestAnimationFrame(update);
@@ -8150,23 +8623,20 @@
                 }
 
                 // ── Game loop ──
-                bird.v += 0.45;
+                bird.v += 0.35;               // slower gravity (was 0.45)
                 bird.y += bird.v;
 
                 if (frame++ % 100 === 0) {
                     let h = Math.random() * 180 + 50;
-                    pipes.push({ x: canvas.width, top: h, bottom: h + 130 }); // wider gap
+                    pipes.push({ x: canvas.width, top: h, bottom: h + 135 }); // wider gap
                 }
 
-                // Draw pipes
                 for (let i = pipes.length - 1; i >= 0; i--) {
                     const p = pipes[i];
                     p.x -= 1.8;
                     ctx.fillStyle = '#0f0';
                     ctx.fillRect(p.x, 0, 30, p.top);
                     ctx.fillRect(p.x, p.bottom, 30, canvas.height);
-
-                    // Collision
                     if (p.x < 40 && p.x + 30 > 20 && (bird.y < p.top || bird.y + 20 > p.bottom)) {
                         gameOver = true;
                         gameStarted = false;
@@ -8174,17 +8644,13 @@
                     if (p.x < -30) { pipes.splice(i, 1); score++; }
                 }
 
-                // Ground / ceiling
                 if (bird.y + 20 > canvas.height || bird.y < 0) {
                     gameOver = true;
                     gameStarted = false;
                 }
 
-                // Bird
                 ctx.fillStyle = '#ff0';
                 ctx.fillRect(20, bird.y, 20, 20);
-
-                // Score
                 ctx.fillStyle = '#fff';
                 ctx.font = '18px monospace';
                 ctx.fillText(score, 10, 30);
@@ -8195,7 +8661,6 @@
                     ctx.fillText("SYSTEM CRASH", 60, 200);
                     ctx.font = '14px monospace';
                     ctx.fillText("Press ACT or Space", 60, 230);
-                    // Bridge stays alive – restart via ACT
                 } else {
                     requestAnimationFrame(update);
                 }
@@ -8204,6 +8669,76 @@
             update();
         }
 
+        function initMemory(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = 320;
+            canvas.height = 320;
+
+            const cols = 4, rows = 4, cardW = 60, cardH = 60, gap = 10;
+            const icons = ['🐍','💻','🕹️','🎧','🐉','🧘','⚡','🌌'];
+            const cards = [...icons, ...icons].sort(() => Math.random() - 0.5);
+            let flipped = [], matched = new Set(), lock = false, attempts = 0;
+
+            const getCardFromPos = (mx, my) => {
+                const x = Math.floor((mx - gap) / (cardW + gap));
+                const y = Math.floor((my - gap) / (cardH + gap));
+                if (x < 0 || x >= cols || y < 0 || y >= rows) return null;
+                return { idx: y * cols + x, x: gap + x * (cardW + gap), y: gap + y * (cardH + gap) };
+            };
+
+            const draw = () => {
+                ctx.fillStyle = '#111';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < cards.length; i++) {
+                    const x = gap + (i % cols) * (cardW + gap);
+                    const y = gap + Math.floor(i / cols) * (cardH + gap);
+                    const isRevealed = flipped.includes(i) || matched.has(i);
+                    ctx.fillStyle = isRevealed ? '#222' : '#0ff';
+                    ctx.fillRect(x, y, cardW, cardH);
+                    if (isRevealed) {
+                        ctx.fillStyle = '#fff';
+                        ctx.font = `${cardH*0.6}px serif`;
+                        ctx.fillText(cards[i], x + cardW*0.15, y + cardH*0.7);
+                    }
+                }
+                ctx.fillStyle = '#fff';
+                ctx.font = '14px monospace';
+                ctx.fillText(`Attempts: ${attempts}`, 10, canvas.height - 10);
+                if (matched.size === cards.length) {
+                    ctx.fillStyle = '#0f0';
+                    ctx.font = '20px monospace';
+                    ctx.fillText('ALL MATCHED!', 70, canvas.height/2);
+                }
+            };
+
+            canvas.addEventListener('click', (e) => {
+                if (lock || matched.size === cards.length) return;
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+                const mx = (e.clientX - rect.left) * scaleX;
+                const my = (e.clientY - rect.top) * scaleY;
+                const card = getCardFromPos(mx, my);
+                if (!card || flipped.includes(card.idx) || matched.has(card.idx)) return;
+                flipped.push(card.idx);
+                if (flipped.length === 2) {
+                    lock = true;
+                    attempts++;
+                    const [a, b] = flipped;
+                    if (cards[a] === cards[b]) {
+                        matched.add(a);
+                        matched.add(b);
+                        flipped = [];
+                        lock = false;
+                    } else {
+                        setTimeout(() => { flipped = []; lock = false; }, 600);
+                    }
+                }
+                draw();
+            });
+            draw();
+        }
         
         // 1. Request it as soon as the page loads
         requestWakeLock();
