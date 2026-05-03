@@ -4112,7 +4112,7 @@
                 tao, wisdom, sutra, buddha, koan, stoic, bible, verse<br>
                 <br>
                 <strong style="color: var(--accent-color);">🎭 FUN & ENTERTAINMENT</strong><br>
-                joke, riddle, poem, poetry, anime, ascii, run, piano, game [snake|dodge|marble|asteroids|flappy], qr [text], homing, siren, radio [channel], tv [channel], play youtube [url], play audio, stop, cowsay [text], hack, htop, react, rotate<br>
+                joke, riddle, poem, poetry, anime, ascii, run, piano, game [snake|dodge|marble|asteroids|flappy|dino], qr [text], homing, siren, radio [channel], tv [channel], play youtube [url], play audio, stop, cowsay [text], hack, htop, react, rotate<br>
                 <br>
                 <strong style="color: var(--accent-color);">🖼️ VISUALS & EFFECTS</strong><br>
                 image, walls, glitch, scroll, intersect, intersectslow<br>
@@ -5879,12 +5879,13 @@
                 </div>`;
 
                 if (gameType === 'snake') {
-                    setTimeout(() => initSnake(canvasId), 100);
+                    const noclip = args[1]?.toLowerCase() === 'noclip';
+                    setTimeout(() => initSnake(canvasId, noclip), 100);
                     return `
                     <div style="text-align: center; margin-top: 10px;">
                         <canvas id="${canvasId}" width="300" height="400" style="background: #111; border: 2px solid #3498db; max-width: 100%; border-radius: 5px;"></canvas>
                         ${gamepadHTML}
-                        <div style="color: #888; font-size: 10px; margin-top: 6px;">Arrows / WASD / Swipe to move | ACT restarts after death</div>
+                        <div style="color: #888; font-size: 10px; margin-top: 6px;">Arrows / WASD / Swipe to move | ACT restarts after death${noclip ? ' | 🌀 NO‑CLIP' : ''}</div>
                     </div>`;
                 }
 
@@ -5942,12 +5943,13 @@
                 }
                 
                 if (gameType === 'dino') {
-                    setTimeout(() => initDinoGame(canvasId), 100);
+                    const godMode = args[1]?.toLowerCase() === 'godmode';
+                    setTimeout(() => initDinoGame(canvasId, godMode), 100);
                     return `
                     <div style="text-align: center; margin-top: 10px;">
                         <canvas id="${canvasId}" width="600" height="200" style="background: #111; border: 2px solid #0ff; max-width: 100%; border-radius: 5px;"></canvas>
                         ${gamepadHTML}
-                        <div style="color: #888; font-size: 10px; margin-top: 6px;">Space / ▲ to jump | ACT restarts after crash</div>
+                        <div style="color: #888; font-size: 10px; margin-top: 6px;">Space / ▲ to jump | ACT restarts after crash${godMode ? ' | 🛡️ GOD MODE ACTIVE' : ''}</div>
                     </div>`;
                 }
 
@@ -8827,7 +8829,7 @@
             }
         });
 
-        function initSnake(canvasId) {
+       function initSnake(canvasId, noclip = false) {
             const canvas = document.getElementById(canvasId);
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
@@ -8863,13 +8865,36 @@
 
             const tick = () => {
                 if (gameOver) return;
-                const head = {x: snake[0].x + currentDir.x, y: snake[0].y + currentDir.y};
-                if (head.x < 0 || head.x >= cols || head.y < 0 || head.y >= rows) {
-                    gameOver = true; clearInterval(gameInterval); render(); return;
+                // Calculate next head position
+                const head = { x: snake[0].x + currentDir.x, y: snake[0].y + currentDir.y };
+
+                // ── Wall handling (noclip wraps, normal dies) ──
+                if (head.x < 0) {
+                    if (noclip) head.x = cols - 1;
+                    else { gameOver = true; clearInterval(gameInterval); render(); return; }
                 }
-                if (snake.some(s => s.x === head.x && s.y === head.y)) {
-                    gameOver = true; clearInterval(gameInterval); render(); return;
+                if (head.x >= cols) {
+                    if (noclip) head.x = 0;
+                    else { gameOver = true; clearInterval(gameInterval); render(); return; }
                 }
+                if (head.y < 0) {
+                    if (noclip) head.y = rows - 1;
+                    else { gameOver = true; clearInterval(gameInterval); render(); return; }
+                }
+                if (head.y >= rows) {
+                    if (noclip) head.y = 0;
+                    else { gameOver = true; clearInterval(gameInterval); render(); return; }
+                }
+
+                // ── Self‑collision (only when noclip is off) ──
+                if (!noclip && snake.some(s => s.x === head.x && s.y === head.y)) {
+                    gameOver = true;
+                    clearInterval(gameInterval);
+                    render();
+                    return;
+                }
+
+                // Move and possibly grow
                 snake.unshift(head);
                 if (head.x === food.x && head.y === food.y) {
                     score++;
@@ -8904,7 +8929,7 @@
                 }
             };
 
-            // ── Bridge – the fixed part ──
+            // ── Bridge for D‑pad & ACT ──
             window._activeGame = {
                 handleInput: (dir) => {
                     if (!gameOver) {
@@ -9558,7 +9583,12 @@
             canvas.addEventListener('DOMNodeRemoved', () => { isRunning = false; });
         }
 
-        function initDinoGame(canvasId) {
+        function initDinoGame(canvasId, godMode = false) {
+            // ── Abort any previous game instance ──
+            if (window._dinoAbort) window._dinoAbort = true;
+            const abortFlag = { abort: false };
+            window._dinoAbort = abortFlag;
+
             const canvas = document.getElementById(canvasId);
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
@@ -9567,11 +9597,23 @@
             const dinoW = 30, dinoH = 30;
             let dino = { x: 50, y: groundY - dinoH, vy: 0, grounded: true };
             let obstacles = [];
+            let powerUp = null;                   // shield power‑up object
+            let shieldActive = false;             // true while temporary shield is on
+            let shieldTimer = null;               // setTimeout reference
+            let shieldSecsLeft = 0;               // seconds remaining on shield
             let score = 0, speed = 4, gameOver = false, frameCount = 0;
             const gravity = 0.6, jumpForce = -10;
 
+            // Helper – turn off temporary shield
+            const deactivateShield = () => {
+                shieldActive = false;
+                shieldSecsLeft = 0;
+                if (shieldTimer) { clearTimeout(shieldTimer); shieldTimer = null; }
+            };
+
             window._activeGame = {
                 handleInput: (dir) => {
+                    if (abortFlag.abort) return;
                     if ((dir === 'UP' || dir === 'ACTION') && dino.grounded && !gameOver) {
                         dino.vy = jumpForce;
                         dino.grounded = false;
@@ -9583,6 +9625,7 @@
             };
 
             const keyHandler = (e) => {
+                if (abortFlag.abort) return;
                 if (document.activeElement && document.activeElement.id === 'cmd-input') return;
                 if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'w') {
                     e.preventDefault();
@@ -9594,6 +9637,8 @@
             function resetGame() {
                 dino = { x: 50, y: groundY - dinoH, vy: 0, grounded: true };
                 obstacles = [];
+                powerUp = null;
+                deactivateShield();
                 score = 0;
                 speed = 4;
                 gameOver = false;
@@ -9602,14 +9647,28 @@
             }
 
             function spawnObstacle() {
-                // Much less frequent, and only short obstacles
                 if (Math.random() < 0.012) {
-                    const h = 15 + Math.random() * 15;   // max height 30px
+                    const h = 15 + Math.random() * 15;
                     obstacles.push({ x: canvas.width, y: groundY - h, w: 12, h: h });
                 }
             }
 
+            function spawnPowerUp() {
+                // Spawn a green shield every ~1/500 chance per frame
+                if (!powerUp && !shieldActive && Math.random() < 0.002) {
+                    powerUp = {
+                        x: canvas.width,
+                        y: groundY - 50 - Math.random() * 60,    // floating above ground
+                        w: 12, h: 12
+                    };
+                }
+            }
+
             function gameLoop() {
+                if (abortFlag.abort) {
+                    document.removeEventListener('keydown', keyHandler);
+                    return;
+                }
                 if (!canvas.isConnected) {
                     document.removeEventListener('keydown', keyHandler);
                     return;
@@ -9617,7 +9676,6 @@
                 if (gameOver) return;
 
                 frameCount++;
-                // Speed increases very slowly
                 if (frameCount % 300 === 0) speed += 0.3;
 
                 // Physics
@@ -9629,41 +9687,109 @@
                     dino.grounded = true;
                 }
 
-                if (frameCount > 30) spawnObstacle();
+                if (frameCount > 30) {
+                    spawnObstacle();
+                    spawnPowerUp();
+                }
 
+                // Move obstacles
                 for (let i = obstacles.length - 1; i >= 0; i--) {
                     obstacles[i].x -= speed;
                     if (obstacles[i].x < -30) { obstacles.splice(i, 1); score++; }
                 }
 
-                for (const obs of obstacles) {
-                    if (
-                        dino.x < obs.x + obs.w &&
-                        dino.x + dinoW > obs.x &&
-                        dino.y + 4 < obs.y + obs.h &&
-                        dino.y + dinoH - 4 > obs.y
-                    ) {
-                        gameOver = true;
+                // Move power‑up
+                if (powerUp) {
+                    powerUp.x -= speed;
+                    if (powerUp.x < -30) { powerUp = null; }
+                    if (powerUp && !shieldActive &&
+                        dino.x < powerUp.x + powerUp.w &&
+                        dino.x + dinoW > powerUp.x &&
+                        dino.y < powerUp.y + powerUp.h &&
+                        dino.y + dinoH > powerUp.y) {
+                        // Activate shield for 15 seconds
+                        shieldActive = true;
+                        shieldSecsLeft = 15;
+                        if (shieldTimer) clearTimeout(shieldTimer);
+                        // Countdown timer
+                        const countdownInterval = setInterval(() => {
+                            if (abortFlag.abort || !shieldActive) {
+                                clearInterval(countdownInterval);
+                                return;
+                            }
+                            shieldSecsLeft--;
+                            if (shieldSecsLeft <= 0) {
+                                clearInterval(countdownInterval);
+                                deactivateShield();
+                            }
+                        }, 1000);
+                        shieldTimer = setTimeout(deactivateShield, 15000);  // 15 seconds
+                        powerUp = null;
                     }
                 }
 
+                // Collision – skip if god mode or shield
+                if (!godMode && !shieldActive) {
+                    for (const obs of obstacles) {
+                        if (
+                            dino.x < obs.x + obs.w &&
+                            dino.x + dinoW > obs.x &&
+                            dino.y + 4 < obs.y + obs.h &&
+                            dino.y + dinoH - 4 > obs.y
+                        ) {
+                            gameOver = true;
+                        }
+                    }
+                }
+
+                // Draw
                 ctx.fillStyle = '#111';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 ctx.strokeStyle = '#0ff';
                 ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(canvas.width, groundY); ctx.stroke();
 
+                // Dino base
                 ctx.fillStyle = '#0ff';
                 ctx.fillRect(dino.x, dino.y, dinoW, dinoH);
+
+                // Glow effect
+                if (godMode || shieldActive) {
+                    const glowColor = godMode ? 'rgba(0,255,255,0.5)' : 'rgba(0,255,0,0.5)';
+                    ctx.fillStyle = glowColor;
+                    ctx.fillRect(dino.x - 4, dino.y - 4, dinoW + 8, dinoH + 8);
+                    ctx.fillStyle = godMode ? '#0ff' : '#0f0';
+                    ctx.font = '12px monospace';
+                    ctx.fillText(godMode ? '🛡️' : '⚡', dino.x - 10, dino.y - 8);
+                }
+
+                // Eye
                 ctx.fillStyle = '#000';
                 ctx.fillRect(dino.x + dinoW - 10, dino.y + 6, 6, 6);
 
+                // Obstacles (red firewalls)
                 ctx.fillStyle = '#f00';
                 obstacles.forEach(o => ctx.fillRect(o.x, o.y, o.w, o.h));
 
+                // Power‑up (green shield)
+                if (powerUp) {
+                    ctx.fillStyle = '#0f0';
+                    ctx.fillRect(powerUp.x, powerUp.y, powerUp.w, powerUp.h);
+                    ctx.fillStyle = 'rgba(0,255,0,0.3)';
+                    ctx.fillRect(powerUp.x - 3, powerUp.y - 3, powerUp.w + 6, powerUp.h + 6);
+                }
+
+                // Score and status
                 ctx.fillStyle = '#0ff';
                 ctx.font = '14px monospace';
                 ctx.fillText('PACKETS: ' + score, canvas.width - 130, 20);
+                if (shieldActive) {
+                    ctx.fillStyle = '#0f0';
+                    ctx.fillText(`🛡️ ${shieldSecsLeft}s`, 10, 20);
+                } else if (godMode) {
+                    ctx.fillStyle = '#0ff';
+                    ctx.fillText('🛡️ GOD MODE', 10, 20);
+                }
 
                 if (gameOver) {
                     ctx.fillStyle = 'rgba(0,0,0,0.8)';

@@ -283,6 +283,8 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 | `siren`              | Play the 1‑minute civil defense siren (local MP3) |
 | `login`               | Display the J_OS Akashic Zero‑Point Kryptos Neural Center splash screen |
 | `game [snake\|dodge\|marble\|asteroids\|flappy\|dino]` | Play interactive canvas games (Snake, Gyro Dodge, Ball Maze, Asteroids, Cyber‑Bird) with D‑pad and gyro controls |
+| `game snake noclip`  | Classic Snake with portal-wrapping walls (never die from walls or tail) |
+| `game dino gm`       | Cyber‑packet runner in god mode (invincible, obstacles pass through you) |
 | `sator`              | Interactive 4×4 Sator word square puzzle |
 | `reverse [message]`  | Reverse‑text cipher (TENET inversion) |
 | `palindrome [check\|square\|tenet\|make]` | Palindrome verifier & ancient Sator Square |
