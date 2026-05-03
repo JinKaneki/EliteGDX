@@ -3226,13 +3226,13 @@
                     return `
                     <div style="border: 1px solid #ff8200; padding: 10px;">
                         <b style="color: #ff8200;">[ J_OS ARCADE MODULE ]</b><br><br>
-                        <span style="color: #0f0;">game snake</span> – Classic Canvas Snake (Keyboard / Swipe / D‑pad)<br>
-                        <span style="color: #0f0;">game dodge</span> – Gyroscope Obstacle Avoidance<br>
-                        <span style="color: #0f0;">game marble</span> – Gyroscope Ball Maze<br>
-                        <span style="color: #0f0;">game asteroids</span> – Space Rock Dodger (D‑pad)<br>
-                        <span style="color: #0f0;">game flappy</span> – Cyber‑Bird Flap (Tap to Flap)<br>
-                        <span style="color: #0f0;">game memory</span> – Emoji memory match (Tap cards to flip)<br>
-                        <span style="color: #0f0;">game dino</span> – Cyber‑packet runner (avoid firewall obstacles)<br>
+                        <span style="color: #0f0;">game snake</span> :Classic Canvas Snake (Keyboard / Swipe / D‑pad)<br>
+                        <span style="color: #0f0;">game dodge</span> :Gyroscope Obstacle Avoidance<br>
+                        <span style="color: #0f0;">game marble</span> :Gyroscope Ball Maze<br>
+                        <span style="color: #0f0;">game asteroids</span> :Space Rock Dodger (D‑pad)<br>
+                        <span style="color: #0f0;">game flappy</span> :Cyber‑Bird Flap (Tap to Flap)<br>
+                        <span style="color: #0f0;">game memory</span> :Emoji memory match (Tap cards to flip)<br>
+                        <span style="color: #0f0;">game dino</span> :Cyber‑packet runner (avoid firewall obstacles)<br>
                     </div>`;
                 }
 
@@ -3430,10 +3430,10 @@
                     return `
                         <div style="border-left: 3px solid #ff0000; padding-left: 10px;">
                             <b style="color: #ff0000;">[ TENET PALINDROME ENGINE ]</b><br>
-                            <span style="color: #0f0;">palindrome check [word]</span> – Verify if a word reads the same backward<br>
-                            <span style="color: #0f0;">palindrome square</span> – Display the ancient Sator Square<br>
-                            <span style="color: #0f0;">palindrome tenet</span> – The TENET principle<br>
-                            <span style="color: #0f0;">palindrome make [word]</span> – Mirror text into a palindrome <br>
+                            <span style="color: #0f0;">palindrome check [word]</span>  :Verify if a word reads the same backward<br>
+                            <span style="color: #0f0;">palindrome square</span>  :Display the ancient Sator Square<br>
+                            <span style="color: #0f0;">palindrome tenet</span> :he TENET principle<br>
+                            <span style="color: #0f0;">palindrome make [word]</span> :Mirror text into a palindrome <br>
                         </div>`;
                 }
 

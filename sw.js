@@ -19,6 +19,8 @@ const PRECACHE_URLS = [
   './images/OkamiKitsune.jpg',
   './images/WheelOfLifeMandala.jpg',
   './images/OrangeHairedWomen.jpg',
+  './images/indepedentBG/BeautyOnBlade.jpg',
+  './images/ChillVibes.jpg',
   './images/Kali.png'
 ];
 
