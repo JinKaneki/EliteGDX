@@ -282,7 +282,10 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 | `intersectslow`       | Deep neural integration (60 sec) |
 | `siren`              | Play the 1‑minute civil defense siren (local MP3) |
 | `login`               | Display the J_OS Akashic Zero‑Point Kryptos Neural Center splash screen |
-| `game [snake\|dodge\|marble\|asteroids\|flappy]` | Play interactive canvas games (Snake, Gyro Dodge, Ball Maze, Asteroids, Cyber‑Bird) with D‑pad and gyro controls |
+| `game [snake\|dodge\|marble\|asteroids\|flappy\|dino]` | Play interactive canvas games (Snake, Gyro Dodge, Ball Maze, Asteroids, Cyber‑Bird) with D‑pad and gyro controls |
+| `sator`              | Interactive 4×4 Sator word square puzzle |
+| `reverse [message]`  | Reverse‑text cipher (TENET inversion) |
+| `palindrome [check\|square\|tenet\|make]` | Palindrome verifier & ancient Sator Square |
 | `run`                | Cyberpunk text RPG – reclaim the Akashic Mainframe |
 | `piano`              | Interactive on‑screen piano with sustain, chords, and keyboard |
 

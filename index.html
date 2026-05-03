@@ -3955,6 +3955,34 @@
             'thebeat': 'https://listen.181fm.com/181-beat_128k.mp3'
         };
 
+        // Global state for the current puzzle
+        window._satorGrid = null;
+        // Helper render function 
+       function renderSatorGrid() {
+            const grid = window._satorGrid;
+            if (!grid) return 'No active puzzle. Type <span style="color: #0f0;">sator new</span> to start.';
+
+            // Clear column labels
+            const colHeaders = '     1   2   3   4';
+            const separator  = '   ────┼───┼───┼───';   // visual separation line
+            const rowLabels = ['A', 'B', 'C', 'D'];
+            let rowsStr = '';
+            for (let r = 0; r < grid.size; r++) {
+                const rowData = grid.player[r].map(c => c === '' ? '·' : c).join(' │ ');
+                rowsStr += `${rowLabels[r]}  │ ${rowData}\n`;
+            }
+
+            const html = `
+                <div style="border: 1px solid #ffaa00; padding: 10px; background: rgba(255,0,0,0.05); text-align: center;">
+                    <b style="color: #ffaa00;">◆ SATOR WORD SQUARE ◆</b><br>
+                    <span style="color: #888;">Fill every cell – each row &amp; column a word</span>
+                    <pre style="font-size: 18px; line-height: 1.5; color: #fff; display: inline-block; text-align: center;">${colHeaders}\n${separator}\n${rowsStr}</pre>
+                    <span style="color: #888;">Example: </span><span style="color: #0f0;">sator B2 R</span> – places 'R' at column B, row 2<br>
+                    <span style="color: #888;">Attempts: ${grid.attempts}</span>
+                    ${grid.revealed ? '<br><span style="color: #ffaa00;">Solution shown.</span>' : ''}
+                </div>`;
+            return html;
+        }
         
         
         // 3. COMMAND RUNNER
@@ -4063,7 +4091,19 @@
                 case  -> interactive diagnostics: resistor calc, color decode, Ohm's Law, voltage divider, capacitor codes<br>
                 <br>
                 <strong style="color: var(--accent-color);">🔐 AKASHIC CIPHER SUITE</strong><br>
-                cipher, encode [msg], decode [b64], shift [n] [msg], kryptos [enc|dec] [bin|hex] [text], vigenere [enc|dec] [key] [msg], mirror [msg], vault [enc|dec] [pw] [msg], handshake [set|clear] [key]<br>
+                cipher : Full usage manual for all ciphers (encrypt/decrypt)<br>
+                encode [msg] : Base64 encode a message<br>
+                decode [b64] : Decode a Base64 string<br>
+                shift [n] [msg] : Caesar shift (letters & digits wrap)<br>
+                kryptos [enc|dec] [bin|hex] [text] : Convert text to/from binary or hex stream<br>
+                vigenere [enc|dec] [key] [msg] : Vigenère cipher with keyword<br>
+                mirror [msg] : Atbash mirror cipher (self‑inverse)<br>
+                reverse [msg] : Reverse every character (TENET inversion)<br>
+                vault [enc|dec] [pw] [msg] : AES‑256 encryption (real, password‑based, handshake key optional)<br>
+                handshake [set|clear] [key] : Store or clear a personal encryption key locally<br>
+                <br>
+                <strong style="color: var(--accent-color);">🔮 TENET CIPHERS</strong><br>
+                reverse [message], palindrome [check|make|square|tenet], sator<br>
                 <br>
                 <strong style="color: var(--accent-color);">🕵️ CYBER OPS</strong><br>
                 kali, steg [hide|reveal] [cover] [secret], tag [set|get|clear|view] [key] [value], kali [hash|scan|crack|inject|genkey|dragon|arch], wifite, airmon [iface], nmap [target], hashcat, flipper [subghz|nfc|badusb|off], raspberry, gpio [status|on|off] [pin]<br>
@@ -5389,6 +5429,11 @@
                 <span style="color: #888;">It's its own inverse – no extra step needed.</span><br>
                 <br>
 
+                <strong style="color: #ff0000;">🔴 Reverse Cipher (reverse)</strong><br>
+                <span style="color: #fff;">Encrypt &amp; Decrypt:</span> <span style="color: #0f0;">reverse hello</span> → olleh (reverse again to get back)<br>
+                <span style="color: #888;">It's its own inverse – no extra step needed. Try "tenet" for a surprise.</span><br>
+                <br>
+
                 <strong style="color: #0f0;">🔴 AES‑256 Vault (vault)</strong><br>
                 <span style="color: #fff;">Encrypt:</span> <span style="color: #0f0;">vault enc mypassword hello</span><br>
                 <span style="color: #fff;">Decrypt:</span> <span style="color: #0f0;">vault dec mypassword &lt;hex_ciphertext&gt;</span><br>
@@ -5558,8 +5603,31 @@
                 const result = text.replace(/[a-z]/g, c => flip(c, 97)).replace(/[A-Z]/g, c => flip(c, 65));
                 return `<span style="color: #0f0;">[ ATBASH MIRROR ]: ${result}</span>`;
             },
+            // 7. REVERSE CIPHER - TENET INVERSION
+            'reverse': (args) => {
+                const text = args.join(' ');
+                if (!text) return 'Usage: reverse [message]\nExample: reverse hello world';
 
-            // 7. HANDSHAKE – store/retrieve personal key (private, local)
+                // TENET Easter egg
+                if (text.toLowerCase() === 'tenet') {
+                    return `
+                        <div style="border-left: 3px solid #ff0000; padding-left: 10px;">
+                            <span style="color: #ff0000;">⏳ TENET REMAINS UNCHANGED</span><br>
+                            <span style="color: #fff;">"What's happened, happened. Time is a flat circle."</span><br>
+                            <span style="color: #0ff;">TENET</span> → <span style="color: #ffaa00;">TENET</span>
+                        </div>`;
+                }
+
+                const reversed = text.split('').reverse().join('');
+                return `
+                    <div style="border-left: 3px solid #ff0000; padding-left: 10px; margin: 5px 0;">
+                        <span style="color: #888;">Original:</span> <span style="color: #fff;">${text}</span><br>
+                        <span style="color: #ff0000;">▼ INVERTED ▼</span><br>
+                        <span style="color: #00f0ff; font-weight: bold;">${reversed}</span>
+                    </div>
+                `;
+            },
+            // 8. HANDSHAKE – store/retrieve personal key (private, local)
             'handshake': (args) => {
                 if (args.length === 0) return 'Usage: handshake [set|clear] [key]\nExample: handshake set mySecretKey';
                 const cmd = args[0].toLowerCase();
@@ -5576,7 +5644,7 @@
                 return `⚠️ Unknown subcommand. Use 'set [key]' or 'clear'.`;
             },
 
-            // 8. VAULT – AES‑256‑GCM via Web Crypto (with handshake fallback)
+            // 9. VAULT – AES‑256‑GCM via Web Crypto (with handshake fallback)
             'vault': async (args) => {
                 // --- argument parsing (unchanged) ---
                 let pw, mode, text;
@@ -5785,6 +5853,7 @@
                         <span style="color: #0f0;">game asteroids</span> – Space Rock Dodger (D‑pad)<br>
                         <span style="color: #0f0;">game flappy</span> – Cyber‑Bird Flap (Tap to Flap)<br>
                         <span style="color: #0f0;">game memory</span> – Emoji memory match (Tap cards to flip)<br>
+                        <span style="color: #0f0;">game dino</span> – Cyber‑packet runner (avoid firewall obstacles)<br>
                     </div>`;
                 }
 
@@ -5869,6 +5938,16 @@
                     <div style="text-align: center; margin-top: 10px;">
                         <canvas id="${canvasId}" width="320" height="320" style="background: #111; border: 2px solid #ff0; max-width: 100%; border-radius: 5px;"></canvas>
                         <div style="color: #888; font-size: 10px; margin-top: 6px;">Click or tap cards to flip | Match all pairs</div>
+                    </div>`;
+                }
+                
+                if (gameType === 'dino') {
+                    setTimeout(() => initDinoGame(canvasId), 100);
+                    return `
+                    <div style="text-align: center; margin-top: 10px;">
+                        <canvas id="${canvasId}" width="600" height="200" style="background: #111; border: 2px solid #0ff; max-width: 100%; border-radius: 5px;"></canvas>
+                        ${gamepadHTML}
+                        <div style="color: #888; font-size: 10px; margin-top: 6px;">Space / ▲ to jump | ACT restarts after crash</div>
                     </div>`;
                 }
 
@@ -5962,6 +6041,165 @@
 
                 return '';
             },
+            'palindrome': (args) => {
+                const sub = args[0]?.toLowerCase();
+                const text = args.slice(1).join(' ');
+
+                if (!sub) {
+                    return `
+                        <div style="border-left: 3px solid #ff0000; padding-left: 10px;">
+                            <b style="color: #ff0000;">[ TENET PALINDROME ENGINE ]</b><br>
+                            <span style="color: #0f0;">palindrome check [word]</span> – Verify if a word reads the same backward<br>
+                            <span style="color: #0f0;">palindrome square</span> – Display the ancient Sator Square<br>
+                            <span style="color: #0f0;">palindrome tenet</span> – The TENET principle<br>
+                            <span style="color: #0f0;">palindrome make [word]</span> – Mirror text into a palindrome <br>
+                        </div>`;
+                }
+
+                if (sub === 'check') {
+                    if (!text) return 'Usage: palindrome check [word]';
+                    const cleaned = text.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+                    const reversed = cleaned.split('').reverse().join('');
+                    const isPalindrome = cleaned === reversed && cleaned.length > 0;
+                    return `
+                        <div style="border-left: 3px solid ${isPalindrome ? '#0f0' : '#f00'}; padding-left: 10px;">
+                            <span style="color: #888;">Word:</span> <span style="color: #fff;">${text}</span><br>
+                            <span style="color: #888;">Reversed:</span> <span style="color: #0ff;">${cleaned.split('').reverse().join('')}</span><br>
+                            <span style="color: ${isPalindrome ? '#0f0' : '#f00'}; font-weight: bold;">
+                                ${isPalindrome ? '✅ PALINDROME CONFIRMED' : '❌ NOT A PALINDROME'}
+                            </span>
+                        </div>`;
+                }
+
+                if (sub === 'square' || sub === 'sator') {
+                    return `
+                        <div style="border: 2px solid #ff0000; padding: 15px; text-align: center; background: rgba(255,0,0,0.05);">
+                            <b style="color: #ff0000;">◆ SATOR SQUARE ◆</b><br>
+                            <span style="color: #888;">The Ancient Palindrome – Pompeii, 79 AD</span><br><br>
+                            <pre style="color: #ffaa00; font-size: 16px; line-height: 1.5; text-align: center; display: inline-block;">
+                S A T O R
+                A R E P O
+                T E N E T
+                O P E R A
+                R O T A S
+                            </pre>
+                            <br>
+                            <span style="color: #0f0;">Reads the same: left→right, right→left, top→bottom, bottom→top</span><br>
+                            <span style="color: #ff0000;">"The Sower Arepo holds the wheels with care."</span>
+                        </div>`;
+                }
+
+                if (sub === 'tenet') {
+                    return `
+                        <div style="border-left: 3px solid #ff0000; padding-left: 10px;">
+                            <b style="color: #ff0000;">⏳ TENET PRINCIPLE</b><br>
+                            <span style="color: #fff;">"What's happened, happened."</span><br>
+                            <span style="color: #0ff;">TENET</span> → <span style="color: #ffaa00;">TENET</span><br>
+                            <span style="color: #888;">Time flows both ways. The palindrome is invariant.</span>
+                        </div>`;
+                }
+
+                if (sub === 'make') {
+                    if (!text) return 'Usage: palindrome make [text]';
+                    const reversed = text.split('').reverse().join('');
+                    const palindrome = text + reversed;
+                    return `
+                        <div style="border-left: 3px solid #ff0000; padding-left: 10px;">
+                            <span style="color: #888;">Original:</span> <span style="color: #fff;">${text}</span><br>
+                            <span style="color: #ff0000;">▼ MIRRORED PALINDROME ▼</span><br>
+                            <span style="color: #00f0ff;">${palindrome}</span>
+                        </div>`;
+                }
+
+                return 'Usage: palindrome [check|square|tenet|make]';
+            },
+            'sator': (args) => {
+                const size = 4;
+                const coordPattern = /^[A-D][1-4]$/i;   // e.g., A1, B3
+
+                // ── START NEW PUZZLE ──
+                if (args.length === 0 || args[0] === 'new') {
+                    // A 4×4 word square where every row = a word, and every column = a word.
+                    // SAGA, AREA, GERO, AAOA are valid Latin words ([SAGA] story, [AREA] open space, [GERO] I carry, [AAOA] is a proper name).
+                    const solution = [
+                        ['S','A','G','A'],
+                        ['A','R','E','A'],
+                        ['G','E','R','O'],
+                        ['A','A','O','A']
+                    ];
+                    window._satorGrid = {
+                        solution: solution,
+                        player: [
+                            ['S','','',''],
+                            ['','','',''],
+                            ['','','',''],
+                            ['','','','']
+                        ],
+                        size: size,
+                        attempts: 0,
+                        revealed: false
+                    };
+                    return renderSatorGrid();
+                }
+
+                // ── REVEAL SOLUTION ──
+                if (args[0] === 'reveal') {
+                    if (!window._satorGrid) return 'No active puzzle. Type <span style="color: #0f0;">sator new</span> to start.';
+                    const grid = window._satorGrid;
+                    grid.player = grid.solution.map(row => [...row]);   // copy solution into player
+                    grid.revealed = true;
+                    return renderSatorGrid() + `<br><span style="color: #ffaa00;">Solution revealed. Row/Column words: SAGA, AREA, GERO, AAOA</span>`;
+                }
+
+                // ── SHORTCUT: sator B2 A ──
+                if (args.length === 2 && coordPattern.test(args[0])) {
+                    if (!window._satorGrid) return 'No active puzzle. Type <span style="color: #0f0;">sator new</span> to start.';
+                    if (window._satorGrid.revealed) return 'Puzzle already revealed. Type <span style="color: #0f0;">sator new</span> for a fresh one.';
+
+                    const pos = args[0].toUpperCase();
+                    const letter = args[1].toUpperCase();
+                    const grid = window._satorGrid;
+
+                    if (letter.length !== 1 || !/[A-Z]/.test(letter)) return '⚠️ Please provide a single letter (A–Z).';
+
+                    const row = pos.charCodeAt(0) - 65;   // A=0, B=1, …
+                    const col = parseInt(pos[1]) - 1;
+                    grid.player[row][col] = letter;
+                    grid.attempts++;
+
+                    // Feedback if wrong
+                    if (grid.player[row][col] !== grid.solution[row][col]) {
+                        return renderSatorGrid() + `<br><span style="color: #f00;">⚠️ Incorrect letter at ${pos}. Try again.</span>`;
+                    }
+
+                    // Check for win
+                    let solved = true;
+                    for (let r = 0; r < size; r++) {
+                        for (let c = 0; c < size; c++) {
+                            if (grid.player[r][c] !== grid.solution[r][c]) solved = false;
+                        }
+                    }
+                    if (solved) {
+                        window._satorGrid = null;
+                        return renderSatorGrid() + `<br><span style="color: #0f0;">🏆 SATOR SQUARE COMPLETED in ${grid.attempts} attempts!</span>`;
+                    }
+
+                    return renderSatorGrid();
+                }
+
+                // ── HELP ──
+                return `
+                    <div style="border-left: 3px solid #ffaa00; padding-left: 10px;">
+                        <b style="color: #ffaa00;">◆ SATOR WORD SQUARE ◆</b><br>
+                        <span style="color: #ccc;">A 4×4 grid where every row and column spells a word.</span><br><br>
+                        <span style="color: #0f0;">sator new</span> – Start a puzzle<br>
+                        <span style="color: #0f0;">sator A1 S</span> – Place letter S at column A, row 1<br>
+                        <span style="color: #0f0;">sator reveal</span> – Show the solution<br>
+                        <br>
+                        <span style="color: #888;">Words: SAGA, AREA, GERO, AAOA (Latin, [SAGA] tale, [AREA] open space, [GERO] I carry, [AAOA] a name)</span>
+                    </div>`;
+            },
+
             'run': () => {
                 if (window._rpg.active) return 'You are already in an RPG session. Type exit to leave.';
                 window._rpg.active = true;
@@ -9320,7 +9558,129 @@
             canvas.addEventListener('DOMNodeRemoved', () => { isRunning = false; });
         }
 
+        function initDinoGame(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
 
+            const groundY = 160;
+            const dinoW = 30, dinoH = 30;
+            let dino = { x: 50, y: groundY - dinoH, vy: 0, grounded: true };
+            let obstacles = [];
+            let score = 0, speed = 4, gameOver = false, frameCount = 0;
+            const gravity = 0.6, jumpForce = -10;
+
+            window._activeGame = {
+                handleInput: (dir) => {
+                    if ((dir === 'UP' || dir === 'ACTION') && dino.grounded && !gameOver) {
+                        dino.vy = jumpForce;
+                        dino.grounded = false;
+                    }
+                    if ((dir === 'UP' || dir === 'ACTION') && gameOver) {
+                        resetGame();
+                    }
+                }
+            };
+
+            const keyHandler = (e) => {
+                if (document.activeElement && document.activeElement.id === 'cmd-input') return;
+                if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'w') {
+                    e.preventDefault();
+                    window._activeGame.handleInput('UP');
+                }
+            };
+            document.addEventListener('keydown', keyHandler);
+
+            function resetGame() {
+                dino = { x: 50, y: groundY - dinoH, vy: 0, grounded: true };
+                obstacles = [];
+                score = 0;
+                speed = 4;
+                gameOver = false;
+                frameCount = 0;
+                requestAnimationFrame(gameLoop);
+            }
+
+            function spawnObstacle() {
+                // Much less frequent, and only short obstacles
+                if (Math.random() < 0.012) {
+                    const h = 15 + Math.random() * 15;   // max height 30px
+                    obstacles.push({ x: canvas.width, y: groundY - h, w: 12, h: h });
+                }
+            }
+
+            function gameLoop() {
+                if (!canvas.isConnected) {
+                    document.removeEventListener('keydown', keyHandler);
+                    return;
+                }
+                if (gameOver) return;
+
+                frameCount++;
+                // Speed increases very slowly
+                if (frameCount % 300 === 0) speed += 0.3;
+
+                // Physics
+                dino.vy += gravity;
+                dino.y += dino.vy;
+                if (dino.y + dinoH >= groundY) {
+                    dino.y = groundY - dinoH;
+                    dino.vy = 0;
+                    dino.grounded = true;
+                }
+
+                if (frameCount > 30) spawnObstacle();
+
+                for (let i = obstacles.length - 1; i >= 0; i--) {
+                    obstacles[i].x -= speed;
+                    if (obstacles[i].x < -30) { obstacles.splice(i, 1); score++; }
+                }
+
+                for (const obs of obstacles) {
+                    if (
+                        dino.x < obs.x + obs.w &&
+                        dino.x + dinoW > obs.x &&
+                        dino.y + 4 < obs.y + obs.h &&
+                        dino.y + dinoH - 4 > obs.y
+                    ) {
+                        gameOver = true;
+                    }
+                }
+
+                ctx.fillStyle = '#111';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.strokeStyle = '#0ff';
+                ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(canvas.width, groundY); ctx.stroke();
+
+                ctx.fillStyle = '#0ff';
+                ctx.fillRect(dino.x, dino.y, dinoW, dinoH);
+                ctx.fillStyle = '#000';
+                ctx.fillRect(dino.x + dinoW - 10, dino.y + 6, 6, 6);
+
+                ctx.fillStyle = '#f00';
+                obstacles.forEach(o => ctx.fillRect(o.x, o.y, o.w, o.h));
+
+                ctx.fillStyle = '#0ff';
+                ctx.font = '14px monospace';
+                ctx.fillText('PACKETS: ' + score, canvas.width - 130, 20);
+
+                if (gameOver) {
+                    ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#f00';
+                    ctx.font = '20px monospace';
+                    ctx.fillText('SYSTEM FAILURE', canvas.width/2 - 80, canvas.height/2 - 15);
+                    ctx.fillText('RUN TERMINATED', canvas.width/2 - 80, canvas.height/2 + 15);
+                    ctx.font = '14px monospace';
+                    ctx.fillText('Press ACT or Space to restart', canvas.width/2 - 80, canvas.height/2 + 40);
+                } else {
+                    requestAnimationFrame(gameLoop);
+                }
+            }
+
+            gameLoop();
+        }
 
         // Automatically update the copyright year
         document.getElementById('year').textContent = new Date().getFullYear();
