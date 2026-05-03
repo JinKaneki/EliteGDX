@@ -2,7 +2,7 @@
   "name": "Elite Gems Dashboard",
   "short_name": "EliteGDX",
   "description": "Ambient cyber-deck dashboard with Cistercian clock, terminal, cipher suite, media playback, games, and neural tools.",
-  "start_url": "/EliteGDX/",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "fullscreen",
   "orientation": "any",
