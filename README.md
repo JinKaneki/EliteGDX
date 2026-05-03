@@ -130,15 +130,21 @@ I set the following CSS custom properties to achieve the **rainbow line effect**
 
 
 ## 📁 Project Structure
-
-    index.html                     # Main dashboard (all HTML/CSS/JS)
-    /images/                       # Slideshow images (profile, backgrounds, etc.)
-    manifest.json                  # PWA manifest
-    sw.js                          # service worker
-    TTC/Tao_te_ching.json          # Local Chapters
-    /images/independentBgImages/   # Independent background images (optimized for mobile screens)
-    README.md                      # This file
----
+/
+├── index.html                     # Main dashboard (all HTML)  
+├── manifest.json                  # PWA manifest  
+├── sw.js                          # Service worker (offline cache)  
+├── sitemap.xml                    # SEO sitemap  
+├── images/                        # Slideshow & background images  
+│   └── independentBGImages/       # Optimized mobile background images  
+├── sounds/                        # Audio files (siren, etc.)  
+├── TTC/                           # Local data  
+│   └── Tao_te_ching.json          # Tao Te Ching chapters  
+├── styles/
+│   └── styles.css                 # Main Stylesheet  
+├── script/
+│   └── app.js                     # Main Application Logic  
+└── README.md                      # Documentation  
 
 ## ⌨️ CLI Reference
   "You know how some people have a clock screensaver? I made something way cooler. It's a web page I keep open that not only tells time but also lets me type commands. I can type 'weather Tokyo' and it shows me the forecast. I can type 'tv nasa' and it plays a live stream from the space station. It also shows inspirational quotes, plays music, and even has a secret 'Intersect' flash. It's like my own little command center." **-Jin Kaneki**
