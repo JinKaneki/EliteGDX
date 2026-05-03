@@ -287,7 +287,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 | `game dino gm`       | Cyber‑packet runner in god mode (invincible, obstacles pass through you) |
 | `sator`              | Interactive 4×4 Sator word square puzzle |
 | `reverse [message]`  | Reverse‑text cipher (TENET inversion) |
-| `palindrome [check\|square\|tenet\|make]` | Palindrome verifier & ancient Sator Square |
+| `palindrome [check\|square\|tenet\|make]` | Palindrome verifier, maker & ancient Sator Square and the Pater Noster anagram |
 | `run`                | Cyberpunk text RPG – reclaim the Akashic Mainframe |
 | `piano`              | Interactive on‑screen piano with sustain, chords, and keyboard |
 
