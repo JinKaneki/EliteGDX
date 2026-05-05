@@ -160,7 +160,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 `theme` `pause` `fetchpanel` `fastfetch` `fetch` `neofetch` `zoom` `mode`
 
 **📡 NETWORK & COMMUNICATION**
-`chat` `status` `disconect` `mesh` `aprsmap` `meshmap`
+`chat` `status` `disconect` `mesh` `aprsmap` `meshmap` `netorbit`
 
 **📰 News & Information**  
 `news` `hackernews` `technology` `crypto`
@@ -255,6 +255,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 | `mesh`                | Animated LoRa mesh topology simulator (canvas) |
 | `aprsmap [fi\|direct]` | Live APRS amateur radio map (choose source) |
 | `meshmap`             | Live Meshtastic node map (MQTT network) |
+| `netorbit [--green\|--red\|--violet]`| Live world map (Braille‑style dot matrix) + packet sniffing|
 | `nuke`                | Factory reset – clears localStorage, stops animations, resets terminal |
 | `tao`                 | Random Tao Te Ching chapter |
 | `wisdom`              | Inspirational quote |
@@ -482,7 +483,7 @@ The "Akashic Update" transforms the dashboard into a comprehensive information r
 1. **Clone the repository**
     ```bash:
     git clone [https://github.com/JinKaneki/EliteGDX.git](https://github.com/JinKaneki/EliteGDX.git)
-    cd AnalogClockHost
+    cd EliteGDX
 ---
 
 2. Serve locally (any static server)

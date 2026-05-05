@@ -1459,6 +1459,7 @@
                 disconnect : Terminate all network links safely<br>
                 mesh : Visualize a simulated LoRa mesh network<br>
                 aprsmap [fi|direct] : Live amateur radio map (choose source)<br>
+                netorbit [--green|--red|--violet] : Live world map + packet sniffing<br>
                 <br>
                 <strong style="color: var(--accent-color);">📰 NEWS & INFORMATION</strong><br>
                 news, hackernews, technology, crypto [coin]<br>
@@ -1961,6 +1962,51 @@
                 return `<span style="color: #0f0; text-shadow: 0 0 5px #0f0;">📅 ${formatted}</span>`;
             },
 
+            'netorbit': (args) => {
+                // Parse theme
+                let theme = 'cyan';
+                if (args[0]?.startsWith('--')) {
+                    const themeArg = args[0].substring(2);
+                    if (['green', 'red', 'violet', 'cyan'].includes(themeArg)) theme = themeArg;
+                }
+
+                // Stop previous animation
+                if (window._netOrbitAnim) {
+                    cancelAnimationFrame(window._netOrbitAnim);
+                    window._netOrbitAnim = null;
+                    const old = document.getElementById('netorbit-container');
+                    if (old) old.remove();
+                }
+
+                const containerId = 'netorbit-container';
+                const output = document.getElementById('cmd-output');
+
+                // Container
+                const container = document.createElement('div');
+                container.id = containerId;
+                container.style.cssText = 'border:1px solid var(--accent-color); border-radius:6px; padding:10px; margin-top:10px; background:rgba(0,0,0,0.3); text-align:center;';
+
+                // Stats line
+                const statsDiv = document.createElement('div');
+                statsDiv.id = 'netorbit-stats';
+                statsDiv.style.cssText = 'color:#fff; font-family:monospace; margin-bottom:8px; font-size:12px;';
+                container.appendChild(statsDiv);
+
+                // Canvas
+                const canvas = document.createElement('canvas');
+                canvas.id = 'netorbit-canvas';
+                canvas.width = 640;
+                canvas.height = 320;
+                canvas.style.cssText = 'background:#000; border:1px solid #333; max-width:100%; display:block; margin:0 auto; image-rendering:pixelated;';
+                container.appendChild(canvas);
+
+                output.appendChild(container);
+                output.scrollTop = output.scrollHeight;
+
+                // Fire up animation
+                initNetOrbit(canvas, theme, statsDiv);
+                return ''; // already injected
+            },
             'mesh': () => {
                 const canvasId = 'mesh-canvas-' + Date.now();
                 setTimeout(() => initMeshMap(canvasId), 100);
@@ -4711,7 +4757,7 @@
                 try {
                     const resp = await fetch('https://labs.bible.org/api/?passage=random&type=json');
                     const data = await resp.json();
-                    return `<span style="color: #gold;">✝️ ${data[0].bookname} ${data[0].chapter}:${data[0].verse}</span><br><span style="color: #ffffff;">${data[0].text}</span>`;
+                    return `<span style="color: #ffdf00;">✝️ ${data[0].bookname} ${data[0].chapter}:${data[0].verse}</span><br><span style="color: #ffffff;">${data[0].text}</span>`;
                 } catch (e) {
                     return '⚠️ Could not fetch a verse. The heavens are quiet.';
                 }
@@ -6982,6 +7028,194 @@
 
             // Cleanup on removal
             canvas.addEventListener('DOMNodeRemoved', () => { isRunning = false; });
+        }
+
+        function initNetOrbit(canvas, theme, statsDiv) {
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width, h = canvas.height;
+
+            const themes = {
+                cyan:   { main: '#00ffff', glow: 'rgba(0,255,255,0.5)', fill: 'rgba(0,255,255,0.15)' },
+                green:  { main: '#00ff00', glow: 'rgba(0,255,0,0.5)',     fill: 'rgba(0,255,0,0.15)' },
+                red:    { main: '#ff0000', glow: 'rgba(255,0,0,0.5)',     fill: 'rgba(255,0,0,0.15)' },
+                violet: { main: '#bf00ff', glow: 'rgba(191,0,255,0.5)',   fill: 'rgba(191,0,255,0.15)' }
+            };
+            const t = themes[theme] || themes.cyan;
+
+            function proj(lon, lat) {
+                return {
+                    x: (lon + 180) / 360 * w,
+                    y: (90 - lat) / 180 * h
+                };
+            }
+
+            // Continent outlines [lon, lat]
+            const continentPolys = {
+                NA: [
+                    [-168,66],[-162,60],[-154,56],[-144,60],[-136,58],[-130,55],
+                    [-124,50],[-114,38],[-108,30],[-100,25],[-92,28],[-88,18],
+                    [-82,15],[-76,25],[-70,42],[-66,46],[-60,48],[-55,40],
+                    [-67,45],[-75,30],[-80,25],[-85,22],[-90,18],[-97,16],
+                    [-105,20],[-115,32],[-124,42],[-130,55],[-140,60],[-152,61],
+                    [-162,65],[-168,66]
+                ],
+                SA: [
+                    [-82,12],[-70,12],[-58,5],[-42,-2],[-35,-5],[-35,-18],
+                    [-40,-22],[-52,-34],[-58,-40],[-65,-46],[-70,-52],[-66,-55],
+                    [-55,-48],[-48,-37],[-42,-28],[-37,-18],[-44,-8],[-54,-2],
+                    [-61,4],[-70,8],[-77,8],[-82,12]
+                ],
+                EU: [ [-10,36],[3,36],[6,43],[10,45],[16,46],[20,47],[24,48],[28,50],[32,52],[30,60],[28,65],[25,68],[20,65],[12,60],[5,58],[0,53],[-4,48],[-10,42],[-10,36] ],
+                AF: [ [-17,15],[10,15],[15,25],[25,22],[32,22],[36,30],[40,22],[51,12],[33,-35],[28,-34],[18,-30],[12,-20],[8,-5],[5,2],[-5,5],[-10,4],[-17,5],[-17,15] ],
+                AS: [ [26,42],[40,42],[48,37],[52,30],[60,25],[72,20],[80,15],[90,22],[95,10],[100,12],[105,5],[110,-5],[120,-10],[127,1],[130,10],[140,10],[150,15],[160,20],[165,30],[155,45],[145,48],[135,50],[130,60],[120,70],[100,72],[80,70],[60,68],[40,68],[26,65],[26,42] ],
+                AU: [ [115,-14],[130,-12],[136,-12],[145,-17],[150,-22],[153,-27],[151,-34],[140,-38],[135,-35],[130,-33],[125,-28],[122,-23],[116,-18],[115,-14] ],
+                AN: [ [-180,-65],[-170,-70],[-150,-72],[-120,-75],[-90,-78],[-60,-80],[-30,-82],[0,-83],[30,-82],[60,-80],[90,-78],[120,-75],[150,-72],[170,-70],[180,-65],[180,-85],[-180,-85],[-180,-65] ]
+            };
+
+            // Pre‑render the entire base map (ocean + grid) once
+            const offCanvas = document.createElement('canvas');
+            offCanvas.width = w;
+            offCanvas.height = h;
+            const offCtx = offCanvas.getContext('2d');
+
+            // Ocean
+            offCtx.fillStyle = '#050510';
+            offCtx.fillRect(0, 0, w, h);
+
+            // Grid
+            offCtx.strokeStyle = '#111';
+            offCtx.lineWidth = 1;
+            for (let lon = -180; lon <= 180; lon += 30) {
+                const x = (lon + 180) / 360 * w;
+                offCtx.beginPath(); offCtx.moveTo(x, 0); offCtx.lineTo(x, h); offCtx.stroke();
+            }
+            for (let lat = -90; lat <= 90; lat += 30) {
+                const y = (90 - lat) / 180 * h;
+                offCtx.beginPath(); offCtx.moveTo(0, y); offCtx.lineTo(w, y); offCtx.stroke();
+            }
+
+            // Draw each continent with dot‑matrix fill + outline
+            for (const name in continentPolys) {
+                const poly = continentPolys[name];
+                if (!poly || poly.length < 3) continue;
+
+                offCtx.save();   
+
+                // Create the continent path and clip to it
+                offCtx.beginPath();
+                const start = proj(poly[0][0], poly[0][1]);
+                offCtx.moveTo(start.x, start.y);
+                for (let i = 1; i < poly.length; i++) {
+                    const p = proj(poly[i][0], poly[i][1]);
+                    offCtx.lineTo(p.x, p.y);
+                }
+                offCtx.closePath();
+                offCtx.clip();
+
+                // Light fill base
+                offCtx.fillStyle = t.fill;
+                offCtx.fill();
+
+                // Dot matrix (4px step, 60% chance)
+                const step = 4;
+                for (let x = 0; x < w; x += step) {
+                    for (let y = 0; y < h; y += step) {
+                        if (Math.random() < 0.6) {
+                            offCtx.fillStyle = t.main;
+                            offCtx.fillRect(x, y, 2, 2);
+                        }
+                    }
+                }
+
+                offCtx.restore(); //  restore after clip
+
+                // Clean outline
+                offCtx.beginPath();
+                offCtx.moveTo(start.x, start.y);
+                for (let i = 1; i < poly.length; i++) {
+                    const p = proj(poly[i][0], poly[i][1]);
+                    offCtx.lineTo(p.x, p.y);
+                }
+                offCtx.closePath();
+                offCtx.strokeStyle = t.main;
+                offCtx.lineWidth = 1.2;
+                offCtx.stroke();
+            }
+
+            // Packet animation
+            let packets = [];
+            let captured = 0, mapped = 0, geoMiss = 0;
+
+            function updateStats() {
+                statsDiv.innerHTML = `NetOrbit Status<br>captured=${captured}  mapped=${mapped}  geo_miss=${geoMiss}<br><span style="color:${t.main};">Starting sniffer…</span>`;
+            }
+            updateStats();
+
+            function spawnPacket() {
+                const lon = Math.random() * 360 - 180;
+                const lat = Math.random() * 160 - 80;
+                const start = proj(lon, lat);
+                const end = proj(Math.random() * 360 - 180, Math.random() * 160 - 80);
+                packets.push({
+                    sx: start.x, sy: start.y,
+                    ex: end.x, ey: end.y,
+                    progress: 0,
+                    speed: 0.003 + Math.random() * 0.02,
+                    trail: []
+                });
+                captured++;
+            }
+
+            function animate() {
+                if (!canvas.isConnected) {
+                    cancelAnimationFrame(window._netOrbitAnim);
+                    return;
+                }
+
+                ctx.clearRect(0, 0, w, h);
+                ctx.drawImage(offCanvas, 0, 0);
+
+                for (let i = packets.length - 1; i >= 0; i--) {
+                    const p = packets[i];
+                    p.progress += p.speed;
+                    if (p.progress >= 1) {
+                        packets.splice(i, 1);
+                        mapped++;
+                        if (Math.random() < 0.08) geoMiss++;
+                        updateStats();
+                        continue;
+                    }
+                    const x = p.sx + (p.ex - p.sx) * p.progress;
+                    const y = p.sy + (p.ey - p.sy) * p.progress;
+
+                    p.trail.push({x, y});
+                    if (p.trail.length > 12) p.trail.shift();
+
+                    // Trail
+                    for (let j = 0; j < p.trail.length; j++) {
+                        const tp = p.trail[j];
+                        const alpha = j / p.trail.length * 0.4;
+                        ctx.fillStyle = t.glow.replace('0.5', alpha.toString());
+                        ctx.beginPath();
+                        ctx.arc(tp.x, tp.y, 1.5, 0, Math.PI*2);
+                        ctx.fill();
+                    }
+
+                    // Head with glow
+                    ctx.shadowBlur = 6;
+                    ctx.shadowColor = t.glow;
+                    ctx.fillStyle = t.main;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI*2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+
+                if (Math.random() < 0.08) spawnPacket();
+                window._netOrbitAnim = requestAnimationFrame(animate);
+            }
+
+            animate();
         }
 
         function initDinoGame(canvasId, godMode = false) {
