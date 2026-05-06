@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /images/
+Disallow: /sounds/
+Disallow: /TTC/
+
+Sitemap: https://jinkaneki.github.io/EliteGDX/sitemap.xml
