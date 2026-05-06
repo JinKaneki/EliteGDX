@@ -249,7 +249,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 | `raspberry`           | Virtual Raspberry Pi system dashboard (temps, uptime, GPIO) |
 | `gpio [status\|on\|off] [pin]` | Raspberry Pi GPIO pin simulator |
 | `chat mqtt`           | Global public frequency chat (IoT / radio vibe) |
-| `chat p2p`         n  | Encrypted peer‑to‑peer direct tunnel |
+| `chat p2p`            | Encrypted peer‑to‑peer direct tunnel |
 | `chat firebase`       | Persistent chat archive with message history |
 | `chat -all`           | Open all three channels at once |
 | `status`              | Show live connection status for all chat protocols |

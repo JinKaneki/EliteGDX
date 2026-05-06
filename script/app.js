@@ -1465,7 +1465,7 @@
                 theme [cyan|magenta|amber|matrix], pause, mode [flipper|midnight|matrix|crimson|cyber|hologram|stealth|off], zoom [in|out|reset]<br>
                 <br>
                 <strong style="color: var(--accent-color);">📡 NETWORK & COMMUNICATION</strong><br>
-                chat mqtt : Global public frequency (IoT style)<br>
+                chat mqtt : Global public frequency<br>
                 chat p2p : Encrypted peer to peer tunnel<br>
                 chat firebase : Persistent mainframe archive<br>
                 chat -all : Open all three channels at once<br>
@@ -3306,13 +3306,13 @@
                             <img src="images/PokemonGo.jpeg" style="max-width: 220px; height: auto; border-radius: 8px; margin-bottom: 5px;">
                         </div>
                         <div>
-                            <span style="color: #0f0;">game snake</span> : Classic Canvas Snake (Keyboard / Swipe / D‑pad)<br>
-                            <span style="color: #0f0;">game dodge</span> : Gyroscope Obstacle Avoidance<br>
-                            <span style="color: #0f0;">game marble</span> : Gyroscope Ball Maze<br>
-                            <span style="color: #0f0;">game asteroids</span> : Space Rock Dodger (D‑pad)<br>
-                            <span style="color: #0f0;">game flappy</span> : Cyber‑Bird Flap (Tap to Flap)<br>
-                            <span style="color: #0f0;">game memory</span> : Emoji memory match (Tap cards to flip)<br>
-                            <span style="color: #0f0;">game dino</span> : Cyber‑packet runner (avoid firewall obstacles)<br>
+                            <span style="color: #fbff00;">game snake</span> : Classic Canvas Snake (Keyboard / Swipe / D‑pad)<br>
+                            <span style="color: #fca311;">game dodge</span> : Gyroscope Obstacle Avoidance<br>
+                            <span style="color: #ef476f">game marble</span> : Gyroscope Ball Maze<br>
+                            <span style="color: #fb00ff;">game asteroids</span> : Space Rock Dodger (D‑pad)<br>
+                            <span style="color: #09ff00;">game flappy</span> : Cyber‑Bird Flap (Tap to Flap)<br>
+                            <span style="color: #ff0000;">game memory</span> : Emoji memory match (Tap cards to flip)<br>
+                            <span style="color: #00d0ff;">game dino</span> : Cyber‑packet runner (avoid firewall obstacles)<br>
                         </div>
                     </div>`;
                 }
