@@ -163,7 +163,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 `chat` `status` `disconect` `mesh` `aprsmap` `meshmap` `netorbit`
 
 **📰 News & Information**  
-`news` `hackernews` `technology` `crypto`
+`news` `hackernews` `technology` `weather` `crypto` 
 
 **📚 Learning & Reference**  
 `define` `wiki` `physics` `electronics` `biology` `space` `cstip` `learn` `fortune` `motd`
@@ -217,6 +217,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 | `hackernews`          | Top 5 Hacker News stories |
 | `crypto [coin]`       | Live cryptocurrency price |
 | `technology`          | Curated tech news (Verge, Ars Technica, TechCrunch, Wired) |
+| `weather [city]`      | Weather for a city (type alone for automatic IP‑based location)|
 | `define [word]`       | Full dictionary entry with phonetics, definitions, synonyms, antonyms |
 | `wiki [topic]`        | Wikipedia summary lookup |
 | `learn`               | Random educational fact |
@@ -250,6 +251,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 | `chat mqtt`           | Global public frequency chat (IoT / radio vibe) |
 | `chat p2p`         n  | Encrypted peer‑to‑peer direct tunnel |
 | `chat firebase`       | Persistent chat archive with message history |
+| `chat -all`           | Open all three channels at once |
 | `status`              | Show live connection status for all chat protocols |
 | `disconnect`          | Gracefully shut down all network connections |
 | `mesh`                | Animated LoRa mesh topology simulator (canvas) |
@@ -291,7 +293,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 | `login`               | Display the J_OS Akashic Zero‑Point Kryptos Neural Center splash screen |
 | `game [snake\|dodge\|marble\|asteroids\|flappy\|dino]` | Play interactive canvas games (Snake, Gyro Dodge, Ball Maze, Asteroids, Cyber‑Bird) with D‑pad and gyro controls |
 | `game snake noclip`  | Classic Snake with portal-wrapping walls (never die from walls or tail) |
-| `game dino gm`       | Cyber‑packet runner in god mode (invincible, obstacles pass through you) |
+| `game dino godmode`  | Cyber‑packet runner in god mode (invincible, obstacles pass through you) |
 | `sator`              | Interactive 4×4 Sator word square puzzle |
 | `reverse [message]`  | Reverse‑text cipher (TENET inversion) |
 | `palindrome [check\|square\|tenet\|make]` | Palindrome verifier, maker & ancient Sator Square and the Pater Noster anagram |
@@ -394,7 +396,7 @@ case vdivider 9 2200 1000
 The **J_OS // AKASHIC ZERO-POINT KRYPTOS NEURAL CENTER** console now supports:
 
 - 🔮 **Mystical wisdom** (`tao`, `sutra`, `koan`, `stoic`, `buddha`, `bible`, `verse`, `wisdom`)
-- 📡 **Live information** (`news`, `technology`, `hackernews`)
+- 📡 **Live information** (`news`, `technology`, `hackernews`,`weather`)
 - 🛠️ **Engineering diagnostics** (`case`, `physics`, `electronics`, `engineering`)
 - 🎬 **Media playback** (`play youtube`, `play audio`, `radio`, `tv`, `stop`)
 - 🖼️ **Ambient visuals** (`walls`, `intersect`, `intersectslow`, `matrix`, `image`, `scroll`)

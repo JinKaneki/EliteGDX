@@ -1,4 +1,4 @@
-const CACHE_NAME = 'elite-gems-v3';  
+const CACHE_NAME = 'elite-gems-v4';  
 
 // Pre‑cache the absolute essentials
 const PRECACHE_URLS = [
@@ -17,7 +17,7 @@ const PRECACHE_URLS = [
   './images/indepedentBG/Ataraxia.jpg',
   './images/IMG_BLUE.jpg',
   './images/OkamiKitsune.jpg',
-  './images/WheelOfLifeMandala.jpg',
+  './images/AbyssalWave.png',
   './images/OrangeHairedWomen.jpg',
   './images/indepedentBG/BeautyOnBlade.jpg',
   './images/ChillVibes.jpg',
@@ -27,9 +27,13 @@ const PRECACHE_URLS = [
 // ***** INSTALL – pre‑cache essential files *****
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(PRECACHE_URLS))
-      .then(() => self.skipWaiting())   // activate immediately
+    caches.open(CACHE_NAME).then(cache => {
+      return Promise.allSettled(
+        PRECACHE_URLS.map(url =>
+          cache.add(url).catch(err => console.warn('Failed to cache:', url, err))
+        )
+      );
+    }).then(() => self.skipWaiting())
   );
 });
 

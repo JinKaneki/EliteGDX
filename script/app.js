@@ -722,6 +722,7 @@
             'images/indepedentBG/DavidMichael.jpg',
             'images/indepedentBG/PMononoke.png',
             'images/indepedentBG/SolarSystem.png',
+            'images/indepedentBG/kaneki_kenJin_TKG.jpg',
             //'images/indepedentBG/',
         ];
 
@@ -1436,6 +1437,18 @@
             cmdVisible = false; 
         });
  
+        function getWeatherEmoji(code) {
+            // WMO Weather codes: 0 clear, 1 mainly clear, 2 partly cloudy, 3 overcast, etc.
+            if (code <= 1) return '☀️';
+            if (code <= 3) return '⛅';
+            if (code <= 48) return '☁️';
+            if (code <= 57) return '🌧️';
+            if (code <= 67) return '🌧️❄️';
+            if (code <= 77) return '❄️';
+            if (code <= 82) return '🌧️';
+            if (code <= 86) return '🌨️';
+            return '🌫️';
+        }
 
         // Global command history array
         let commandHistory = [];
@@ -1455,6 +1468,7 @@
                 chat mqtt : Global public frequency (IoT style)<br>
                 chat p2p : Encrypted peer to peer tunnel<br>
                 chat firebase : Persistent mainframe archive<br>
+                chat -all : Open all three channels at once<br>
                 status : Live connection report (MQTT, P2P, Firebase)<br>
                 disconnect : Terminate all network links safely<br>
                 mesh : Visualize a simulated LoRa mesh network<br>
@@ -1462,7 +1476,7 @@
                 netorbit [--green|--red|--violet] : Live world map + packet sniffing<br>
                 <br>
                 <strong style="color: var(--accent-color);">📰 NEWS & INFORMATION</strong><br>
-                news, hackernews, technology, crypto [coin]<br>
+                news, hackernews, technology, weather[city], crypto [coin], news -all (news,hackernews,technology)<br>
                 <br>
                 <strong style="color: var(--accent-color);">📚 LEARNING & REFERENCE</strong><br>
                 define [word], learn, physics, electronics, engineering, biology, space, cstip, wiki [topic], fortune, motd<br>
@@ -1833,7 +1847,10 @@
                     { name: "Neural_Gateway", role: "Synapse Operator", status: "Active", id: "J.O.H.A.N." }
                 ];
                 const p = personas[Math.floor(Math.random() * personas.length)];
-                return `User: ${p.name}\nRole: ${p.role}\nStatus: ${p.status}\nPhygital ID: ${p.id}`;
+                return `User: ${p.name}\nRole: ${p.role}\nStatus: ${p.status}\nPhygital ID: ${p.id}<br>
+                <div style="text-align: center; margin: 5px 0;">
+                    <img src="images/kanJin.png" style="max-width: 220px; height: auto; border-radius: 8px; margin-bottom: 5px;">
+                </div>`;
             },
             'ls': () => 'Documents/  Downloads/  Secret_Project/  tao_te_ching.txt  system_core.bin',
             'echo': (args) => args.join(' ') || 'Usage: echo [text]',
@@ -2061,16 +2078,29 @@
             },
             'chat': (args) => {
                 const sub = args[0]?.toLowerCase();
+                if (sub === '-all') {
+                // Launch MQTT (green)
+                commands['chat'](['mqtt']);
+                // Launch P2P (magenta)
+                commands['chat'](['p2p']);
+                // Launch Firebase (amber)
+                commands['chat'](['firebase']);
+                return '🌐 All chat networks activated (MQTT, P2P, Firebase).';
+            }
+
                 if (!sub) {
                     return `
-                    <div style="border-left: 3px solid var(--accent-color); padding-left: 10px;">
-                        <b style="color: var(--accent-color);">[ J_OS COMMUNICATION TRIAD ]</b><br>
-                        <span style="color: #0f0;">chat mqtt</span> – Global public frequency (IoT style)<br>
-                        <span style="color: #ff00ff;">chat p2p</span> – Encrypted peer‑to‑peer tunnel<br>
-                        <span style="color: #fca311;">chat firebase</span> – Persistent mainframe archive<br>
-                    </div>`;
+                        <div style="border-left: 3px solid var(--accent-color); padding-left: 10px;">
+                            <b style="color: var(--accent-color);">[ J_OS COMMUNICATION TRIAD ]</b><br>
+                            <span style="color: #0f0;">chat mqtt</span>  :Global public frequency<br>
+                            <span style="color: #d400ff;">chat p2p</span>  :Encrypted peer‑to‑peer tunnel<br>
+                            <span style="color: #fca311;">chat firebase</span>  :Persistent mainframe archive<br><br>
+                            <span style="color: #fff;">chat -all</span>  :Open all three channels at once<br>
+                            <span style="color: #00a2ff;">status</span>  –Show live connection status for all chat protocols.<br>
+                            <span style="color: #ff0077;">disconnect</span>  –Gracefully shut down all network connections.<br>
+                        </div>`;
                 }
-                // … the three if blocks for mqtt, p2p, firebase
+
                 // 1. MQTT – The Global Frequency (Green #0f0)
                 if (sub === 'mqtt') {
                     const old = document.getElementById('mqtt-chat-box');
@@ -2335,7 +2365,7 @@
                     const nodeId = 'ARCH-' + Math.random().toString(16).slice(2, 5).toUpperCase();
 
                     // Reference to chat messages
-                    const chatRef = db.ref('elitegdx/chat');
+                    const chatRef = window.db.ref('elitegdx/chat');
                     window._chatRef = chatRef;
 
                     chatRef.limitToLast(20).on('child_added', (snap) => {
@@ -3270,15 +3300,20 @@
 
                 if (!gameType) {
                     return `
-                    <div style="border: 1px solid #ff8200; padding: 10px;">
-                        <b style="color: #ff8200;">[ J_OS ARCADE MODULE ]</b><br><br>
-                        <span style="color: #0f0;">game snake</span> :Classic Canvas Snake (Keyboard / Swipe / D‑pad)<br>
-                        <span style="color: #0f0;">game dodge</span> :Gyroscope Obstacle Avoidance<br>
-                        <span style="color: #0f0;">game marble</span> :Gyroscope Ball Maze<br>
-                        <span style="color: #0f0;">game asteroids</span> :Space Rock Dodger (D‑pad)<br>
-                        <span style="color: #0f0;">game flappy</span> :Cyber‑Bird Flap (Tap to Flap)<br>
-                        <span style="color: #0f0;">game memory</span> :Emoji memory match (Tap cards to flip)<br>
-                        <span style="color: #0f0;">game dino</span> :Cyber‑packet runner (avoid firewall obstacles)<br>
+                    <div style="border: 1px solid #ff8200; padding: 10px; text-align: center;">
+                        <b style="color: #ff8200;">[ J_OS ARCADE MODULE ]</b><br>
+                        <div style="margin: 5px 0;">
+                            <img src="images/PokemonGo.jpeg" style="max-width: 220px; height: auto; border-radius: 8px; margin-bottom: 5px;">
+                        </div>
+                        <div>
+                            <span style="color: #0f0;">game snake</span> : Classic Canvas Snake (Keyboard / Swipe / D‑pad)<br>
+                            <span style="color: #0f0;">game dodge</span> : Gyroscope Obstacle Avoidance<br>
+                            <span style="color: #0f0;">game marble</span> : Gyroscope Ball Maze<br>
+                            <span style="color: #0f0;">game asteroids</span> : Space Rock Dodger (D‑pad)<br>
+                            <span style="color: #0f0;">game flappy</span> : Cyber‑Bird Flap (Tap to Flap)<br>
+                            <span style="color: #0f0;">game memory</span> : Emoji memory match (Tap cards to flip)<br>
+                            <span style="color: #0f0;">game dino</span> : Cyber‑packet runner (avoid firewall obstacles)<br>
+                        </div>
                     </div>`;
                 }
 
@@ -3938,7 +3973,60 @@
 
             // ----- ASYNC (return Promise) -----
             //BBC WORLD NEWS - top 5 headlines
-            'news': async () => {
+            'news': async (args) => {
+                // aggregate all feeds
+                if (args[0] === '-all') {
+                    let output = '';
+                    try {
+                        output += '📰 <strong style="color: #00f0ff;">BBC WORLD NEWS</strong><br>';
+                        const api = 'https://api.rss2json.com/v1/api.json?rss_url=';
+                        const bbcFeed = 'https://feeds.bbci.co.uk/news/world/rss.xml';
+                        const resp1 = await fetch(api + encodeURIComponent(bbcFeed));
+                        const data1 = await resp1.json();
+                        if (data1.status === 'ok' && data1.items) {
+                            data1.items.slice(0, 3).forEach((item, i) => {
+                                output += `<span style="color: #fff;">[${i+1}] <a href="${item.link}" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: none; border-bottom: 1px dotted #888;">${item.title}</a></span><br>`;
+                            });
+                        } else throw new Error('BBC feed failed');
+                    } catch(e) { output += '<span style="color: #f00;">⚠️ BBC feed offline.</span><br>'; }
+
+                    try {
+                        output += '<br>📰 <strong style="color: #ff6600;">HACKER NEWS</strong><br>';
+                        const res2 = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');
+                        const ids2 = await res2.json();
+                        const top3 = ids2.slice(0, 3);
+                        const storyPromises = top3.map(id => fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(r => r.json()));
+                        const stories = await Promise.all(storyPromises);
+                        stories.forEach((story, i) => {
+                            output += `<span style="color: #fff;">[${i+1}] <a href="${story.url}" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: none; border-bottom: 1px dashed #ff6600;">${story.title}</a> (${story.score} pts)</span><br>`;
+                        });
+                    } catch(e) { output += '<span style="color: #f00;">⚠️ Hacker News feed offline.</span><br>'; }
+
+                    try {
+                        output += '<br>📰 <strong style="color: #00f0ff;">TECHNOLOGY (The Verge / Ars / TechCrunch / Wired)</strong><br>';
+                        const feeds = [
+                            { name: 'The Verge', url: 'https://www.theverge.com/rss/index.xml', weight: 2 },
+                            { name: 'Ars Technica', url: 'https://feeds.arstechnica.com/arstechnica/index', weight: 1 },
+                            { name: 'TechCrunch', url: 'https://techcrunch.com/feed/', weight: 1 },
+                            { name: 'Wired', url: 'https://www.wired.com/feed/rss', weight: 1 }
+                        ];
+                        const techPromises = feeds.map(async feed => {
+                            const api = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`;
+                            const resp = await fetch(api);
+                            const data = await resp.json();
+                            return (data.items || []).slice(0, feed.weight).map(item => ({ ...item, sourceName: feed.name }));
+                        });
+                        const techResults = await Promise.all(techPromises);
+                        const techItems = techResults.flat();
+                        techItems.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+                        techItems.forEach((item, i) => {
+                            output += `<span style="color: #fff;">[${i+1}] <a href="${item.link}" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: none; border-bottom: 1px dotted #00f0ff;">${item.title}</a> (${item.sourceName})</span><br>`;
+                        });
+                    } catch(e) { output += '<span style="color: #f00;">⚠️ Technology feed offline.</span><br>'; }
+
+                    return output;
+                }
+
                 try {
                     let output = '<strong style="color: #00f0ff;">📰 BBC WORLD NEWS</strong><br>';
                     const api = 'https://api.rss2json.com/v1/api.json?rss_url=';
@@ -3977,6 +4065,89 @@
                     return output;
                 } catch (e) {
                     return '⚠️ Could not reach Hacker News.';
+                }
+            },
+            'weather': async (args) => {
+                let city = args.length ? args.join(' ') : null;
+
+                const loadingLine = document.createElement('div');
+                loadingLine.style.color = '#888';
+                loadingLine.textContent = city 
+                    ? `☁️ Looking up weather for ${city}…` 
+                    : `☁️ Detecting your area & getting weather…`;
+                cmdOutput.appendChild(loadingLine);
+                cmdOutput.scrollTop = cmdOutput.scrollHeight;
+
+                try {
+                    let latitude, longitude, name, country, usedFallback = false;
+
+                    if (!city) {
+                        // IP‑based geolocation
+                        try {
+                            const ipResp = await fetch('https://ipapi.co/json/');
+                            const ipData = await ipResp.json();
+                            if (ipData.error) throw new Error(ipData.reason);
+                            latitude = ipData.latitude;
+                            longitude = ipData.longitude;
+                            name = ipData.city || 'Unknown';
+                            country = ipData.country_name || '';
+                        } catch (ipErr) {
+                            // Fallback to London
+                            latitude = 51.5074;
+                            longitude = -0.1278;
+                            name = 'London';
+                            country = 'GB';
+                            usedFallback = true;
+                        }
+                    } else {
+                        // ----- Geocode the given city name -----
+                        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`;
+                        const geoResp = await fetch(geoUrl);
+                        const geoData = await geoResp.json();
+                        if (!geoData.results || geoData.results.length === 0) {
+                            loadingLine.remove();
+                            return `⚠️ City "${city}" not found.`;
+                        }
+                        latitude = geoData.results[0].latitude;
+                        longitude = geoData.results[0].longitude;
+                        name = geoData.results[0].name;
+                        country = geoData.results[0].country || '';
+                    }
+
+                    // ----- Fetch weather from coordinates -----
+                    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=auto`;
+                    const weatherResp = await fetch(weatherUrl);
+                    const weatherData = await weatherResp.json();
+                    if (!weatherData.current_weather) throw new Error('No weather data');
+
+                    const w = weatherData.current_weather;
+                    const temp = w.temperature;
+                    const wind = w.windspeed;
+                    const code = w.weathercode;
+                    const emoji = getWeatherEmoji(code);
+
+                    loadingLine.remove();
+
+                    let outputHtml = `
+                        <div style="border-left: 2px solid #ffaa00; padding: 10px; margin: 10px 0; background: rgba(255,170,0,0.05); border-radius: 4px; font-size: 1.1rem;">
+                            🌍 <strong style="color: #ffaa00;">${name}, ${country}</strong><br>
+                            <span style="font-size: 1.3rem;">${emoji}  ${temp}°C</span><br>
+                            <span style="color: #aaa;">Wind: ${wind} km/h</span>
+                        </div>`;
+
+                    // If no city was given, add relevant hints
+                    if (!city) {
+                        if (usedFallback) {
+                            outputHtml += `<br><span style="color: #ffaa00;">⚠️ Could not detect your location. Showing London as default.</span>`;
+                        }
+                        outputHtml += `<br><span style="color: #888;">💡 <b>Usage:</b> weather [city]  (e.g., weather Tokyo)</span>`;
+                    }
+
+                    return outputHtml;
+
+                } catch (e) {
+                    loadingLine.remove();
+                    return '⚠️ Weather service unavailable.';
                 }
             },
             'define': async (args) => {
