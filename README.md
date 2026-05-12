@@ -178,10 +178,10 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 `tao` `wisdom` `sutra` `buddha` `koan` `stoic` `bible` `verse`
 
 **🎭 Fun & Entertainment**  
-`joke` `riddle` `game` `poem` `ascii` `poetry` `anime` `qr` `radio` `tv` `play youtube` `play audio` `stop` `cowsay [text]` `hack` `htop` `react` `rotate`  `siren` `piano` `run` `homing`
+`joke` `riddle` `game` `run` `poem` `ascii` `poetry` `anime` `qr` `radio` `tv` `play youtube` `play audio` `stop` `cowsay` `hack` `htop` `react` `rotate`  `banner` `piano` `homing`
 
 **🖼️ Visuals & Effects**  
-`image` `walls` `glitch` `scroll` `intersect` `intersectslow`
+`image` `walls` `glitch` `scroll` `intersect` `intersectslow` `graph`
 
 **Type `help` to see the full list.**
 ## 💻 Terminal Command Runner(CLI)
@@ -272,7 +272,9 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 | `anime`               | Top 10 anime + currently airing |
 | `qr [text]`           | Generate scannable QR code |
 | `play youtube <id/url>`   | Embed YouTube video player in the terminal |
-| `play audio <url>`    | Play direct audio file or stream(url must end with .mp3) |
+| `play audio <preset>` | Start playing a built‑in sound. Available presets:<br>`siren`, `bell`, `gong`, `ascension`, `medit`, `deeptown`, `elite`, `cote` |
+| `play audio <preset> -loop` | Play a preset in a continuous loop (stops when you type `stop`). |
+| `play audio <url>` | Play an external audio file (must be a direct link to a `.mp3`, `.ogg`, `.wav`, etc.). |
 | `radio [channel]`     | Tune into a curated radio channel |
 | `tv [channel]`        | Watch a curated live TV feed (NASA, ISS, Lofi, Gumball) |
 | `stop`                | Stop all currently playing media (YouTube and audio) |
@@ -299,8 +301,13 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 | `palindrome [check\|square\|tenet\|make]` | Palindrome verifier, maker & ancient Sator Square and the Pater Noster anagram |
 | `run`                | Cyberpunk text RPG – reclaim the Akashic Mainframe |
 | `piano`              | Interactive on‑screen piano with sustain, chords, and keyboard |
+| `graph`              | Toggle the live Obsidian graph command‑co‑occurrence overlay |
 
-### 📖 Cyberpunk RPG (`run`)
+## 🧠 Neural Graph
+- **`graph`** – Toggle the live command‑co‑occurrence overlay (Obsidian‑style).
+- **`brain clear`** – Erase all nodes and connections.
+
+## 📖 Cyberpunk RPG (`run`)
 Type `run` to start a branching text adventure where you play as Neo‑J, a neural operative battling the rogue AI KRYPTOS. All game choices are entered directly in the terminal. Type `exit` to leave the RPG. Three different endings await.
 
 ### 🎧 Media Playback
@@ -340,6 +347,25 @@ The terminal supports YouTube video embedding, direct audio playback, live radio
 
 
 Type `radio` or `tv` without arguments to see the channel list directly in the terminal.
+
+### 🎧 Built‑in Audio Presets
+
+The `play audio` command now accepts shortcut names:
+
+- `play audio siren` – Civil defense siren
+- `play audio bell` – Large church bells
+- `play audio gong` – Temple gong
+- `play audio ascension` – Ascension ambient
+- `play audio medit` – Meditation music
+- `play audio deeptown` – DeepTown routine (used in RPG)
+- `play audio elite` – Ayano Sinister Schemes (used in RPG)
+- `play audio cote` – COTE A‑Class Arisu (used in RPG)
+
+add -loop at the end to play in a continuous loop. e.g: `play audio ascension -loop` until you type `stop`
+
+## 🗺️ NetOrbit – Global Packet Map
+
+`netorbit` draws an animated world map with moving packets and live telemetry, inspired by [NetOrbit](https://github.com/ZXCurban/NetOrbit)
 
 ### 🕵️ Steganography vs. Tag Store
 

@@ -2,6 +2,17 @@
             const bootStatuses = ["J-OS BOOTING", "AKASHIC SYNC", "NEURAL LINK ACTIVE"];
             triggerGhost(bootStatuses[Math.floor(Math.random() * bootStatuses.length)]);
         });
+
+        // ── NEURAL GRAPH STATE ──
+        let nodes = [];
+        let links = [];
+        const MAX_NODES = 30;
+        const DRIFT_SPEED = 0.2;
+        let graphCanvas = null;
+        let graphCtx = null;
+        let graphAnimationId = null;
+        const NODE_COLORS = ['#0f0', '#0ff', '#ff0', '#f0f', '#f00']; // green, cyan, yellow, magenta, red
+        
         // --- 1. AUDIO CONTEXT SETUP ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -98,6 +109,18 @@
             osc.stop(audioCtx.currentTime + 0.03); // Stop osc after 30ms
         }
 
+        // ── Audio preset shortcuts ──
+        const audioPresets = {
+            siren:     './sounds/civil-defense-siren.mp3',
+            bell:      './sounds/LargeChurchBells.mp3',
+            gong:      './sounds/TempleGong.mp3',
+            ascension: './sounds/Ascension.mp3',
+            medit:     './sounds/MeditMusic.mp3',
+            deeptown:  './sounds/DeepTown-Routine_128k.mp3',
+            elite:     './sounds/AyanoSinister-Schemes_128k.mp3',
+            cote:      './sounds/COTE A-Class-Arisu_128k.mp3'
+        };
+
 
         // RPG State
         window._rpg = {
@@ -106,7 +129,189 @@
             inventory: [],
             health: 100
         };
+
+        function startRpgPlaylist() {
+            stopRpgAudio(); // stop any previous
+
+            const playlist = ['deeptown', 'elite', 'cote'];
+            let currentIndex = 0;
+
+            function playNext() {
+                if (!window._rpg.active) return; // RPG ended, stop
+                const preset = playlist[currentIndex];
+                const audio = new Audio(audioPresets[preset]);
+                window._rpgCurrentAudio = audio;
+                audio.play().catch(e => console.warn('RPG audio failed:', e));
+                audio.onended = () => {
+                    currentIndex = (currentIndex + 1) % playlist.length;
+                    playNext();
+                };
+            }
+
+            playNext();
+        }
+
+        function stopRpgAudio() {
+            if (window._rpgCurrentAudio) {
+                window._rpgCurrentAudio.pause();
+                window._rpgCurrentAudio.currentTime = 0;
+                window._rpgCurrentAudio.onended = null;
+                window._rpgCurrentAudio = null;
+            }
+        }
         
+        // Load saved graph from localStorage
+        function loadGraph() {
+            try {
+                const saved = JSON.parse(localStorage.getItem('akashic_graph'));
+                if (saved && saved.nodes && saved.links) {
+                    nodes = saved.nodes;
+                    links = saved.links;
+                }
+            } catch (e) { /* ignore corrupt data */ }
+        }
+
+        // Save graph to localStorage
+        function saveGraph() {
+            localStorage.setItem('akashic_graph', JSON.stringify({ nodes, links }));
+        }
+
+        // Add a command to the graph
+        function addNodeToGraph(label) {
+            if (!label) return;
+            // Look for an existing node with the same label
+            let existing = nodes.find(n => n.label === label);
+            if (existing) {
+                existing.size = Math.min(existing.size + 2, 20);
+                // Cycle colour
+                const currentIdx = NODE_COLORS.indexOf(existing.color);
+                const nextIdx = (currentIdx + 1) % NODE_COLORS.length;
+                existing.color = NODE_COLORS[nextIdx] !== -1 ? NODE_COLORS[nextIdx] : NODE_COLORS[0];
+                // … link logic …
+                saveGraph();
+                return;
+            }
+
+            // Create new node at random position
+            const w = window.innerWidth, h = window.innerHeight;
+            const newNode = {
+                label: label,
+                relX: Math.random() * 0.8 + 0.1,   // 10%–90% of width
+                relY: Math.random() * 0.6 + 0.2,   // 20%–80% of height
+                size: 5,
+                color: NODE_COLORS[Math.floor(Math.random() * NODE_COLORS.length)]
+            };
+
+            // Link from the previous node (if any)
+            if (nodes.length > 0) {
+                links.push({ source: nodes[nodes.length - 1], target: newNode });
+            }
+
+            nodes.push(newNode);
+
+            // Trim old nodes
+            if (nodes.length > MAX_NODES) {
+                const removed = nodes.shift();
+                // Remove any links that reference the removed node
+                links = links.filter(l => l.source !== removed && l.target !== removed);
+            }
+
+            saveGraph();
+        }
+
+        // Draw the brain graph
+       function drawBrainGraph() {
+            if (!graphCtx) return;
+
+            // Keep canvas dimensions in sync with the window
+            const w = window.innerWidth, h = window.innerHeight;
+            if (graphCanvas.width !== w || graphCanvas.height !== h) {
+                graphCanvas.width = w;
+                graphCanvas.height = h;
+            }
+
+            // Fade previous frame
+            graphCtx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+            graphCtx.fillRect(0, 0, w, h);
+
+            // Convert relative → absolute, apply drift, keep inside bounds
+            nodes.forEach(node => {
+                // If rel not yet set (for old data), compute from stored absolute (fallback)
+                if (node.relX === undefined) {
+                    node.relX = node.x / w || 0.1;
+                    node.relY = node.y / h || 0.2;
+                }
+                // Get current absolute position from relative
+                let ax = node.relX * w;
+                let ay = node.relY * h;
+
+                // Drift
+                ax += (Math.random() - 0.5) * DRIFT_SPEED;
+                ay += (Math.random() - 0.5) * DRIFT_SPEED;
+                // Clamp
+                ax = Math.max(10, Math.min(w - 10, ax));
+                ay = Math.max(10, Math.min(h - 10, ay));
+
+                // Store back as relative
+                node.relX = ax / w;
+                node.relY = ay / h;
+
+                // Temporary absolute for drawing
+                node.x = ax;
+                node.y = ay;
+            });
+
+            // Draw links (using node.x, node.y which we just set)
+            graphCtx.strokeStyle = 'rgba(0, 255, 0, 0.15)';
+            graphCtx.lineWidth = 1;
+            links.forEach(link => {
+                graphCtx.beginPath();
+                graphCtx.moveTo(link.source.x, link.source.y);
+                graphCtx.lineTo(link.target.x, link.target.y);
+                graphCtx.stroke();
+            });
+
+            // Draw nodes (with new label positioning)
+            nodes.forEach(node => {
+                graphCtx.fillStyle = node.color;
+                graphCtx.beginPath();
+                graphCtx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
+                graphCtx.fill();
+
+                // Label above the node
+                graphCtx.fillStyle = '#fff';
+                graphCtx.font = '10px monospace';
+                graphCtx.textAlign = 'center';
+                graphCtx.textBaseline = 'bottom';
+                graphCtx.fillText(node.label, node.x, node.y - node.size - 4);
+            });
+            // Reset text alignment
+            graphCtx.textAlign = 'start';
+            graphCtx.textBaseline = 'alphabetic';
+
+            saveGraph(); // periodic save (with relative coords)
+            graphAnimationId = requestAnimationFrame(drawBrainGraph);
+        }
+
+        // Start the graph overlay
+        function startGraph() {
+            graphCanvas = document.getElementById('neural-canvas');
+            if (!graphCanvas) return;
+            graphCanvas.style.display = 'block';
+            graphCanvas.width = window.innerWidth;
+            graphCanvas.height = window.innerHeight;
+            graphCtx = graphCanvas.getContext('2d');
+            window._graphActive = true;
+            drawBrainGraph();
+        }
+
+        // Stop the graph overlay
+        function stopGraph() {
+            if (graphAnimationId) cancelAnimationFrame(graphAnimationId);
+            if (graphCanvas) graphCanvas.style.display = 'none';
+            window._graphActive = false;
+        }
+
         // --- CYBER-FETCH ENGINE ---
         const fetchTerminal = document.getElementById('cyber-fetch-terminal');
         const fetchContent = document.getElementById('fetch-content');
@@ -723,6 +928,7 @@
             'images/indepedentBG/PMononoke.png',
             'images/indepedentBG/SolarSystem.png',
             'images/indepedentBG/kaneki_kenJin_TKG.jpg',
+            'images/indepedentBG/june-17-solstice-sunset.png',
             //'images/indepedentBG/',
         ];
 
@@ -1461,6 +1667,10 @@
                 <strong style="color: var(--accent-color);">⚡ SYSTEM & UTILITY</strong><br>
                 help, about, clear, echo [text], whoami, ls, sudo, history, fastfetch, fetchpanel, fetch, neofetch, system, shutdown, ping, date [utc\|iso\|unix], spinner, stopspinner, timer [seconds], stoptimer, nuke :(factory reset)<br>
                 <br>
+                <strong style="color: var(--accent-color);">🧠 NEURAL GRAPH</strong><br>
+                graph : Toggle live neural command graph (Obsidian‑style)<br>
+                brain clear : Reset the graph<br>
+                <br>
                 <strong style="color: var(--accent-color);">🎨 THEME & UI</strong><br>
                 theme [cyan|magenta|amber|matrix], pause, mode [flipper|midnight|matrix|crimson|cyber|hologram|stealth|off], zoom [in|out|reset]<br>
                 <br>
@@ -1506,10 +1716,10 @@
                 tao, wisdom, sutra, buddha, koan, stoic, bible, verse<br>
                 <br>
                 <strong style="color: var(--accent-color);">🎭 FUN & ENTERTAINMENT</strong><br>
-                joke, riddle, poem, poetry, anime, ascii, run, piano, game [snake|dodge|marble|asteroids|flappy|dino], qr [text], homing, siren, radio [channel], tv [channel], play youtube [url], play audio, stop, cowsay [text], hack, htop, react, rotate<br>
+                joke, riddle, poem, run (Role Player Game), poetry, anime, ascii, banner [text], piano, game [snake|dodge|marble|asteroids|flappy|dino], qr [text], homing, radio [channel], tv [channel], play youtube [url], play audio [url|preset] [-loop], stop, cowsay [text], hack, htop, react, rotate<br>
                 <br>
                 <strong style="color: var(--accent-color);">🖼️ VISUALS & EFFECTS</strong><br>
-                image, walls, glitch, scroll, intersect, intersectslow<br>
+                image, walls, glitch, scroll, intersect, graph, intersectslow<br>
                 <br>
                 `;
             },
@@ -1860,7 +2070,8 @@
             },
             'history': () => {
                 if (commandHistory.length === 0) return 'No commands in history.';
-                return commandHistory.map(cmd => `<span style="color: #ffffff;">${cmd}</span>`).join('<br>');
+                const list = commandHistory.map(cmd => `<span style="color: #ffffff;">${cmd}</span>`).join('<br>');
+                return `${list}<br><br><span style="color: #888;">💡 Type <b style="color:#00f0ff;">graph</b> to see your visual command constellation</span>`;
             },
             'pause': () => {
                 if (typeof isBgFrozen !== 'undefined') {
@@ -1880,9 +2091,9 @@
                     ${'‾'.repeat(message.length + 2)}
                         ^__^
                                 (oo)\\_______
-                                    (__)\\       )\\/\\
-                                        ||----w |
-                                        ||     ||
+                                     (__)\\        )\\/\\
+                                       ||----w |
+                                       ||     ||
                 `;
                 return `<pre style="color: #fff; line-height: 1.2;">${cow}</pre>`;
             },
@@ -3299,6 +3510,15 @@
                 const gameType = args[0]?.toLowerCase();
 
                 if (!gameType) {
+                    //  Stop any currently playing audio, then start looping the deeptown arcade theme
+                    if (currentAudio) {
+                        currentAudio.pause();
+                        currentAudio = null;
+                    }
+                    currentAudio = new Audio(audioPresets['deeptown']);
+                    currentAudio.loop = true; 
+                    currentAudio.play().catch(e => console.warn('Arcade audio failed:', e));
+
                     return `
                     <div style="border: 1px solid #ff8200; padding: 10px; text-align: center;">
                         <b style="color: #ff8200;">[ J_OS ARCADE MODULE ]</b><br>
@@ -3683,13 +3903,107 @@
                         <span style="color: #ff00aa;">Words: SAGA, AREA, GERO, AAOA (Latin, [SAGA] tale, [AREA] open space, [GERO] I carry, [AAOA] a name)</span>
                     </div>`;
             },
+            'banner': (args) => {
+                const text = args.join(' ').trim();
+                if (!text) return '⚠️ <b>Usage:</b> banner [text] (max 20 characters)';
+                if (text.length > 20) return '⚠️ Text too long (max 20 characters).';
 
+                // ---- The ASCII font ----
+                const asciiFont = {
+                    'A': ['  ███  ', ' ██ ██ ', ' █████ ', ' ██ ██ ', ' ██ ██ '],
+                    'B': [' ████  ', ' ██ ██ ', ' ████  ', ' ██ ██ ', ' ████  '],
+                    'C': ['  ████ ', ' ██    ', ' ██    ', ' ██    ', '  ████ '],
+                    'D': [' ████  ', ' ██ ██ ', ' ██ ██ ', ' ██ ██ ', ' ████  '],
+                    'E': [' █████ ', ' ██    ', ' ████  ', ' ██    ', ' █████ '],
+                    'F': [' █████ ', ' ██    ', ' ████  ', ' ██    ', ' ██    '],
+                    'G': ['  ████ ', ' ██    ', ' ██ ██ ', ' ██ ██ ', '  ████ '],
+                    'H': [' ██ ██ ', ' ██ ██ ', ' █████ ', ' ██ ██ ', ' ██ ██ '],
+                    'I': [' █████ ', '   ██  ', '   ██  ', '   ██  ', ' █████ '],
+                    'J': ['    ██ ', '    ██ ', '    ██ ', ' ██ ██ ', '  ███  '],
+                    'K': [' ██ ██ ', ' ████  ', ' ███   ', ' ████  ', ' ██ ██ '],
+                    'L': [' ██    ', ' ██    ', ' ██    ', ' ██    ', ' █████ '],
+                    'M': [' ██ ██ ', ' █████ ', ' ██ ██ ', ' ██ ██ ', ' ██ ██ '],
+                    'N': [' ██ ██ ', ' █████ ', ' █████ ', ' ██ ██ ', ' ██ ██ '],
+                    'O': ['  ███  ', ' ██ ██ ', ' ██ ██ ', ' ██ ██ ', '  ███  '],
+                    'P': [' ████  ', ' ██ ██ ', ' ████  ', ' ██    ', ' ██    '],
+                    'Q': ['  ███  ', ' ██ ██ ', ' ██ ██ ', ' █████ ', '  ████ '],
+                    'R': [' ████  ', ' ██ ██ ', ' ████  ', ' ████  ', ' ██ ██ '],
+                    'S': ['  ████ ', ' ██    ', '  ███  ', '    ██ ', ' ████  '],
+                    'T': [' █████ ', '   ██  ', '   ██  ', '   ██  ', '   ██  '],
+                    'U': [' ██ ██ ', ' ██ ██ ', ' ██ ██ ', ' ██ ██ ', '  ███  '],
+                    'V': [' ██ ██ ', ' ██ ██ ', ' ██ ██ ', '  ███  ', '   █   '],
+                    'W': [' ██ ██ ', ' ██ ██ ', ' ██ ██ ', ' █████ ', ' ██ ██ '],
+                    'X': [' ██ ██ ', '  ███  ', '   █   ', '  ███  ', ' ██ ██ '],
+                    'Y': [' ██ ██ ', ' ██ ██ ', '  ███  ', '   ██  ', '   ██  '],
+                    'Z': [' █████ ', '    ██ ', '   ██  ', '  ██   ', ' █████ '],
+                    '0': ['  ███  ', ' ██ ██ ', ' ██ ██ ', ' ██ ██ ', '  ███  '],
+                    '1': ['  ███  ', '   ██  ', '   ██  ', '   ██  ', ' █████ '],
+                    '2': [' ████  ', '    ██ ', '  ███  ', ' ██    ', ' █████ '],
+                    '3': [' ████  ', '    ██ ', '  ███  ', '    ██ ', ' ████  '],
+                    '4': [' ██ ██ ', ' ██ ██ ', ' █████ ', '    ██ ', '    ██ '],
+                    '5': [' █████ ', ' ██    ', ' ████  ', '    ██ ', ' ████  '],
+                    '6': ['  ███  ', ' ██    ', ' ████  ', ' ██ ██ ', '  ███  '],
+                    '7': [' █████ ', '    ██ ', '   ██  ', '  ██   ', '  ██   '],
+                    '8': ['  ███  ', ' ██ ██ ', '  ███  ', ' ██ ██ ', '  ███  '],
+                    '9': ['  ███  ', ' ██ ██ ', '  ████ ', '    ██ ', '  ███  '],
+                    ' ': ['       ', '       ', '       ', '       ', '       '],
+                    '?': ['  ███  ', ' ██ ██ ', '   ██  ', '       ', '   ██  '],
+                    '!': ['   █   ', '   █   ', '   █   ', '       ', '   █   '],
+                    '.': ['       ', '       ', '       ', '       ', '   █   '],
+                    '-': ['       ', '       ', ' █████ ', '       ', '       ']
+                };
+
+                const upperText = text.toUpperCase();
+                const fontHeight = 5;
+                let outputLines = Array(fontHeight).fill('');
+
+                for (let i = 0; i < upperText.length; i++) {
+                    const char = upperText[i];
+                    const charArt = asciiFont[char] || asciiFont['?'];
+                    for (let row = 0; row < fontHeight; row++) {
+                        outputLines[row] += charArt[row] + '  ';   // extra spacing between letters
+                    }
+                }
+
+                const banner = outputLines.join('\n');
+                return `<pre style="color: var(--accent-color); text-shadow: 0 0 4px var(--accent-color); line-height: 1.2;">${banner}</pre>`;
+            },
+            'graph': () => {
+                if (window._graphActive) {
+                    stopGraph();
+                    return '🧠 Neural graph paused.';
+                } else {
+                    startGraph();
+                    return '🧠 Neural graph activated. Visualising command history.';
+                }
+            },
+            'brain': (args) => {
+                if (args[0] === 'clear') {
+                    nodes = [];
+                    links = [];
+                    saveGraph();
+                    if (window._graphActive) {
+                        stopGraph();
+                        startGraph();      // restart with empty canvas
+                    }
+                    return '🧠 Neural pathways purged.';
+                }
+                // Show usage instead of toggling
+                return `🧠 <b>NEURAL GRAPH COMMANDS</b><br>
+                <span style="color:#0f0;">graph</span> – Toggle the live graph overlay<br>
+                <span style="color:#0f0;">brain clear</span> – Delete all nodes and connections`;
+            },
             'run': () => {
                 if (window._rpg.active) return 'You are already in an RPG session. Type exit to leave.';
                 window._rpg.active = true;
                 window._rpg.inventory = [];
                 window._rpg.health = 100;
                 window._rpg.chapter = chapter1;
+
+                // Start looping RPG ambiance (deeptown → elite → cote)
+                stopRpgAudio();  // safety
+                startRpgPlaylist();
+
                 appendCommandHTML(`
                     <div style="border-left: 3px solid #ff00ff; padding-left: 10px; line-height: 1.4;">
                         <b style="color: #ff00ff;">[ AKASHIC INTRUSION DETECTED ]</b><br>
@@ -3712,31 +4026,34 @@
                 return `🖼️ Decrypting visual data... seed=${seed}${imgHtml}`;
             },
             'play': (args) => {
-                if (args.length < 2) {
+                // Show help when no arguments or just "play"
+                if (args.length === 0) {
                     return `
                         <strong style="color: #00f0ff;">🎬 PLAY COMMAND</strong><br>
                         <span style="color: #888;">Usage:</span><br>
                         <span style="color: #0f0;">play youtube &lt;id_or_url&gt;</span> – Embed YouTube player<br>
-                        <span style="color: #0f0;">play audio &lt;mp3_url&gt;</span> – Play direct audio file (MP3, OGG, WAV)<br>
+                        <span style="color: #0f0;">play audio &lt;url&gt;</span> – Play direct audio file (MP3, OGG, WAV)<br>
+                        <span style="color: #0f0;">play audio &lt;preset&gt;</span> – Play a built‑in sound<br>
+                        <br>
+                        <span style="color: #888;">Built‑in audio presets:</span><br>
+                        <span style="color: #ff4d00;">siren</span>, <span style="color: #00d0ff;">bell</span>, <span style="color: #ffdd00;">gong</span>, <span style="color: #00a6ff;">ascension</span>, <span style="color: #d400ff;">medit</span>, <span style="color: #00ff4c;">elite</span>, <span style="color: #ffff00;">deeptown</span><br>
                         <br>
                         <span style="color: #888;">Examples:</span><br>
                         play youtube dQw4w9WgXcQ<br>
-                        play youtube https://youtu.be/dQw4w9WgXcQ<br>
-                        play audio https://example.com/song.mp3
+                        play yt url<br>
+                        play audio https://example.com/song.mp3<br>
+                        play audio bell
                     `;
                 }
 
                 const type = args[0].toLowerCase();
-                
+
                 // ----- YOUTUBE -----
                 if (type === 'youtube' || type === 'yt') {
-                    // Gold‑standard regex to extract video ID
                     const input = args[1];
                     if (!input) return '⚠️ Please provide a YouTube URL or ID.';
-
                     const containerId = 'yt-player-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
                     setTimeout(() => createYouTubePlayer(input, containerId), 50);
-
                     return `
                         <div style="margin: 12px 0; border: 1px solid var(--accent-color); border-radius: 8px; overflow: hidden; background: #000; box-shadow: 0 0 15px rgba(0,255,0,0.2);">
                             <div id="${containerId}" style="width: 100%; min-height: 200px;"></div>
@@ -3744,40 +4061,45 @@
                         <span style="color: #00ffff;">📡 FEED ESTABLISHED</span>
                     `;
                 }
-                
-                // ----- AUDIO (direct file) -----
-                if (type === 'audio') {
-                    const url = args[1];
-                    if (!url) return '⚠️ Please provide an audio URL.';
-                    
-                    // Stop any currently playing audio
+
+                // ----- AUDIO (preset or URL) -----
+                 if (type === 'audio') {
+                    // Separate the flag from the rest
+                    let audioArgs = args.slice(1);            // everything after "audio"
+                    let loop = false;
+
+                    const loopIdx = audioArgs.indexOf('-loop');
+                    if (loopIdx !== -1) {
+                        loop = true;
+                        audioArgs.splice(loopIdx, 1);        // remove the flag
+                    }
+
+                    // Determine what to play
+                    const first = audioArgs[0] || '';
+                    let url;
+                    if (audioPresets[first]) {
+                        url = audioPresets[first];            // known preset
+                    } else {
+                        url = audioArgs.join(' ');           // treat remainder as a custom URL
+                        if (!url) return '⚠️ Please provide an audio URL or a preset name.';
+                    }
+
+                    // Stop any previously playing audio
                     if (currentAudio) {
                         currentAudio.pause();
                         currentAudio = null;
                     }
-                    
+
                     currentAudio = new Audio(url);
+                    if (loop) currentAudio.loop = true;      // <-- loop flag applied
                     currentAudio.play().catch(e => {
                         appendCommandOutput(`⚠️ Audio playback failed: ${e.message}`, true);
                     });
-                    return `<div class="active-transmission">🔊 NEURAL AUDIO STREAM STARTED: ${url}</div>`;
+
+                    return `<div class="active-transmission">🔊 NEURAL AUDIO STREAM STARTED: ${first || 'custom URL'}${loop ? ' (loop)' : ''}</div>`;
                 }
-                
+
                 return '⚠️ Unknown type. Use "play youtube" or "play audio".';
-            },
-            'siren': () => {
-                // Stop any previously playing siren (optional)
-                if (window._sirenAudio) {
-                    window._sirenAudio.pause();
-                    window._sirenAudio = null;
-                }
-                const audio = new Audio('./sounds/civil-defense-siren.mp3');
-                audio.loop = false;           // play once (1 minute)
-                audio.play().catch(e => {
-                    appendCommandOutput(`⚠️ Siren failed: ${e.message}`, true);
-                });
-                window._sirenAudio = audio;
-                return '🚨 SIREN ACTIVATED. Type <span style="color: #0f0;">stop</span> to silence.';
             },
             'homing': () => {
                 if (typeof startContinuousTone !== 'function') {
@@ -3793,20 +4115,22 @@
                     if (youtubePlayer.destroy) youtubePlayer.destroy();
                     youtubePlayer = null;
                 }
-                
-                // Stop audio
+
+                // Stop global audio (presets + custom URLs)
                 if (currentAudio) {
                     currentAudio.pause();
+                    currentAudio.currentTime = 0;
                     currentAudio = null;
                 }
-                
-                if (window._sirenAudio) {
-                    window._sirenAudio.pause();
-                    window._sirenAudio.currentTime = 0; // Reset to start
-                    window._sirenAudio = null;
+
+                // Stop homing continuous tone
+                if (typeof stopContinuousTone === 'function') {
+                    stopContinuousTone();
                 }
-                    if (typeof stopContinuousTone === 'function') {
-                    stopContinuousTone();  
+
+                // RPG playlist
+                if (typeof stopRpgAudio === 'function') {
+                    stopRpgAudio();
                 }
 
                 return '🔇 All transmissions silenced.';
@@ -3816,14 +4140,14 @@
                 if (!args || args.length === 0) {
                     let channelList = '';
                     for (const ch in stations) {
-                        channelList += `<span style="color: #0f0;">${ch}</span>  `;
+                        channelList += `<span style="color: #ffdd00;">${ch}</span>  `;
                     }
                     return `
                         <strong style="color: #00ffff;">📻 AKASHIC RADIO FREQUENCIES</strong><br>
                         <span style="color: #888;">Available channels:</span><br>
                         ${channelList}<br>
                         <br>
-                        <span style="color: #888;">Usage:</span> <span style="color: #0f0;">radio &lt;channel&gt;</span><br>
+                        <span style="color: #888;">Usage:</span> <span style="color: #00f7ff;">radio &lt;channel&gt;</span><br>
                         <span style="color: #888;">Example:</span> radio defcon
                     `;
                 }
@@ -3905,12 +4229,13 @@
 
                 if (!args || args.length === 0) {
                     let channelList = '';
-                    for (const ch in channels) channelList += `<span style="color: #0f0;">${ch}</span>  `;
+                    for (const ch in channels) channelList += `<span style="color: #ffdd00;">${ch}</span>  `;
                     return `
                         <strong style="color: #00ffff;">📺 AKASHIC VISUAL UPLINK</strong><br>
                         <span style="color: #888;">Available feeds:</span><br>
                         ${channelList}<br><br>
-                        <span style="color: #888;">Usage:</span> <span style="color: #0f0;">tv &lt;channel&gt;</span>
+                        <span style="color: #00d0ff;">Usage:</span> <span style="color: #0f0;">tv &lt;channel&gt;</span><br>
+                        <span style="color: #888;">Example:</span> tv gumball
                     `;
                 }
 
@@ -5950,6 +6275,7 @@
         }
 
         function victory(type) {
+            stopRpgAudio();
             window._rpg.active = false;
             let msg = '';
             if (type === 'complete') {
@@ -5967,6 +6293,7 @@
             if (window._rpg.health <= 0) {
                 window._rpg.health = 0;
                 window._rpg.active = false;
+                stopRpgAudio();
                 appendCommandHTML(`<span style="color: #f00;">💀 NEURAL LINK SEVERED. GAME OVER.</span>`);
                 appendCommandHTML(`<span style="color: #888;">Type <b>run</b> to try again.</span>`);
             }
@@ -5985,6 +6312,7 @@
                 const input = rawCmd.trim();
                 if (input.toLowerCase() === 'exit') {
                     window._rpg.active = false;
+                    stopRpgAudio();
                     appendCommandOutput('Exiting RPG mode.');
                     return;
                 }
@@ -5994,6 +6322,7 @@
                 cmdInput.value = '';
                 return;
             }
+            
             // Add to history
             commandHistory.push(rawCmd);
             
@@ -6001,6 +6330,9 @@
             const args = rawCmd.split(' ');
             const main = args[0].toLowerCase();
             const restArgs = args.slice(1);
+            
+            // Now safe to update neural graph
+            addNodeToGraph(main);
             
             // Show the command in output
             appendCommandOutput(`$ ${rawCmd}`);
@@ -6015,7 +6347,7 @@
             let result;
             
             try {
-                // Execute the command
+                // execute the command
                 result = cmdFunc(restArgs);
                 
                 // If it's a Promise (async command), show loading and await
@@ -6027,7 +6359,7 @@
                     cmdOutput.scrollTop = cmdOutput.scrollHeight;
                     
                     result = await result;
-                    loadingLine.remove(); // remove loading indicator
+                    loadingLine.remove();         // remove loading indicator
                 }
                 
                 // Display result if not empty
@@ -6043,7 +6375,7 @@
                 appendCommandOutput(`Error: ${error.message}`, true);
             }
         });
-
+       
         // --- FULLSCREEN TOGGLE FOR TERMINAL ---
         const fullscreenBtn = document.getElementById('terminal-fullscreen-btn');
         const terminalContainer = document.getElementById('command-runner');
@@ -6075,6 +6407,31 @@
                 }
             });
         }
+        
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement && cmdVisible) {
+                // We just left fullscreen – scroll the terminal output into view
+                const runner = document.getElementById('command-runner');
+                if (runner) {
+                    runner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // also scroll the output to the bottom
+                    const output = document.getElementById('cmd-output');
+                    if (output) output.scrollTop = output.scrollHeight;
+                }
+            }
+        });
+        // Safari support
+        document.addEventListener('webkitfullscreenchange', () => {
+            if (!document.webkitFullscreenElement && cmdVisible) {
+                const runner = document.getElementById('command-runner');
+                if (runner) {
+                    runner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    const output = document.getElementById('cmd-output');
+                    if (output) output.scrollTop = output.scrollHeight;
+                }
+            }
+        });
+
         
         let currentTermFontSize = 8; // 14 matches default
 
