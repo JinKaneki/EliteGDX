@@ -355,6 +355,87 @@
             window._graphActive = false;
         }
 
+
+        // slideshow overlay
+        let slideshowInterval = null;
+        window._slideshowActive = false;
+        window._slideshowPaused = false;
+        let currentSlideIndex = 0;
+
+        function drawImageCover(img, canvas, ctx) {
+            const cw = canvas.width, ch = canvas.height;
+            const iw = img.naturalWidth, ih = img.naturalHeight;
+            const scale = Math.max(cw / iw, ch / ih);
+            const sw = iw * scale, sh = ih * scale;
+            const sx = (cw - sw) / 2, sy = (ch - sh) / 2;
+            ctx.clearRect(0, 0, cw, ch);
+            ctx.drawImage(img, sx, sy, sw, sh);
+        }
+
+        function startSlideshow() {
+            const canvas = document.getElementById('slideshow-canvas');
+            if (!canvas) return;
+            canvas.style.display = 'block';
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            window._slideshowActive = true;
+            window._slideshowPaused = false;
+
+            function drawSlide() {
+                if (!window._slideshowActive || window._slideshowPaused) return;
+                const img = new Image();
+                img.onload = () => drawImageCover(img, canvas, ctx);
+                const sources = slideshowSource;
+                img.src = sources[currentSlideIndex % sources.length];
+                currentSlideIndex++;
+                if (currentSlideIndex >= sources.length) currentSlideIndex = 0;
+            }
+
+            drawSlide();
+            slideshowInterval = setInterval(() => {
+                if (window._slideshowActive && !window._slideshowPaused) drawSlide();
+            }, 30000); // change every 30 seconds
+        }
+
+        function advanceSlideshow() {
+            const canvas = document.getElementById('slideshow-canvas');
+            if (!canvas || !window._slideshowActive) return;
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.onload = () => drawImageCover(img, canvas, ctx);
+            const sources = slideshowSource;
+            img.src = sources[currentSlideIndex % sources.length];
+            currentSlideIndex++;
+        }
+        function previousSlideshow() {
+            const canvas = document.getElementById('slideshow-canvas');
+            if (!canvas || !window._slideshowActive) return;
+            const ctx = canvas.getContext('2d');
+            const sources = slideshowSource;
+            currentSlideIndex = (currentSlideIndex - 2 + sources.length) % sources.length; // go back
+            if (currentSlideIndex < 0) currentSlideIndex = sources.length - 1;
+            const img = new Image();
+            img.onload = () => drawImageCover(img, canvas, ctx);
+            img.src = sources[currentSlideIndex % sources.length];
+        }
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('slideshow-canvas');
+            if (canvas && window._slideshowActive) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        });
+
+        function stopSlideshow() {
+            window._slideshowActive = false;
+            if (slideshowInterval) clearInterval(slideshowInterval);
+            const canvas = document.getElementById('slideshow-canvas');
+            if (canvas) canvas.style.display = 'none';
+        }
+
+
+
         // --- CYBER-FETCH ENGINE ---
         const fetchTerminal = document.getElementById('cyber-fetch-terminal');
         const fetchContent = document.getElementById('fetch-content');
@@ -1041,6 +1122,7 @@
             'images/MahoragaWheel.jpeg'
         ];
 
+        let slideshowSource = galleryImages;   // default
 
         const ghost = document.getElementById('ghost-indicator');
         const bgToggleBtn = document.getElementById('bg-toggle-btn');
@@ -1708,7 +1790,10 @@
             'help': () => {
                 return `
                 <strong style="color: var(--accent-color);">⚡ SYSTEM & UTILITY</strong><br>
-                help, about, clear, echo [text], whoami, ls, sudo, history, fastfetch, fetchpanel, fetch, neofetch, system, shutdown, ping, date [utc\|iso\|unix], spinner, stopspinner, timer [seconds], stoptimer, nuke :(factory reset)<br>
+                help, about, clear, echo [text], whoami, ls, sudo,<br>
+                history, fastfetch, fetchpanel, fetch, neofetch, system,<br>
+                ping, date [utc\|iso\|unix], spinner, stopspinner,<br>
+                timer [seconds], stoptimer, shutdown, nuke :(factory reset)<br>
                 <br>
                 <strong style="color: var(--accent-color);">🧠 NEURAL GRAPH</strong><br>
                 graph : Toggle live neural command graph (Obsidian‑style)<br>
@@ -1716,7 +1801,8 @@
                 brain layout : Toggle freeform / circular / grid layout<br>
                 <br>
                 <strong style="color: var(--accent-color);">🎨 THEME & UI</strong><br>
-                theme [cyan|magenta|amber|matrix], pause, mode [flipper|midnight|matrix|crimson|cyber|hologram|stealth|off], zoom [in|out|reset]<br>
+                theme [cyan|magenta|amber|matrix], zoom [in|out|reset]<br>
+                mode [flipper|midnight|matrix|crimson|cyber|hologram|stealth|off], pause<br>
                 <br>
                 <strong style="color: var(--accent-color);">📡 NETWORK & COMMUNICATION</strong><br>
                 chat mqtt : Global public frequency<br>
@@ -1730,13 +1816,15 @@
                 netorbit [--green|--red|--violet] : Live world map + packet sniffing<br>
                 <br>
                 <strong style="color: var(--accent-color);">📰 NEWS & INFORMATION</strong><br>
-                news, hackernews, technology, weather[city], crypto [coin], news -all (news,hackernews,technology)<br>
+                news, hackernews, technology, weather[city],<br> 
+                crypto [coin], news -all (news,hackernews,technology)<br>
                 <br>
                 <strong style="color: var(--accent-color);">📚 LEARNING & REFERENCE</strong><br>
-                define [word], learn, physics, electronics, engineering, biology, space, cstip, wiki [topic], fortune, motd<br>
+                define [word], learn, wiki [topic], electronics,<br>
+                engineering, physics, biology, space, cstip, fortune, motd<br>
                 <br>
                 <strong style="color: var(--accent-color);">⚙️ ENGINEERING TOOLS</strong><br>
-                case  -> interactive diagnostics: resistor calc, color decode, Ohm's Law, voltage divider, capacitor codes<br>
+                case   -> interactive diagnostics: resistor calc, color decode, Ohm's Law, voltage divider, capacitor codes<br>
                 <br>
                 <strong style="color: var(--accent-color);">🔐 AKASHIC CIPHER SUITE</strong><br>
                 cipher : Full usage manual for all ciphers (encrypt/decrypt)<br>
@@ -1751,19 +1839,27 @@
                 handshake [set|clear] [key] : Store or clear a personal encryption key locally<br>
                 <br>
                 <strong style="color: var(--accent-color);">🔮 TENET CIPHERS</strong><br>
-                reverse [message], palindrome [check|make|square|tenet], sator<br>
+                reverse [message], sator,<br>
+                palindrome [check|make|square|tenet]<br>
                 <br>
                 <strong style="color: var(--accent-color);">🕵️ CYBER OPS</strong><br>
-                kali, steg [hide|reveal] [cover] [secret], tag [set|get|clear|view] [key] [value], kali [hash|scan|crack|inject|genkey|dragon|arch], wifite, airmon [iface], nmap [target], hashcat, flipper [subghz|nfc|badusb|off], raspberry, gpio [status|on|off] [pin]<br>
+                kali, steg [hide|reveal] [cover] [secret],  wifite,<br>
+                tag [set|get|clear|view] [key] [value],  airmon [iface],<br>
+                kali [hash|scan|crack|inject|genkey|dragon|arch],  nmap [target], hashcat,<br>
+                flipper [subghz|nfc|badusb|off],<br>
+                raspberry, gpio [status|on|off] [pin]<br>
                 <br>
                 <strong style="color: var(--accent-color);">🧘 WISDOM & SPIRITUALITY</strong><br>
                 tao, wisdom, sutra, buddha, koan, stoic, bible, verse<br>
                 <br>
                 <strong style="color: var(--accent-color);">🎭 FUN & ENTERTAINMENT</strong><br>
-                joke, riddle, poem, run (Role Player Game), poetry, anime, ascii, banner [text], piano, game [snake|dodge|marble|asteroids|flappy|dino], qr [text], homing, radio [channel], tv [channel], play youtube [url], play audio [url|preset] [-loop], stop, cowsay [text], hack, htop, react, rotate<br>
+                joke, riddle, poem, game, run (Role Player Game), poetry, anime,<br>
+                ascii, banner [text], piano, qr [text], homing, radio [channel], tv [channel], play, stop,<br>
+                cowsay [text], hack, htop, react, rotate, play youtube<br>
                 <br>
                 <strong style="color: var(--accent-color);">🖼️ VISUALS & EFFECTS</strong><br>
-                image, walls, glitch, scroll, intersect, graph, intersectslow<br>
+                image, walls, glitch, scroll, intersect, graph, intersectslow, slide<br>
+                slide [src|next|prev|pause|resume] : Control the overlay slideshow<br>
                 <br>
                 `;
             },
@@ -2109,7 +2205,7 @@
             'ls': () => 'Documents/  Downloads/  Secret_Project/  tao_te_ching.txt  system_core.bin',
             'echo': (args) => args.join(' ') || 'Usage: echo [text]',
             'shutdown': () => {
-                setTimeout(() => { if (typeof enterMagicMirror === 'function') enterMagicMirror(); }, 1500);
+                setTimeout(() => { enterPerfectMirror(); }, 1500);
                 return 'System shutting down... Entering Mirror Mode.';
             },
             'history': () => {
@@ -4054,6 +4150,62 @@
                         <span style="color:#0f0;">brain clear</span>  –Delete all nodes and connections<br>
                         <span style="color:#0f0;">brain layout</span>  –Toggle between freeform, circular, and grid layout`;
             },
+           'slide': (args) => {
+                const sub = args[0]?.toLowerCase();
+
+                // No sub-command → toggle slideshow on/off
+                if (!sub) {
+                    if (window._slideshowActive) {
+                        stopSlideshow();
+                        return '🖼️ Slideshow stopped.';
+                    } else {
+                        startSlideshow();
+                        return '🖼️ Slideshow started. Use <span style="color:#0f0;">slide next</span> to skip, <span style="color:#0f0;">slide pause</span> to pause.';
+                    }
+                }
+
+                // Known sub-commands
+                if (sub === 'src') {
+                    const target = args[1]?.toLowerCase();
+                    if (target === 'gallery' || target === 'default') {
+                        slideshowSource = galleryImages;
+                        return '🖼️ Slideshow source set to <b>gallery</b>.';
+                    } else if (target === 'indie' || target === 'independent' || target === 'bg') {
+                        slideshowSource = independentBgImages;
+                        return '🖼️ Slideshow source set to <b>independent backgrounds</b>.';
+                    } else {
+                        return '⚠️ Usage: <b>slide src [gallery|indie]</b>';
+                    }
+                }
+                else if (sub === 'next') {
+                    if (window._slideshowActive) {
+                        advanceSlideshow();
+                        return '⏭️ Advanced to next image.';
+                    }
+                    return 'Slideshow is not running. Type <span style="color:#0f0;">slide</span> to start.';
+                }
+                else if (sub === 'prev') {
+                    if (window._slideshowActive) {
+                        previousSlideshow();
+                        return '⏮️ Went back to previous image.';
+                    }
+                    return 'Slideshow is not running. Type <span style="color:#0f0;">slide</span> to start.';
+                }
+                else if (sub === 'pause') {
+                    if (window._slideshowPaused) return 'Slideshow already paused.';
+                    window._slideshowPaused = true;
+                    return '⏸️ Slideshow paused. Type <span style="color:#0f0;">slide resume</span> to continue.';
+                }
+                else if (sub === 'resume') {
+                    if (!window._slideshowPaused) return 'Slide is not paused.';
+                    window._slideshowPaused = false;
+                    return '▶️ Slideshow resumed.';
+                }
+                else {
+                    // Unknown sub-command
+                    return `⚠️ Unknown sub-command: <b>${sub}</b>. Usage: slide [src|next|prev|pause|resume]`;
+                }
+            },
             'run': () => {
                 if (window._rpg.active) return 'You are already in an RPG session. Type exit to leave.';
                 window._rpg.active = true;
@@ -4112,7 +4264,7 @@
                 // ----- YOUTUBE -----
                 if (type === 'youtube' || type === 'yt') {
                     const input = args[1];
-                    if (!input) return '⚠️ Please provide a YouTube URL or ID.';
+                    if (!input) return '⚠️ Please provide a YouTube URL or ID.<br>type "play" to see how to use it';
                     const containerId = 'yt-player-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
                     setTimeout(() => createYouTubePlayer(input, containerId), 50);
                     return `
@@ -4142,7 +4294,7 @@
                         url = audioPresets[first];            // known preset
                     } else {
                         url = audioArgs.join(' ');           // treat remainder as a custom URL
-                        if (!url) return '⚠️ Please provide an audio URL or a preset name.';
+                        if (!url) return '⚠️ Please provide an audio URL or a preset name.<br>type "play" to see how to use it';
                     }
 
                     // Stop any previously playing audio
@@ -6453,7 +6605,8 @@
                 appendCommandOutput(`Error: ${error.message}`, true);
             }
         });
-       
+
+
         // --- FULLSCREEN TOGGLE FOR TERMINAL ---
         const fullscreenBtn = document.getElementById('terminal-fullscreen-btn');
         const terminalContainer = document.getElementById('command-runner');
@@ -6510,6 +6663,26 @@
             }
         });
 
+        function refreshSlideshowIfActive() {
+            if (window._slideshowActive) {
+                // quickly re‑draw the current image to restore visibility
+                const canvas = document.getElementById('slideshow-canvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                const sources = slideshowSource;
+                const idx = currentSlideIndex > 0 ? currentSlideIndex - 1 : sources.length - 1; // last shown
+                const img = new Image();
+                img.onload = () => drawImageCover(img, canvas, ctx);
+                img.src = sources[idx % sources.length];
+            }
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) refreshSlideshowIfActive();
+        });
+        document.addEventListener('webkitfullscreenchange', () => {
+            if (!document.webkitFullscreenElement) refreshSlideshowIfActive();
+        });
         
         let currentTermFontSize = 8; // 14 matches default
 
@@ -6725,7 +6898,7 @@
         const mirrorExitBtn = document.getElementById('mirror-exit-btn');
 
         // Elements to hide (Tao widget stays visible)
-        const elementsToHide = [
+        let elementsToHide = [
             '.content-blocks', '.controls', '.site-footer', '#command-runner',
             '.action-btn',
             '#quote-widget', '#dynamic-quote-container',   // online quote
@@ -6844,14 +7017,53 @@
 
             // Bring back the JOHAN_OS button
             document.getElementById('toggle-fetch-btn').parentElement.style.display = 'block';
-
             // Bring back the fastfetch container (MUST be 'flex' to preserve your layout!)
             document.getElementById('neofetch-container').style.display = 'flex';
+
+            if (window._perfectMirrorActive) {
+                const taoWidget = document.getElementById('tao-quote-container');
+                const quoteWidget = document.getElementById('online-quote-container');
+                if (taoWidget) {
+                    taoWidget.style.visibility = window._perfectOriginalTaoVis || '';
+                }
+                if (quoteWidget) {
+                    quoteWidget.style.visibility = window._perfectOriginalQuoteVis || '';
+                }
+                window._perfectMirrorActive = false;
+                window._perfectOriginalTaoVis = '';
+                window._perfectOriginalQuoteVis = '';
+            }
         }
 
         // Attach event listeners
         if (magicMirrorBtn) magicMirrorBtn.addEventListener('click', enterMagicMirror);
         if (mirrorExitBtn) mirrorExitBtn.addEventListener('click', exitMagicMirror);
+
+        function enterPerfectMirror() {
+            if (magicMirrorActive) return;
+
+            const taoWidget = document.getElementById('tao-quote-container');
+            const quoteWidget = document.getElementById('online-quote-container');
+
+            // Store originals and hide with visibility (keeps space)
+            if (taoWidget) {
+                if (!window._perfectOriginalTaoVis) {
+                    window._perfectOriginalTaoVis = taoWidget.style.visibility || '';
+                }
+                taoWidget.style.visibility = 'hidden';
+            }
+            if (quoteWidget) {
+                if (!window._perfectOriginalQuoteVis) {
+                    window._perfectOriginalQuoteVis = quoteWidget.style.visibility || '';
+                }
+                quoteWidget.style.visibility = 'hidden';
+            }
+
+            enterMagicMirror();
+            window._perfectMirrorActive = true;
+        }
+
+
 
         // --- SCREEN WAKE LOCK API ---
         let wakeLock = null;

@@ -368,6 +368,14 @@ add -loop at the end to play in a continuous loop. e.g: `play audio ascension -l
 
 `netorbit` draws an animated world map with moving packets and live telemetry, inspired by [NetOrbit](https://github.com/ZXCurban/NetOrbit)
 
+### 🖼️ Slideshow Overlay
+`slide` – Start / stop an automatic 30‑second image rotation  
+`slide src gallery` – Use the main gallery images (default)  
+`slide src indie` – Use independent background images  
+`slide next` – Skip to the next image  
+`slide prev` – Go back to the previous image  
+`slide pause` / `slide resume` – Pause / resume the timer
+
 ### 🕵️ Steganography vs. Tag Store
 
 | Feature               | Steganography (`steg`)                       | Cipher Dictionary (`tag`)               |
