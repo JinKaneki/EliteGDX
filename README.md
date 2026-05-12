@@ -306,6 +306,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 ## 🧠 Neural Graph
 - **`graph`** – Toggle the live command‑co‑occurrence overlay (Obsidian‑style).
 - **`brain clear`** – Erase all nodes and connections.
+- **`brain layout`** – Toggle between freeform and circular layout.
 
 ## 📖 Cyberpunk RPG (`run`)
 Type `run` to start a branching text adventure where you play as Neo‑J, a neural operative battling the rogue AI KRYPTOS. All game choices are entered directly in the terminal. Type `exit` to leave the RPG. Three different endings await.

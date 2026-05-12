@@ -7,11 +7,12 @@
         let nodes = [];
         let links = [];
         const MAX_NODES = 30;
-        const DRIFT_SPEED = 0.2;
+        const DRIFT_SPEED = 0.7;   // more vivid neural activity
         let graphCanvas = null;
         let graphCtx = null;
         let graphAnimationId = null;
         const NODE_COLORS = ['#0f0', '#0ff', '#ff0', '#f0f', '#f00']; // green, cyan, yellow, magenta, red
+        let graphLayout = 'free'; // 'free', 'circle', 'grid'
         
         // --- 1. AUDIO CONTEXT SETUP ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -244,13 +245,15 @@
                 // Get current absolute position from relative
                 let ax = node.relX * w;
                 let ay = node.relY * h;
-
-                // Drift
-                ax += (Math.random() - 0.5) * DRIFT_SPEED;
-                ay += (Math.random() - 0.5) * DRIFT_SPEED;
-                // Clamp
-                ax = Math.max(10, Math.min(w - 10, ax));
-                ay = Math.max(10, Math.min(h - 10, ay));
+                
+                // Drift + Apply stored velocity (from layout burst) and small random drift
+                ax += (node.vx || 0) + (Math.random() - 0.5) * DRIFT_SPEED;
+                ay += (node.vy || 0) + (Math.random() - 0.5) * DRIFT_SPEED;
+                // Clamp + Dampen velocities so they fade out
+                node.vx = (node.vx || 0) * 0.95;
+                node.vy = (node.vy || 0) * 0.95;
+                if (Math.abs(node.vx) < 0.01) node.vx = 0;
+                if (Math.abs(node.vy) < 0.01) node.vy = 0;
 
                 // Store back as relative
                 node.relX = ax / w;
@@ -260,6 +263,46 @@
                 node.x = ax;
                 node.y = ay;
             });
+
+            // ── if in circle mode, place nodes evenly on a circle ──
+            if (graphLayout === 'circle') {
+                const centerX = w / 2, centerY = h / 2;
+                const radius = Math.min(w, h) * 0.4;
+                const total = nodes.length;
+                nodes.forEach((node, i) => {
+                    const angle = (i / total) * Math.PI * 2 - Math.PI / 2; // start from top
+                    const targetX = centerX + Math.cos(angle) * radius;
+                    const targetY = centerY + Math.sin(angle) * radius;
+                    // Smoothly move towards the target (lerp)
+                    node.x += (targetX - node.x) * 0.1;
+                    node.y += (targetY - node.y) * 0.1;
+                    // Store relative positions (for persistence)
+                    node.relX = node.x / w;
+                    node.relY = node.y / h;
+                });
+            }
+
+            // ── if in grid mode, snap nodes to a neat grid ──
+            if (graphLayout === 'grid') {
+                const total = nodes.length;
+                if (total > 0) {
+                    const cols = Math.ceil(Math.sqrt(total));
+                    const rows = Math.ceil(total / cols);
+                    const gridW = w / (cols + 1);
+                    const gridH = h / (rows + 1);
+                    nodes.forEach((node, i) => {
+                        const col = i % cols;
+                        const row = Math.floor(i / cols);
+                        const targetX = gridW * (col + 1);
+                        const targetY = gridH * (row + 1);
+                        // Lerp toward target
+                        node.x += (targetX - node.x) * 0.1;
+                        node.y += (targetY - node.y) * 0.1;
+                        node.relX = node.x / w;
+                        node.relY = node.y / h;
+                    });
+                }
+            }
 
             // Draw links (using node.x, node.y which we just set)
             graphCtx.strokeStyle = 'rgba(0, 255, 0, 0.15)';
@@ -1670,6 +1713,7 @@
                 <strong style="color: var(--accent-color);">🧠 NEURAL GRAPH</strong><br>
                 graph : Toggle live neural command graph (Obsidian‑style)<br>
                 brain clear : Reset the graph<br>
+                brain layout : Toggle freeform / circular / grid layout<br>
                 <br>
                 <strong style="color: var(--accent-color);">🎨 THEME & UI</strong><br>
                 theme [cyan|magenta|amber|matrix], pause, mode [flipper|midnight|matrix|crimson|cyber|hologram|stealth|off], zoom [in|out|reset]<br>
@@ -3989,9 +4033,26 @@
                     return '🧠 Neural pathways purged.';
                 }
                 // Show usage instead of toggling
+                if (args[0] === 'layout') {
+                    const layouts = ['free', 'circle', 'grid'];
+                    const currentIdx = layouts.indexOf(graphLayout);
+                    const nextIdx = (currentIdx + 1) % layouts.length;
+                    graphLayout = layouts[nextIdx];
+
+                    // When switching back to freeform, give nodes a tiny random boost
+                    if (graphLayout === 'free') {
+                        nodes.forEach(node => {
+                            node.vx = (Math.random() - 0.5) * 2;   // small velocity
+                            node.vy = (Math.random() - 0.5) * 2;
+                        });
+                    }
+
+                    return `🧠 Graph layout switched to <b>${graphLayout.toUpperCase()}</b>.`;
+                }
                 return `🧠 <b>NEURAL GRAPH COMMANDS</b><br>
-                <span style="color:#0f0;">graph</span> – Toggle the live graph overlay<br>
-                <span style="color:#0f0;">brain clear</span> – Delete all nodes and connections`;
+                        <span style="color:#0f0;">graph</span>  –Toggle the live graph overlay<br>
+                        <span style="color:#0f0;">brain clear</span>  –Delete all nodes and connections<br>
+                        <span style="color:#0f0;">brain layout</span>  –Toggle between freeform, circular, and grid layout`;
             },
             'run': () => {
                 if (window._rpg.active) return 'You are already in an RPG session. Type exit to leave.';
@@ -4172,15 +4233,32 @@
                 if (currentAudio && !currentAudio.paused) {
                     const src = currentAudio.src;
                     let feedName = src;
+
+                    // 1. Check radio stations
                     for (const ch in stations) {
                         if (src.includes(stations[ch])) {
                             feedName = ch.toUpperCase();
                             break;
                         }
                     }
+
+                    // 2. Check audio presets (local files)
                     if (feedName === src) {
-                        feedName = src.length > 40 ? src.substring(0, 37) + '...' : src;
+                        for (const preset in audioPresets) {
+                            if (src.endsWith(audioPresets[preset])) {
+                                feedName = preset.toUpperCase();
+                                break;
+                            }
+                        }
                     }
+
+                    // 3. Fallback: if still a URL, show only the filename
+                    if (feedName === src) {
+                        const parts = src.split('/');
+                        const filename = parts[parts.length - 1] || src;
+                        feedName = filename.length > 30 ? filename.substring(0, 27) + '...' : filename;
+                    }
+
                     currentFeed = feedName;
                 }
 
