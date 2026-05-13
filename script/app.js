@@ -14,6 +14,14 @@
         const NODE_COLORS = ['#0f0', '#0ff', '#ff0', '#f0f', '#f00']; // green, cyan, yellow, magenta, red
         let graphLayout = 'free'; // 'free', 'circle', 'grid'
         
+        // Trance state
+        let tranceActive = false;
+        let tranceFloatRunning = false;
+        let tranceSpiralRunning = false;
+        let tranceFloatTexts = [];
+        let tranceFloatAnimationId = null;
+        let tranceSpiralAnimationId = null;
+
         // --- 1. AUDIO CONTEXT SETUP ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -296,6 +304,26 @@
                         const targetX = gridW * (col + 1);
                         const targetY = gridH * (row + 1);
                         // Lerp toward target
+                        node.x += (targetX - node.x) * 0.1;
+                        node.y += (targetY - node.y) * 0.1;
+                        node.relX = node.x / w;
+                        node.relY = node.y / h;
+                    });
+                }
+            }
+
+            // ── if in fibonacci mode, arrange nodes in a sunflower spiral ──
+            if (graphLayout === 'fibonacci') {
+                const total = nodes.length;
+                if (total > 0) {
+                    const centerX = w / 2, centerY = h / 2;
+                    const scale = Math.min(w, h) * 0.3;            // adjust spread
+                    const goldenAngle = Math.PI * (3 - Math.sqrt(5)); // ~137.5°
+                    nodes.forEach((node, i) => {
+                        const radius = scale * Math.sqrt(i + 0.5);
+                        const angle = i * goldenAngle;
+                        const targetX = centerX + radius * Math.cos(angle);
+                        const targetY = centerY + radius * Math.sin(angle);
                         node.x += (targetX - node.x) * 0.1;
                         node.y += (targetY - node.y) * 0.1;
                         node.relX = node.x / w;
@@ -1663,7 +1691,10 @@
             
             // Hip-Hop / Urban
             'fiphiphop': 'https://direct.fipradio.fr/live/fiphiphop-hifi.aac',
-            'thebeat': 'https://listen.181fm.com/181-beat_128k.mp3'
+            'thebeat': 'https://listen.181fm.com/181-beat_128k.mp3',
+
+            'skyrock':   'https://icecast.skyrock.net/s/natio_mp3_128k',
+            '1mix':      'https://fr3.1mix.co.uk:8000/192hr',   // Trance / EDM
         };
 
         // Global state for the current puzzle
@@ -1797,8 +1828,7 @@
                 <br>
                 <strong style="color: var(--accent-color);">🧠 NEURAL GRAPH</strong><br>
                 graph : Toggle live neural command graph (Obsidian‑style)<br>
-                brain clear : Reset the graph<br>
-                brain layout : Toggle freeform / circular / grid layout<br>
+                brain : Info on how to toggle and Reset the graph<br>
                 <br>
                 <strong style="color: var(--accent-color);">🎨 THEME & UI</strong><br>
                 theme [cyan|magenta|amber|matrix], zoom [in|out|reset]<br>
@@ -1855,7 +1885,7 @@
                 <strong style="color: var(--accent-color);">🎭 FUN & ENTERTAINMENT</strong><br>
                 joke, riddle, poem, game, run (Role Player Game), poetry, anime,<br>
                 ascii, banner [text], piano, qr [text], homing, radio [channel], tv [channel], play, stop,<br>
-                cowsay [text], hack, htop, react, rotate, play youtube<br>
+                cowsay [text], hack, htop, react, rotate, flow, play youtube<br>
                 <br>
                 <strong style="color: var(--accent-color);">🖼️ VISUALS & EFFECTS</strong><br>
                 image, walls, glitch, scroll, intersect, graph, intersectslow, slide<br>
@@ -4122,33 +4152,35 @@
                     nodes = [];
                     links = [];
                     saveGraph();
-                    if (window._graphActive) {
-                        stopGraph();
-                        startGraph();      // restart with empty canvas
-                    }
+                    if (window._graphActive) { stopGraph(); startGraph(); }
                     return '🧠 Neural pathways purged.';
                 }
-                // Show usage instead of toggling
                 if (args[0] === 'layout') {
-                    const layouts = ['free', 'circle', 'grid'];
-                    const currentIdx = layouts.indexOf(graphLayout);
-                    const nextIdx = (currentIdx + 1) % layouts.length;
-                    graphLayout = layouts[nextIdx];
-
-                    // When switching back to freeform, give nodes a tiny random boost
+                    const layouts = ['free', 'circle', 'grid', 'fibonacci'];
+                    let target;
+                    const arg = args[1];
+                    if (arg && /^[1-4]$/.test(arg)) {
+                        // direct number (1‑based)
+                        target = parseInt(arg) - 1;
+                    } else {
+                        // cycle forward
+                        const currentIdx = layouts.indexOf(graphLayout);
+                        target = (currentIdx + 1) % layouts.length;
+                    }
+                    graphLayout = layouts[target];
                     if (graphLayout === 'free') {
                         nodes.forEach(node => {
                             node.vx = (Math.random() - 0.5) * 2;   // small velocity
                             node.vy = (Math.random() - 0.5) * 2;
                         });
                     }
-
                     return `🧠 Graph layout switched to <b>${graphLayout.toUpperCase()}</b>.`;
                 }
                 return `🧠 <b>NEURAL GRAPH COMMANDS</b><br>
                         <span style="color:#0f0;">graph</span>  –Toggle the live graph overlay<br>
                         <span style="color:#0f0;">brain clear</span>  –Delete all nodes and connections<br>
-                        <span style="color:#0f0;">brain layout</span>  –Toggle between freeform, circular, and grid layout`;
+                        <span style="color:#0f0;">brain layout [1-4]</span>  –Freeform(1), Circle(2), Grid(3), Fibonacci(4)<br>
+                        <span style="color:#0f0;">brain layout</span>  –Cycle to next layout`;
             },
            'slide': (args) => {
                 const sub = args[0]?.toLowerCase();
@@ -4205,6 +4237,64 @@
                     // Unknown sub-command
                     return `⚠️ Unknown sub-command: <b>${sub}</b>. Usage: slide [src|next|prev|pause|resume]`;
                 }
+            },
+            'flow': async () => {
+                const thoughts = [
+                    { tag: "PHYSICS_OVERRIDE",   text: "What if gravity worked sideways for an hour?" },
+                    { tag: "SENSORY_HACK",       text: "Design a secret language that only uses colours." },
+                    { tag: "NEURAL_ARCHIVE",     text: "Imagine a device that records dreams. What does it look like?" },
+                    { tag: "TEMPORAL_COMMS",     text: "How would you explain the internet to a medieval monk?" },
+                    { tag: "KINETIC_LOGIC",      text: "Invent a new sport that combines chess and parkour." },
+                    { tag: "URBAN_FRACTAL",      text: "Describe a city that exists entirely inside a single building." },
+                    { tag: "MEMORY_ECONOMICS",   text: "What if memories were traded like currency?" },
+                    { tag: "COGNITIVE_NUTRITION",text: "Create a recipe for a dish that grants temporary telepathy." },
+                    { tag: "EMOTION_METRICS",    text: "Design a clock that measures happiness instead of time." },
+                    { tag: "ELEMENTAL_DIALOGUE", text: "If you could talk to the wind, what would you ask?" },
+                    { tag: "HARMONIC_GOVERNANCE",text: "Build a world where music is the only form of law." },
+                    { tag: "SHADOW_SYNTAX",      text: "What would happen if everyone's shadow had a personality?" },
+                    { tag: "VOID_AESTHETICS",    text: "Write a haiku about a colour that doesn't exist yet." },
+                    { tag: "PARADOX_ARCHIVE",    text: "Imagine a library that contains every book never written." },
+                    { tag: "FLORA_OBSERVATION",  text: "How would a tree describe a human?" },
+                    { tag: "ZEN_PROTOCOL",       text: "Create a holiday that celebrates silence." },
+                    { tag: "TRUTH_TOPOGRAPHY",   text: "What if every lie you told turned into a visible tattoo?" },
+                    { tag: "EMPATHIC_HARDWARE",  text: "Design a friendship bracelet that transmits emotions." },
+                    { tag: "LIGHT_STORAGE",      text: "How would you store a sunset in a bottle?" }
+                ];
+
+                const t = thoughts[Math.floor(Math.random() * thoughts.length)];
+                const output = document.getElementById('cmd-output');
+
+                // Create the container
+                const container = document.createElement('div');
+                container.style.borderLeft = "2px solid #ffaa00";
+                container.style.paddingLeft = "10px";
+                container.style.margin = "10px 0";
+                output.appendChild(container);
+
+                // Print the header instantly
+                container.innerHTML = `
+                    <span style="color: #ffaa00; font-size: 0.8rem; letter-spacing: 1px;">[ EXTRACTING THOUGHT SEED // SECTOR: ${t.tag} ]</span><br>
+                    <span id="flow-text-${Date.now()}" style="color: #fff; font-size: 1.1rem; font-style: italic;"></span>
+                `;
+
+                const textSpan = container.lastElementChild;
+
+                // Typewriter / thought-forming effect
+                for (let i = 0; i < t.text.length; i++) {
+                    textSpan.innerHTML += t.text[i];
+
+                    // Use your existing audio engine for soft ticks
+                    if (typeof playTick === 'function' && i % 2 === 0) playTick();
+
+                    // Randomised typing speed – feels like a human thinking
+                    await new Promise(r => setTimeout(r, 30 + Math.random() * 60));
+
+                    // Auto‑scroll
+                    output.scrollTop = output.scrollHeight;
+                }
+
+                // Final closing statement
+                return `<span style="color: #555; font-size: 0.8rem;">// Let the concept compile in your mind. //</span>`;
             },
             'run': () => {
                 if (window._rpg.active) return 'You are already in an RPG session. Type exit to leave.';
@@ -4454,7 +4544,11 @@
 
                     // Entertainment (embeddable)
                     'lofi':       { name: 'Lofi Girl', type: 'youtube', url: 'jfKfPfyJRdk' },
-                    'gumball':    { name: 'Amazing World of Gumball', type: 'youtube', url: 'nIyaCRNwxhU' }
+                    'gumball':    { name: 'Amazing World of Gumball', type: 'youtube', url: 'nIyaCRNwxhU' },
+
+                    'kpop':         { name: 'K-POP 24/7',          type: 'youtube', url: 'tU2bRjRZx20' },
+                    'topgear':      { name: 'Top Gear Classic',    type: 'youtube', url: 'Xw2Xu5wKQVw' },
+                    'rickandmorty': { name: 'Rick and Morty Live', type: 'youtube', url: 'iiRNq1sxr0U' }
                 };
 
                 if (!args || args.length === 0) {

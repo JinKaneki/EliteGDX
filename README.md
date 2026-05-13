@@ -301,6 +301,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 | `palindrome [check\|square\|tenet\|make]` | Palindrome verifier, maker & ancient Sator Square and the Pater Noster anagram |
 | `run`                | Cyberpunk text RPG – reclaim the Akashic Mainframe |
 | `piano`              | Interactive on‑screen piano with sustain, chords, and keyboard |
+| `flow`               | Extract a random "Thought Seed" |
 | `graph`              | Toggle the live Obsidian graph command‑co‑occurrence overlay |
 
 ## 🧠 Neural Graph
