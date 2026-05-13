@@ -3,6 +3,35 @@
             triggerGhost(bootStatuses[Math.floor(Math.random() * bootStatuses.length)]);
         });
 
+        // --- SCREEN WAKE LOCK API ---
+        let wakeLock = null;
+
+        // Function to request the screen to stay awake
+        const requestWakeLock = async () => {
+            try {
+                // Requesting the 'screen' wake lock
+                wakeLock = await navigator.wakeLock.request('screen');
+                console.log('Wake Lock is active! Screen will stay on. 💡');
+                
+                // If the system forces it to release (like low battery), log it
+                wakeLock.addEventListener('release', () => {
+                    console.log('Wake Lock was released.');
+                });
+            } catch (err) {
+                // If the browser doesn't support it or blocks it
+                console.error(`Wake Lock error: ${err.name}, ${err.message}`);
+            }
+        };
+        // 1. Request it as soon as the page loads
+        requestWakeLock();
+
+        // 2. Re-request it if the user switches tabs and comes back
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                requestWakeLock();
+            }
+        });
+
         // ── NEURAL GRAPH STATE ──
         let nodes = [];
         let links = [];
@@ -384,7 +413,7 @@
         }
 
 
-        // slideshow overlay
+        // Slideshow Overlay
         let slideshowInterval = null;
         window._slideshowActive = false;
         window._slideshowPaused = false;
@@ -404,11 +433,15 @@
             const canvas = document.getElementById('slideshow-canvas');
             if (!canvas) return;
             canvas.style.display = 'block';
+            canvas.style.zIndex = '1000';    // ensure it floats above all else
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             window._slideshowActive = true;
             window._slideshowPaused = false;
+
+            canvas.addEventListener('click', (e) => e.stopPropagation());
+            canvas.addEventListener('touchstart', (e) => e.stopPropagation());
 
             function drawSlide() {
                 if (!window._slideshowActive || window._slideshowPaused) return;
@@ -460,6 +493,7 @@
             if (slideshowInterval) clearInterval(slideshowInterval);
             const canvas = document.getElementById('slideshow-canvas');
             if (canvas) canvas.style.display = 'none';
+            canvas.style.zIndex = '6';   // back to original
         }
 
 
@@ -7158,35 +7192,6 @@
         }
 
 
-
-        // --- SCREEN WAKE LOCK API ---
-        let wakeLock = null;
-
-        // Function to request the screen to stay awake
-        const requestWakeLock = async () => {
-            try {
-                // Requesting the 'screen' wake lock
-                wakeLock = await navigator.wakeLock.request('screen');
-                console.log('Wake Lock is active! Screen will stay on. 💡');
-                
-                // If the system forces it to release (like low battery), log it
-                wakeLock.addEventListener('release', () => {
-                    console.log('Wake Lock was released.');
-                });
-            } catch (err) {
-                // If the browser doesn't support it or blocks it
-                console.error(`Wake Lock error: ${err.name}, ${err.message}`);
-            }
-        };
-        // 1. Request it as soon as the page loads
-        requestWakeLock();
-
-        // 2. Re-request it if the user switches tabs and comes back
-        document.addEventListener('visibilitychange', async () => {
-            if (wakeLock !== null && document.visibilityState === 'visible') {
-                requestWakeLock();
-            }
-        });
 
        function initSnake(canvasId, noclip = false) {
             const canvas = document.getElementById(canvasId);
