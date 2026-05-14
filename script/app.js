@@ -440,9 +440,6 @@
             window._slideshowActive = true;
             window._slideshowPaused = false;
 
-            canvas.addEventListener('click', (e) => e.stopPropagation());
-            canvas.addEventListener('touchstart', (e) => e.stopPropagation());
-
             function drawSlide() {
                 if (!window._slideshowActive || window._slideshowPaused) return;
                 const img = new Image();
@@ -458,6 +455,18 @@
                 if (window._slideshowActive && !window._slideshowPaused) drawSlide();
             }, 30000); // change every 30 seconds
         }
+
+        // Extra robustness
+        if (window._slideshowGuard) clearInterval(window._slideshowGuard);
+        window._slideshowGuard = setInterval(() => {
+            if (window._slideshowActive) {
+                const canvas = document.getElementById('slideshow-canvas');
+                if (canvas && canvas.style.display !== 'block') {
+                    canvas.style.display = 'block';
+                    refreshSlideshowIfActive();
+                }
+            }
+        }, 2000);
 
         function advanceSlideshow() {
             const canvas = document.getElementById('slideshow-canvas');
@@ -480,11 +489,14 @@
             img.onload = () => drawImageCover(img, canvas, ctx);
             img.src = sources[currentSlideIndex % sources.length];
         }
+
         window.addEventListener('resize', () => {
             const canvas = document.getElementById('slideshow-canvas');
             if (canvas && window._slideshowActive) {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
+                // Immediately redraw the current image after resize
+                refreshSlideshowIfActive();
             }
         });
 
@@ -493,6 +505,7 @@
             if (slideshowInterval) clearInterval(slideshowInterval);
             const canvas = document.getElementById('slideshow-canvas');
             if (canvas) canvas.style.display = 'none';
+            if (window._slideshowGuard) clearInterval(window._slideshowGuard);
             canvas.style.zIndex = '6';   // back to original
         }
 
@@ -4438,7 +4451,7 @@
                         <span style="color: #0f0;">play youtube &lt;id_or_url&gt;</span>  -Embed YouTube player<br>
                         <span style="color: #0f0;">play audio &lt;url&gt;</span>  -Play direct audio file (MP3, OGG, WAV)<br>
                         <span style="color: #0f0;">play audio &lt;preset&gt;</span>  -Play a built-in sound<br>
-                        <span style="color: #0f0;">play iptv url<br></span> -Play an IPTV stream in the terminal<br> play iptv <url> : Play an IPTV stream in the terminal<br>
+                        <span style="color: #0f0;">play iptv <url></span> -Play an IPTV stream in the terminal<br>
                         <br>
                         <span style="color: #888;">Built-in audio presets:</span><br>
                         <span style="color: #ff4d00;">siren</span>, <span style="color: #00d0ff;">bell</span>, <span style="color: #ffdd00;">gong</span>, <span style="color: #00a6ff;">ascension</span>, <span style="color: #d400ff;">medit</span>, <span style="color: #00ff4c;">elite</span>, <span style="color: #ffff00;">deeptown</span><br>
