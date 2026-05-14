@@ -178,10 +178,10 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 `tao` `wisdom` `sutra` `buddha` `koan` `stoic` `bible` `verse`
 
 **🎭 Fun & Entertainment**  
-`joke` `riddle` `game` `run` `poem` `ascii` `poetry` `anime` `qr` `radio` `tv` `play youtube` `play audio` `stop` `cowsay` `hack` `htop` `react` `rotate`  `banner` `piano` `homing`
+`joke` `riddle` `game` `run` `poem` `ascii` `poetry` `anime` `qr` `radio` `tv` `play youtube` `play audio` `play iptv` `stop` `cowsay` `hack` `htop` `react` `rotate`  `banner` `piano` `homing` `iptv all`
 
 **🖼️ Visuals & Effects**  
-`image` `walls` `glitch` `scroll` `intersect` `intersectslow` `graph`
+`image` `walls` `glitch` `scroll` `intersect` `intersectslow` `graph` `slide`
 
 **Type `help` to see the full list.**
 ## 💻 Terminal Command Runner(CLI)
@@ -277,7 +277,11 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 | `play audio <url>` | Play an external audio file (must be a direct link to a `.mp3`, `.ogg`, `.wav`, etc.). |
 | `radio [channel]`     | Tune into a curated radio channel |
 | `tv [channel]`        | Watch a curated live TV feed (NASA, ISS, Lofi, Gumball) |
-| `stop`                | Stop all currently playing media (YouTube and audio) |
+| `stop`                | Stop all currently playing media (YouTube, audio, Iptv, etc) |
+| `iptv all`            | Browse all IPTV channels. |
+| `iptv us`             | Browse USA channels (any ISO country code). |
+| `iptv cat`            | Browse by category (see full list). |
+| `play iptv <url>`     | Play a stream directly in the terminal. |
 | `cowsay [text]`       | An ASCII cow speaks your message |
 | `ascii [1‑7]`         | Display specific cyber‑mystical ASCII art (random if no number) |
 | `hack`                | Simulate a fake hacking sequence (animated) |
@@ -291,7 +295,7 @@ The built‑in command runner—a full‑featured terminal emulator with over 50
 | `intersect`           | Neural‑link flash sequence (45 sec) |
 | `homing`              | Start a continuous homing tone (bypasses volume slider) |
 | `intersectslow`       | Deep neural integration (60 sec) |
-| `siren`              | Play the 1‑minute civil defense siren (local MP3) |
+| `siren`               | Play the 1‑minute civil defense siren (local MP3) |
 | `login`               | Display the J_OS Akashic Zero‑Point Kryptos Neural Center splash screen |
 | `game [snake\|dodge\|marble\|asteroids\|flappy\|dino]` | Play interactive canvas games (Snake, Gyro Dodge, Ball Maze, Asteroids, Cyber‑Bird) with D‑pad and gyro controls |
 | `game snake noclip`  | Classic Snake with portal-wrapping walls (never die from walls or tail) |
@@ -365,7 +369,17 @@ The `play audio` command now accepts shortcut names:
 
 add -loop at the end to play in a continuous loop. e.g: `play audio ascension -loop` until you type `stop`
 
-## 🗺️ NetOrbit – Global Packet Map
+## 📡 IPTV Streaming
+- **`iptv all`** – Browse all IPTV channels. **Click any channel name** to start watching directly in the terminal.  
+- **`iptv us`** – Browse USA channels (any ISO country code).
+- **`iptv cat animation`** – Browse by category (see full list with `iptv cat`).
+- **`play iptv <url>`** – Play a stream directly in the terminal.
+- **`stop`** – Stops all IPTV streams, audio, and YouTube players.
+- Uses the [iptv-org](https://github.com/iptv-org/iptv) public database of free, legal streams.
+
+**Available categories:** animation, auto, business, classic, comedy, cooking, culture, documentary, education, entertainment, family, general, kids, legislative, lifestyle, movies, music, news, outdoor, public, relax, religious, science, series, shop, sports, travel, weather.
+
+### 🗺️ NetOrbit – Global Packet Map
 
 `netorbit` draws an animated world map with moving packets and live telemetry, inspired by [NetOrbit](https://github.com/ZXCurban/NetOrbit)
 

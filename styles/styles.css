@@ -1467,7 +1467,57 @@
         }
 
 
+        /* ---------- IPTV / VIDEO PLAYER – totally dark, no white overlay ---------- */
 
+        /* Base style for all IPTV video elements */
+        .iptv-video {
+            -webkit-tap-highlight-color: transparent !important;   /* mobile tap flash */
+            outline: none !important;                              /* focus ring */
+            filter: brightness(1) !important;                      /* never wash out */
+            background: #000 !important;
+            transition: none !important;                           /* remove any fade delay */
+        }
+
+        /* Focus & active – prevent any glow */
+        .iptv-video:focus,
+        .iptv-video:active {
+            box-shadow: none !important;
+            background: #000 !important;
+        }
+
+        /* Controls bar – keep it dark */
+        .iptv-video::-webkit-media-controls-panel {
+            background-color: rgba(0, 0, 0, 0.85) !important;
+            border-radius: 0 0 6px 6px;
+        }
+
+        /* Controls icons / sliders – subtle accent glow */
+        .iptv-video::-webkit-media-controls-play-button,
+        .iptv-video::-webkit-media-controls-volume-slider,
+        .iptv-video::-webkit-media-controls-timeline {
+            filter: drop-shadow(0 0 4px var(--accent-color));
+        }
+
+        /* Remove the default white enclosure overlay */
+        .iptv-video::-webkit-media-controls-enclosure {
+            background: none !important;
+        }
+
+        /* Fullscreen – force black background */
+        .iptv-video:fullscreen {
+            background: #000 !important;
+        }
+        .iptv-video:-webkit-full-screen {
+            background: #000 !important;
+        }
+
+        /* Fullscreen backdrop (the letterboxing layer) – black */
+        .iptv-video::backdrop {
+            background: #000 !important;
+        }
+
+
+        
         /* MOBILE-FRIENDLY TWEAKS */
         @media (max-width: 600px) {
             /* Theme toggle (right side) */

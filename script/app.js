@@ -496,7 +496,22 @@
             canvas.style.zIndex = '6';   // back to original
         }
 
+        const categoriesList = [
+            'animation', 'auto', 'business', 'classic', 'comedy', 'cooking',
+            'culture', 'documentary', 'education', 'entertainment', 'family',
+            'general', 'kids', 'legislative', 'lifestyle', 'movies', 'music',
+            'news', 'outdoor', 'public', 'relax', 'religious', 'science',
+            'series', 'shop', 'sports', 'travel', 'weather'
+        ];
 
+        // Click‑to‑fill – a universal helper
+        function fillInput(text) {
+            const input = document.getElementById('cmd-input');
+            if (input) {
+                input.value = text;
+                input.focus();
+            }
+        }
 
         // --- CYBER-FETCH ENGINE ---
         const fetchTerminal = document.getElementById('cyber-fetch-terminal');
@@ -1708,6 +1723,45 @@
             }, 100); // 100ms delay gives the API time to clean up
         }
 
+        // Quick IPTV player – inserts a <video> element into cmd-output
+        function playIPTVInTerminal(url, channelName) {
+            const containerId = 'iptv-player-' + Date.now();
+            const title = channelName
+                ? `<div style="color:var(--accent-color); padding:6px 12px; font-family:monospace; font-size:0.85rem; background:rgba(0,0,0,0.7);">📺 ${channelName}</div>`
+                : '';
+            const html = `
+            <div id="${containerId}-wrapper" class="iptv-player-wrapper" style="margin:12px 0; border:1px solid var(--accent-color); border-radius:8px; overflow:hidden; background:#000;">
+                ${title}
+                <video id="${containerId}" class="iptv-video" controls autoplay width="100%" style="min-height:200px; display:block;">
+                    <source src="${url}" type="application/x-mpegURL">
+                </video>
+            </div>`;
+            appendCommandHTML(html);
+
+            const video = document.getElementById(containerId);
+            if (!video) return;
+
+            // Timeout – if video hasn't started playing in 10 seconds, show error
+            const timeout = setTimeout(() => {
+                if (video.paused || video.readyState < 2) {
+                    const wrapper = document.getElementById(`${containerId}-wrapper`);
+                    if (wrapper) {
+                        wrapper.innerHTML = `<div style="color:#f00; padding:20px; text-align:center; font-family:monospace;">⚠️ Stream offline or unavailable.<br><span style="color:#888;">Try again later or check another source.</span></div>`;
+                    }
+                }
+            }, 10000);
+
+            // Also listen for native error (sometimes it does fire)
+            video.addEventListener('error', () => {
+                clearTimeout(timeout);
+                const wrapper = document.getElementById(`${containerId}-wrapper`);
+                if (wrapper) {
+                    wrapper.innerHTML = `<div style="color:#f00; padding:20px; text-align:center; font-family:monospace;">⚠️ Stream offline or unavailable.<br><span style="color:#888;">Try again later or check another source.</span></div>`;
+                }
+            });
+        }
+
+
         // Curated Akashic frequencies – all HTTPS, no proxy needed
         const stations = {
             // Cyber-Dark / Industrial
@@ -1918,8 +1972,14 @@
                 <br>
                 <strong style="color: var(--accent-color);">🎭 FUN & ENTERTAINMENT</strong><br>
                 joke, riddle, poem, game, run (Role Player Game), poetry, anime,<br>
-                ascii, banner [text], piano, qr [text], homing, radio [channel], tv [channel], play, stop,<br>
-                cowsay [text], hack, htop, react, rotate, flow, play youtube<br>
+                ascii, banner [text], piano, qr [text], homing,<br>
+                cowsay [text], hack, htop, react, rotate, flow,<br>
+                radio [channel], tv [channel], play, stop,<br>
+                iptv all : list all IPTV channels <br>
+                iptv [country_code] : Browse IPTV channels by country (us, gb, fr, ca, jp, au, …)<br>
+                play iptv <url> : Play an IPTV stream in the terminal ,play youtube,<br>
+                iptv cat : List all available categories<br>
+                iptv cat [category] : Browse by category (animation, news, sports, music…)<br>
                 <br>
                 <strong style="color: var(--accent-color);">🖼️ VISUALS & EFFECTS</strong><br>
                 image, walls, glitch, scroll, intersect, graph, intersectslow, slide<br>
@@ -2511,8 +2571,8 @@
                             <span style="color: #d400ff;">chat p2p</span>  :Encrypted peer‑to‑peer tunnel<br>
                             <span style="color: #fca311;">chat firebase</span>  :Persistent mainframe archive<br><br>
                             <span style="color: #fff;">chat -all</span>  :Open all three channels at once<br>
-                            <span style="color: #00a2ff;">status</span>  –Show live connection status for all chat protocols.<br>
-                            <span style="color: #ff0077;">disconnect</span>  –Gracefully shut down all network connections.<br>
+                            <span style="color: #00a2ff;">status</span>  -Show live connection status for all chat protocols.<br>
+                            <span style="color: #ff0077;">disconnect</span>  -Gracefully shut down all network connections.<br>
                         </div>`;
                 }
 
@@ -3277,49 +3337,49 @@
                 <br>
 
                 <strong style="color: #0f0;">🔵 Base64 (encode / decode)</strong><br>
-                <span style="color: #fff;">Encrypt:</span> <span style="color: #0f0;">encode hello</span><br>
-                <span style="color: #fff;">Decrypt:</span> <span style="color: #0f0;">decode aGVsbG8=</span><br>
+                <span style="color: #fff;">Encrypt:</span> <span onclick="fillInput('encode hello')" style="color: #0f0; cursor:pointer; text-decoration:underline;">encode hello</span><br>
+                <span style="color: #fff;">Decrypt:</span> <span onclick="fillInput('decode aGVsbG8')" style="color: #0f0; cursor:pointer; text-decoration:underline;">decode aGVsbG8=</span><br>
                 <span style="color: #888;">The commands are exact mirrors. No key needed.</span><br>
                 <br>
 
                 <strong style="color: #0f0;">🟢 Caesar Shift (shift)</strong><br>
-                <span style="color: #fff;">Encrypt:</span> <span style="color: #0f0;">shift 3 hello</span> → khoor<br>
-                <span style="color: #fff;">Decrypt:</span> <span style="color: #0f0;">shift -3 khoor</span> → hello<br>
+                <span style="color: #fff;">Encrypt:</span> <span onclick="fillInput('shift 3 hello')" style="color: #0f0; cursor:pointer; text-decoration:underline;">shift 3 hello</span> → khoor<br>
+                <span style="color: #fff;">Decrypt:</span> <span onclick="fillInput('shift -3 khoor')" style="color: #0f0; cursor:pointer; text-decoration:underline;">shift -3 khoor</span> → hello<br>
                 <span style="color: #888;">Use the negative of the encryption number. Digits wrap as well.</span><br>
                 <br>
 
                 <strong style="color: #0f0;">🟡 Vigenère (vigenere)</strong><br>
-                <span style="color: #fff;">Encrypt:</span> <span style="color: #0f0;">vigenere enc secret hello</span><br>
-                <span style="color: #fff;">Decrypt:</span> <span style="color: #0f0;">vigenere dec secret &lt;ciphertext&gt;</span><br>
+                <span style="color: #fff;">Encrypt:</span> <span onclick="fillInput('vigenere enc secret hello')" style="color: #0f0; cursor:pointer; text-decoration:underline;">vigenere enc secret hello</span><br>
+                <span style="color: #fff;">Decrypt:</span> <span onclick="fillInput('vigenere dec secret')" style="color: #0f0; cursor:pointer; text-decoration:underline;">vigenere dec secret &lt;ciphertext&gt;</span><br>
                 <span style="color: #888;">You must use the same keyword and change the first argument to 'dec'.</span><br>
                 <br>
 
                 <strong style="color: #0f0;">🟣 Atbash Mirror (mirror)</strong><br>
-                <span style="color: #fff;">Encrypt &amp; Decrypt:</span> <span style="color: #0f0;">mirror hello</span> → svool (then mirror again to get back)<br>
+                <span style="color: #fff;">Encrypt &amp; Decrypt:</span> <span onclick="fillInput('mirror hello')" style="color: #0f0; cursor:pointer; text-decoration:underline;">mirror hello</span> → svool (then mirror again to get back)<br>
                 <span style="color: #888;">It's its own inverse – no extra step needed.</span><br>
                 <br>
 
                 <strong style="color: #ff0000;">🔴 Reverse Cipher (reverse)</strong><br>
-                <span style="color: #fff;">Encrypt &amp; Decrypt:</span> <span style="color: #0f0;">reverse hello</span> → olleh (reverse again to get back)<br>
+                <span style="color: #fff;">Encrypt &amp; Decrypt:</span> <span onclick="fillInput('reverse hello')" style="color: #0f0; cursor:pointer; text-decoration:underline;">reverse hello</span> → olleh (reverse again to get back)<br>
                 <span style="color: #888;">It's its own inverse – no extra step needed. Try "tenet" for a surprise.</span><br>
                 <br>
 
                 <strong style="color: #0f0;">🔴 AES‑256 Vault (vault)</strong><br>
-                <span style="color: #fff;">Encrypt:</span> <span style="color: #0f0;">vault enc mypassword hello</span><br>
-                <span style="color: #fff;">Decrypt:</span> <span style="color: #0f0;">vault dec mypassword &lt;hex_ciphertext&gt;</span><br>
+                <span style="color: #fff;">Encrypt:</span> <span onclick="fillInput('vault enc mypassword hello')" style="color: #0f0; cursor:pointer; text-decoration:underline;">vault enc mypassword hello</span><br>
+                <span style="color: #fff;">Decrypt:</span> <span onclick="fillInput('vault dec mypassword')" style="color: #0f0; cursor:pointer; text-decoration:underline;">vault dec mypassword &lt;hex_ciphertext&gt;</span><br>
                 <span style="color: #888;">You can omit the password if you've stored one with <span style="color: #0f0;">handshake set mykey</span>.<br>
                 The ciphertext includes a random IV – safe to reuse the same key.</span><br>
                 <br>
 
                 <strong style="color: #0f0;">⚫ Kryptos Stream (kryptos)</strong><br>
-                <span style="color: #fff;">Encrypt:</span> <span style="color: #0f0;">kryptos bin hello</span> → 01101000 01100101 ...<br>
-                <span style="color: #fff;">Encrypt:</span> <span style="color: #0f0;">kryptos hex hello</span> → 68 65 6C 6C 6F<br>
-                <span style="color: #fff;">Decrypt:</span> <span style="color: #0f0;">kryptos dec bin 01101000 01100101 ...</span> → hello<br>
-                <span style="color: #fff;">Decrypt:</span> <span style="color: #0f0;">kryptos dec hex 68 65 6C 6C 6F</span> → hello<br>
+                <span style="color: #fff;">Encrypt:</span> <span onclick="fillInput('kryptos bin hello')" style="color: #0f0; cursor:pointer; text-decoration:underline;">kryptos bin hello</span> → 01101000 01100101 ...<br>
+                <span style="color: #fff;">Encrypt:</span> <span onclick="fillInput('kryptos hex hello')" style="color: #0f0; cursor:pointer; text-decoration:underline;">kryptos hex hello</span> → 68 65 6C 6C 6F<br>
+                <span style="color: #fff;">Decrypt:</span> <span onclick="fillInput('kryptos dec bin')" style="color: #0f0; cursor:pointer; text-decoration:underline;">kryptos dec bin 01101000 01100101 ...</span> → hello<br>
+                <span style="color: #fff;">Decrypt:</span> <span onclick="fillInput('kryptos dec hex')" style="color: #0f0; cursor:pointer; text-decoration:underline;">kryptos dec hex 68 65 6C 6C 6F</span> → hello<br>
                 <br>
 
                 <strong style="color: #0f0;">🤝 Handshake (handshake)</strong><br>
-                <span style="color: #fff;">Store a password:</span> <span style="color: #0f0;">handshake set mysecret</span><br>
+                <span style="color: #fff;">Store a password:</span> <span onclick="fillInput('handshake set mysecret')" style="color: #0f0; cursor:pointer; text-decoration:underline;">handshake set mysecret</span><br>
                 <span style="color: #fff;">Clear:</span> <span style="color: #0f0;">handshake clear</span><br>
                 <span style="color: #888;">Stored only in your browser's local storage – never leaves your machine.</span><br>
                 <br>
@@ -3730,13 +3790,13 @@
                             <img src="images/PokemonGo.jpeg" style="max-width: 220px; height: auto; border-radius: 8px; margin-bottom: 5px;">
                         </div>
                         <div>
-                            <span style="color: #fbff00;">game snake</span> : Classic Canvas Snake (Keyboard / Swipe / D‑pad)<br>
-                            <span style="color: #fca311;">game dodge</span> : Gyroscope Obstacle Avoidance<br>
-                            <span style="color: #ef476f">game marble</span> : Gyroscope Ball Maze<br>
-                            <span style="color: #fb00ff;">game asteroids</span> : Space Rock Dodger (D‑pad)<br>
-                            <span style="color: #09ff00;">game flappy</span> : Cyber‑Bird Flap (Tap to Flap)<br>
-                            <span style="color: #ff0000;">game memory</span> : Emoji memory match (Tap cards to flip)<br>
-                            <span style="color: #00d0ff;">game dino</span> : Cyber‑packet runner (avoid firewall obstacles)<br>
+                            <span onclick="fillInput('game snake')" style="color: #fbff00; cursor:pointer; text-decoration:underline;">game snake</span> : Classic Canvas Snake (Keyboard / Swipe / D‑pad)<br>
+                            <span onclick="fillInput('game dodge')" style="color: #fca311; cursor:pointer; text-decoration:underline;">game dodge</span> : Gyroscope Obstacle Avoidance<br>
+                            <span onclick="fillInput('game marble')" style="color: #ef476f cursor:pointer; text-decoration:underline;">game marble</span> : Gyroscope Ball Maze<br>
+                            <span onclick="fillInput('game asteroids')" style="color: #fb00ff; cursor:pointer; text-decoration:underline;">game asteroids</span> : Space Rock Dodger (D‑pad)<br>
+                            <span onclick="fillInput('game flappy')" style="color: #09ff00; cursor:pointer; text-decoration:underline;">game flappy</span> : Cyber‑Bird Flap (Tap to Flap)<br>
+                            <span onclick="fillInput('game memory')" style="color: #ff0000; cursor:pointer; text-decoration:underline;">game memory</span> : Emoji memory match (Tap cards to flip)<br>
+                            <span onclick="fillInput('game dino')" style="color: #00d0ff; cursor:pointer; text-decoration:underline;">game dino</span> : Cyber‑packet runner (avoid firewall obstacles)<br>
                         </div>
                     </div>`;
                 }
@@ -3935,10 +3995,10 @@
                     return `
                         <div style="border-left: 3px solid #ff0000; padding-left: 10px;">
                             <b style="color: #ff0000;">[ TENET PALINDROME ENGINE ]</b><br>
-                            <span style="color: #0f0;">palindrome check [word]</span>  :Verify if a word reads the same backward<br>
-                            <span style="color: #0f0;">palindrome square</span>  :Display the ancient Sator Square<br>
-                            <span style="color: #0f0;">palindrome tenet</span> :he TENET principle<br>
-                            <span style="color: #0f0;">palindrome make [word]</span> :Mirror text into a palindrome <br>
+                            <span onclick="fillInput('palindrome check racecar')" style="color: #0f0; cursor:pointer; text-decoration:underline;">palindrome check [word]</span>  :Verify if a word reads the same backward<br>
+                            <span onclick="fillInput('palindrome square')" style="color: #0f0; cursor:pointer; text-decoration:underline;">palindrome square</span>  :Display the ancient Sator Square<br>
+                            <span onclick="fillInput('palindrome tenet')" style="color: #0f0; cursor:pointer; text-decoration:underline;">palindrome tenet</span> :the TENET principle<br>
+                            <span onclick="fillInput('palindrome make ')" style="color: #0f0; cursor:pointer; text-decoration:underline;">palindrome make [word]</span> :Mirror text into a palindrome <br>
                         </div>`;
                 }
 
@@ -4098,7 +4158,7 @@
                 return `
                     <div style="border-left: 3px solid #ffaa00; padding-left: 10px;">
                         <b style="color: #ffaa00;">◆ SATOR WORD SQUARE ◆</b><br>
-                        <span style="color: #ccc;">A 4×4 grid where every row and column spells a word.</span><br><br>
+                        <span style="color: #ccc;">A 4x4 grid where every row and column spells a word.</span><br><br>
                         <span style="color: #0f0;">sator new</span>  :Start a puzzle<br>
                         <span style="color: #0f0;">sator A1 S</span>  :Place letter S at column A, row 1<br>
                         <span style="color: #0f0;">sator reveal</span>  :Show the solution<br>
@@ -4211,10 +4271,10 @@
                     return `🧠 Graph layout switched to <b>${graphLayout.toUpperCase()}</b>.`;
                 }
                 return `🧠 <b>NEURAL GRAPH COMMANDS</b><br>
-                        <span style="color:#0f0;">graph</span>  –Toggle the live graph overlay<br>
-                        <span style="color:#0f0;">brain clear</span>  –Delete all nodes and connections<br>
-                        <span style="color:#0f0;">brain layout [1-4]</span>  –Freeform(1), Circle(2), Grid(3), Fibonacci(4)<br>
-                        <span style="color:#0f0;">brain layout</span>  –Cycle to next layout`;
+                        <span style="color:#0f0;">graph</span>  -Toggle the live graph overlay<br>
+                        <span style="color:#0f0;">brain clear</span>  -Delete all nodes and connections<br>
+                        <span style="color:#0f0;">brain layout [1-4]</span>  -Freeform(1), Circle(2), Grid(3), Fibonacci(4)<br>
+                        <span style="color:#0f0;">brain layout</span>  -Cycle to next layout`;
             },
            'slide': (args) => {
                 const sub = args[0]?.toLowerCase();
@@ -4267,9 +4327,16 @@
                     window._slideshowPaused = false;
                     return '▶️ Slideshow resumed.';
                 }
+                else if (sub === 'status' || sub === 'info') {
+                    const sourceName = (slideshowSource === galleryImages) ? 'Gallery' : 'Independent BG';
+                    const state = window._slideshowActive
+                        ? (window._slideshowPaused ? '⏸️ Paused' : '▶️ Running')
+                        : '⏹️ Stopped';
+                    return `🖼️ <b>Slideshow Status:</b> ${state}<br>📂 <b>Source:</b> ${sourceName}`;
+                }
                 else {
                     // Unknown sub-command
-                    return `⚠️ Unknown sub-command: <b>${sub}</b>. Usage: slide [src|next|prev|pause|resume]`;
+                    return `⚠️ Unknown sub-command: <b>${sub}</b>. Usage: slide [src|next|prev|pause|resume|status]`;
                 }
             },
             'flow': async () => {
@@ -4368,11 +4435,12 @@
                     return `
                         <strong style="color: #00f0ff;">🎬 PLAY COMMAND</strong><br>
                         <span style="color: #888;">Usage:</span><br>
-                        <span style="color: #0f0;">play youtube &lt;id_or_url&gt;</span> – Embed YouTube player<br>
-                        <span style="color: #0f0;">play audio &lt;url&gt;</span> – Play direct audio file (MP3, OGG, WAV)<br>
-                        <span style="color: #0f0;">play audio &lt;preset&gt;</span> – Play a built‑in sound<br>
+                        <span style="color: #0f0;">play youtube &lt;id_or_url&gt;</span>  -Embed YouTube player<br>
+                        <span style="color: #0f0;">play audio &lt;url&gt;</span>  -Play direct audio file (MP3, OGG, WAV)<br>
+                        <span style="color: #0f0;">play audio &lt;preset&gt;</span>  -Play a built-in sound<br>
+                        <span style="color: #0f0;">play iptv url<br></span> -Play an IPTV stream in the terminal<br> play iptv <url> : Play an IPTV stream in the terminal<br>
                         <br>
-                        <span style="color: #888;">Built‑in audio presets:</span><br>
+                        <span style="color: #888;">Built-in audio presets:</span><br>
                         <span style="color: #ff4d00;">siren</span>, <span style="color: #00d0ff;">bell</span>, <span style="color: #ffdd00;">gong</span>, <span style="color: #00a6ff;">ascension</span>, <span style="color: #d400ff;">medit</span>, <span style="color: #00ff4c;">elite</span>, <span style="color: #ffff00;">deeptown</span><br>
                         <br>
                         <span style="color: #888;">Examples:</span><br>
@@ -4436,6 +4504,18 @@
                     return `<div class="active-transmission">🔊 NEURAL AUDIO STREAM STARTED: ${first || 'custom URL'}${loop ? ' (loop)' : ''}</div>`;
                 }
 
+                if (type === 'iptv') {
+                    const url = args[1];
+                    if (!url) return '⚠️ Please provide an IPTV stream URL.';
+                    const containerId = 'iptv-player-' + Date.now();
+                    return `
+                    <div style="margin:12px 0; border:1px solid var(--accent-color); border-radius:8px; overflow:hidden; background:#000;">
+                        <video id="${containerId}" controls autoplay width="100%" style="min-height:200px;">
+                            <source src="${url}" type="application/x-mpegURL">
+                        </video>
+                    </div>`;
+                }
+
                 return '⚠️ Unknown type. Use "play youtube" or "play audio".';
             },
             'homing': () => {
@@ -4452,7 +4532,7 @@
                     if (youtubePlayer.destroy) youtubePlayer.destroy();
                     youtubePlayer = null;
                 }
-
+                
                 // Stop global audio (presets + custom URLs)
                 if (currentAudio) {
                     currentAudio.pause();
@@ -4470,6 +4550,15 @@
                     stopRpgAudio();
                 }
 
+                // Stop all IPTV video elements – fully stop and remove sources
+                document.querySelectorAll('video').forEach(v => {
+                    v.pause();
+                    // Remove all <source> children
+                    v.querySelectorAll('source').forEach(s => s.remove());
+                    v.removeAttribute('src');
+                    //v.load();   // resets the element, but without src it won't play
+                });
+
                 return '🔇 All transmissions silenced.';
             },
             'radio': (args) => {
@@ -4477,7 +4566,7 @@
                 if (!args || args.length === 0) {
                     let channelList = '';
                     for (const ch in stations) {
-                        channelList += `<span style="color: #ffdd00;">${ch}</span>  `;
+                        channelList += `<span onclick="fillInput('radio ${ch}')" style="cursor:pointer; text-decoration:underline; color:#ffdd00;">${ch}</span>  `;
                     }
                     return `
                         <strong style="color: #00ffff;">📻 AKASHIC RADIO FREQUENCIES</strong><br>
@@ -4587,7 +4676,9 @@
 
                 if (!args || args.length === 0) {
                     let channelList = '';
-                    for (const ch in channels) channelList += `<span style="color: #ffdd00;">${ch}</span>  `;
+                    for (const ch in channels) {
+                        channelList += `<span onclick="fillInput('tv ${ch}')" style="cursor:pointer; text-decoration:underline; color:#ffdd00;">${ch}</span>  `;
+                    }
                     return `
                         <strong style="color: #00ffff;">📺 AKASHIC VISUAL UPLINK</strong><br>
                         <span style="color: #888;">Available feeds:</span><br>
@@ -4603,6 +4694,155 @@
 
                 appendCommandOutput(`📡 Tuning visual feed to ${channel.name}...`, false);
                 return commands['play'](['youtube', channel.url]);
+            },
+            'iptv': async (args) => {
+                const sub = args[0]?.toLowerCase();
+                const page = Math.max(1, parseInt(args[1]) || 1);
+                const perPage = 40;
+
+                // ── Category browsing: iptv cat animation, iptv cat news, etc. ──
+                if (sub === 'cat' || sub === 'category') {
+                    const catName = args[1]?.toLowerCase();
+                    if (!catName) {
+                        // Show available categories
+                        return `<b style="color:#0f0;">📂 IPTV Categories</b><br><br>
+                        ${categoriesList.map(c => `<span style="color:#0ff; cursor:pointer; text-decoration:underline;" onclick="fillInput('iptv cat ${c}')">${c}</span>`).join(' &nbsp;·&nbsp; ')}
+                        <br><br><span style="color:#888;">Click a category or type <b>iptv cat &lt;name&gt;</b></span>`;
+                    }
+
+                    const page = Math.max(1, parseInt(args[2]) || 1);   // <-- page shoulb be the 3rd argument
+                    const perPage = 40;
+
+                    const playlistUrl = `https://iptv-org.github.io/iptv/categories/${catName}.m3u`;
+                    const loading = document.createElement('div');
+                    loading.style.color = '#888';
+                    loading.textContent = `📡 Fetching ${catName} channels…`;
+                    cmdOutput.appendChild(loading);
+                    cmdOutput.scrollTop = cmdOutput.scrollHeight;
+
+                    try {
+                        const resp = await fetch(playlistUrl);
+                        if (!resp.ok) { loading.remove(); return `⚠️ Category "${catName}" not found.`; }
+                        const text = await resp.text();
+                        const lines = text.split('\n');
+                        const channels = [];
+                        for (let i = 0; i < lines.length; i++) {
+                            if (lines[i].startsWith('#EXTINF:')) {
+                                const name = lines[i].split(',')[1]?.trim() || 'Unknown';
+                                const url = lines[i + 1]?.trim();
+                                if (url && url.startsWith('http')) channels.push({ name, url });
+                            }
+                        }
+                        loading.remove();
+                        if (channels.length === 0) return 'No channels found in this category.';
+
+                        const totalPages = Math.ceil(channels.length / perPage);
+                        const start = (page - 1) * perPage;
+                        const slice = channels.slice(start, start + perPage);
+
+                        let output = `<b style="color:#0f0;">📺 IPTV – ${catName.toUpperCase()}</b> `;
+                        output += `<span style="color:#888;">(${channels.length} channels, page ${page}/${totalPages})</span><br><br>`;
+                        slice.forEach((ch, i) => {
+                            const idx = start + i + 1;
+                            const safeName = ch.name.replace(/'/g, "\\'");
+                            output += `<span style="color:#fff;">[${idx}]</span> <span style="color:#0ff; cursor:pointer; text-decoration:underline;" onclick="playIPTVInTerminal('${ch.url}','${safeName}')">${ch.name}</span><br>`;
+                        });
+                        if (page < totalPages) {
+                            output += `<br><span style="color:#888;">Type <b style="color:#0f0;">iptv cat ${catName} ${page+1}</b> for next page.</span>`;
+                        }
+                        return output;
+                    } catch (e) {
+                        loading.remove();
+                        return '⚠️ Could not fetch category playlist.';
+                    }
+                }
+
+                // ── Country browsing: iptv za, iptv us, etc. ──
+                const country = sub || 'all';
+                const loading = document.createElement('div');
+                loading.style.color = '#888';
+                loading.textContent = '📡 Fetching IPTV channels…';
+                cmdOutput.appendChild(loading);
+                cmdOutput.scrollTop = cmdOutput.scrollHeight;
+
+                try {
+                    const playlistUrl = country === 'all'
+                        ? 'https://iptv-org.github.io/iptv/index.m3u'
+                        : `https://raw.githubusercontent.com/iptv-org/iptv/master/streams/${country}.m3u`;
+
+                    const resp = await fetch(playlistUrl);
+                    if (!resp.ok) { loading.remove(); return `⚠️ Country code "${country}" not found.`; }
+                    const text = await resp.text();
+                    const lines = text.split('\n');
+                    const channels = [];
+                    for (let i = 0; i < lines.length; i++) {
+                        if (lines[i].startsWith('#EXTINF:')) {
+                            const name = lines[i].split(',')[1]?.trim() || 'Unknown';
+                            const url = lines[i + 1]?.trim();
+                            if (url && url.startsWith('http')) channels.push({ name, url });
+                        }
+                    }
+                    loading.remove();
+                    if (channels.length === 0) return 'No channels found.';
+
+                    const totalPages = Math.ceil(channels.length / perPage);
+                    const start = (page - 1) * perPage;
+                    const slice = channels.slice(start, start + perPage);
+
+                    let output = `<b style="color:#0f0;">📺 IPTV – ${country.toUpperCase()}</b> `;
+                    output += `<span style="color:#888;">(${channels.length} channels, page ${page}/${totalPages})</span><br><br>`;
+                    slice.forEach((ch, i) => {
+                        const idx = start + i + 1;
+                        const safeName = ch.name.replace(/'/g, "\\'");
+                        output += `<span style="color:#fff;">[${idx}]</span> <span style="color:#0ff; cursor:pointer; text-decoration:underline;" onclick="playIPTVInTerminal('${ch.url}','${safeName}')">${ch.name}</span><br>`;
+                    });
+                    if (page < totalPages) {
+                        output += `<br><span style="color:#888;">Type <b style="color:#0f0;">iptv ${country} ${page+1}</b> for next page.</span>`;
+                    }
+                    return output;
+                } catch (e) {
+                    loading.remove();
+                    return '⚠️ Could not fetch IPTV playlist.';
+                }
+            },
+            'ipset': (args) => {
+                const lang = args[0]?.toLowerCase() || 'en';
+
+                const presets = {
+                    en: [
+                        { name: '📰 Bloomberg TV Europe',        url: 'https://bloomberg.com/media-manifest/streams/eu.m3u8' },
+                        { name: '📰 Euronews English',           url: 'https://euronews.alteox.app/hls/en_stream.m3u8' },
+                        { name: '📰 Alhurra (US)',               url: 'https://mbn-ingest-worldsafe.akamaized.net/hls/live/2038900/MBN_Alhurra_Worldsafe_HLS/master.m3u8' },
+                        { name: '📰 CGTN Europe',                url: 'https://raw.githubusercontent.com/Sibprod/streams/main/ressources/dm/py/hls/cgtneurope.m3u8' },
+                        { name: '📰 France 24 English',          url: 'https://a-cdn.klowdtv.com/live2/france24_720p/playlist.m3u8' },
+                        { name: '🌍 Africa 24 English',          url: 'https://edge20.vedge.infomaniak.com/livecast/ik:africa24english/manifest.m3u8' },
+                        { name: '🎬 AKC TV Puppies 24/7',        url: 'https://install.akctvcontrol.com/speed/broadcast/140/desktop-playlist.m3u8' },
+                    ],
+                    fr: [
+                        { name: '📰 TV5Monde Info',              url: 'https://ott.tv5monde.com/Content/HLS/Live/channel(info)/index.m3u8' },
+                        { name: '📰 France 24 (Français)',        url: 'https://a-cdn.klowdtv.com/live2/france24_720p/playlist.m3u8' },
+                        { name: '📰 Euronews French',            url: 'https://2f6c5bf4.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmxheHhUVi1ldV9FdXJvbmV3c0ZyYW5jYWlzX0hMUw/playlist.m3u8' },
+                        { name: '📰 BFM TV',                    url: 'https://live-cdn-stream-euw1.bfmtv.bct.nextradiotv.com/master.m3u8' },
+                        { name: '🌍 Africa 24',                  url: 'https://africa24.vedge.infomaniak.com/livecast/ik:africa24/manifest.m3u8' },
+                        { name: '📺 20 Minutes TV',              url: 'https://live-20minutestv.digiteka.com/1961167769/index.m3u8' },
+                        { name: '📰 CNews',                      url: 'https://raw.githubusercontent.com/Sibprod/streams/main/ressources/dm/py/hls/cnews.m3u8' },
+                    ]
+                };
+
+                const list = presets[lang];
+                if (!list) return '⚠️ Usage: iptv-preset [en|fr]';
+
+                let html = `<b style="color:#0f0;">📺 IPTV Preset – ${lang.toUpperCase()}</b><br><br>`;
+                list.forEach((ch, i) => {
+                    const safeName = ch.name.replace(/'/g, "\\'");  // escape single quotes
+                    // Clickable channel name ,plays in terminal with title
+                    html += `<span style="color:#fff;">[${i+1}]</span> <span style="color:#0ff; cursor:pointer; text-decoration:underline;" onclick="playIPTVInTerminal('${ch.url}','${safeName}')">${ch.name}</span>`;
+                    // Also a small copy link for external use
+                    html += ` <span style="color:#888;font-size:10px;cursor:pointer;" onclick="navigator.clipboard.writeText('${ch.url}')">📋</span><br>`;
+                });
+                
+                html += `<br><span style="color:#888;">Click a channel name to watch in the terminal. 📋 copies the stream URL.</span>`;
+                return html;
             },
             'about': () => {
                 return `
@@ -6064,28 +6304,28 @@
                             <span style="color: #888;">Usage: case &lt;tool&gt; [parameters]</span><br><br>
                             
                             <strong style="color: #0f0;">⚡ LED Resistor</strong><br>
-                            <span style="color: #fff;">case resistor 12v led</span> <span style="color: #888;">→ calc resistor for 12V supply, 2V LED</span><br>
+                            <span onclick="fillInput('case resistor 12v led')" style="color: #fff;">case resistor 12v led</span> <span style="color: #888; cursor:pointer; text-decoration:underline;">→ calc resistor for 12V supply, 2V LED</span><br>
                             <span style="color: #fff;">case resistor 9v 3.2v 0.02</span> <span style="color: #888;">→ custom LED (3.2V, 20mA)</span><br><br>
                             
                             <strong style="color: #0f0;">🎨 Resistor Color Decode</strong><br>
-                            <span style="color: #fff;">case decode brown black red</span> <span style="color: #888;">→ 1kΩ ±5% (default gold)</span><br>
+                            <span onclick="fillInput('case decode brown black red')" style="color: #fff; cursor:pointer; text-decoration:underline;">case decode brown black red</span> <span style="color: #888;">→ 1kΩ ±5% (default gold)</span><br>
                             <span style="color: #fff;">case decode yellow violet orange gold</span> <span style="color: #888;">→ 47kΩ ±5%</span><br><br>
                             
                             <strong style="color: #0f0;">🔌 Ohm's Law</strong><br>
-                            <span style="color: #fff;">case ohmslaw V 0.02 1000</span> <span style="color: #888;">→ V = I × R (20mA × 1kΩ = 20V)</span><br>
-                            <span style="color: #fff;">case ohmslaw I 5 220</span> <span style="color: #888;">→ I = V / R (5V / 220Ω = 22.7mA)</span><br>
-                            <span style="color: #fff;">case ohmslaw R 12 0.5</span> <span style="color: #888;">→ R = V / I (12V / 0.5A = 24Ω)</span><br><br>
+                            <span onclick="fillInput('case ohmslaw V 0.02 1000')" style="color: #fff; cursor:pointer; text-decoration:underline;">case ohmslaw V 0.02 1000</span> <span style="color: #888;">→ V = I × R (20mA × 1kΩ = 20V)</span><br>
+                            <span onclick="fillInput('case ohmslaw I 5 220')" style="color: #fff; cursor:pointer; text-decoration:underline;">case ohmslaw I 5 220</span> <span style="color: #888;">→ I = V / R (5V / 220Ω = 22.7mA)</span><br>
+                            <span onclick="fillInput('case ohmslaw R 12 0.5')" style="color: #fff; cursor:pointer; text-decoration:underline;">case ohmslaw R 12 0.5</span> <span style="color: #888;">→ R = V / I (12V / 0.5A = 24Ω)</span><br><br>
                             
                             <strong style="color: #0f0;">📊 Voltage Divider</strong><br>
-                            <span style="color: #fff;">case vdivider 5 10000 10000</span> <span style="color: #888;">→ 5V with two 10kΩ → 2.5V out</span><br><br>
+                            <span onclick="fillInput('case vdivider 5 10000 10000')" style="color: #fff; cursor:pointer; text-decoration:underline;">case vdivider 5 10000 10000</span> <span style="color: #888;">→ 5V with two 10kΩ → 2.5V out</span><br><br>
                             
                             <strong style="color: #0f0;">🔗 Series / Parallel</strong><br>
-                            <span style="color: #fff;">case series 100 220 330</span> <span style="color: #888;">→ 650Ω total</span><br>
-                            <span style="color: #fff;">case parallel 100 100</span> <span style="color: #888;">→ 50Ω total</span><br><br>
+                            <span onclick="fillInput('case series 100 220 330')" style="color: #fff; cursor:pointer; text-decoration:underline;">case series 100 220 330</span> <span style="color: #888;">→ 650Ω total</span><br>
+                            <span onclick="fillInput('case parallel 100 100')" style="color: #fff; cursor:pointer; text-decoration:underline;">case parallel 100 100</span> <span style="color: #888;">→ 50Ω total</span><br><br>
                             
                             <strong style="color: #0f0;">🔋 Capacitor Code</strong><br>
-                            <span style="color: #fff;">case capacitor 104</span> <span style="color: #888;">→ 100nF (0.1µF)</span><br>
-                            <span style="color: #fff;">case capacitor 472</span> <span style="color: #888;">→ 4.7nF</span><br><br>
+                            <span onclick="fillInput('case capacitor 104')" style="color: #fff; cursor:pointer; text-decoration:underline;">case capacitor 104</span> <span style="color: #888;">→ 100nF (0.1µF)</span><br>
+                            <span onclick="fillInput('case capacitor 472')" style="color: #fff; cursor:pointer; text-decoration:underline;">case capacitor 472</span> <span style="color: #888;">→ 4.7nF</span><br><br>
                             
                             <span style="color: #888;">Type a command above to run diagnostics.</span>
                         </div>
