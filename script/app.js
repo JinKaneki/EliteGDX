@@ -70,10 +70,11 @@
         // --- 2. VOLUME & MUTE LOGIC ---
         const muteBtn = document.getElementById('mute-btn');
         const volumeSlider = document.getElementById('volume-slider');
-
-        // One single source of truth for volume
-        let currentVolume = parseFloat(volumeSlider.value); 
-        let previousVolume = currentVolume; 
+        let currentVolume = 0.06;
+        if (volumeSlider) {
+            currentVolume = parseFloat(volumeSlider.value);
+        }
+        let previousVolume = currentVolume;
 
         // Mute Toggle Event
         muteBtn.addEventListener('click', () => {
@@ -449,24 +450,25 @@
                 currentSlideIndex++;
                 if (currentSlideIndex >= sources.length) currentSlideIndex = 0;
             }
-
             drawSlide();
+
             slideshowInterval = setInterval(() => {
                 if (window._slideshowActive && !window._slideshowPaused) drawSlide();
             }, 30000); // change every 30 seconds
-        }
 
-        // Extra robustness
-        if (window._slideshowGuard) clearInterval(window._slideshowGuard);
-        window._slideshowGuard = setInterval(() => {
-            if (window._slideshowActive) {
-                const canvas = document.getElementById('slideshow-canvas');
-                if (canvas && canvas.style.display !== 'block') {
-                    canvas.style.display = 'block';
-                    refreshSlideshowIfActive();
+            // ─── GUARD INTERVAL Extra robustness ─── 
+            if (window._slideshowGuard) clearInterval(window._slideshowGuard);
+            window._slideshowGuard = setInterval(() => {
+                if (window._slideshowActive) {
+                    const canvas = document.getElementById('slideshow-canvas');
+                    if (canvas && canvas.style.display !== 'block') {
+                        canvas.style.display = 'block';
+                        refreshSlideshowIfActive();
+                    }
                 }
-            }
-        }, 2000);
+            }, 2000);
+
+        }
 
         function advanceSlideshow() {
             const canvas = document.getElementById('slideshow-canvas');
@@ -786,7 +788,7 @@
         }
 
         const typewriterElement = document.getElementById('typewriter');
-        const names = ["JIN KANEKI", "JOHN COHEN","@_@","THE OBSERVER","DARK SAMURAI","THE WANDERER","JIN LEE","KANJIN","How many names have you counted?",":)"];
+        const names = ["JIN KANEKI", "JOHN COHEN","@_@","THE OBSERVER","DARK SAMURAI","THE WANDERER","JIN LEE","KANJIN","Johan D. Awakened","How many names have you counted?",":)"];
         let nameIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
@@ -1143,6 +1145,7 @@
             'images/indepedentBG/SolarSystem.png',
             'images/indepedentBG/kaneki_kenJin_TKG.jpg',
             'images/indepedentBG/june-17-solstice-sunset.png',
+            'images/indepedentBG/Eugenics.jpg',
             //'images/indepedentBG/',
         ];
 
@@ -1646,94 +1649,112 @@
         // Run the loader immediately
         loadSavedTheme();
 
-
         let spinnerInterval = null;
-        // YouTube API ready flag
-        window.YTReady = false;
-        function onYouTubeIframeAPIReady() {
-            window.YTReady = true;
-            console.log("📡 Akashic Link: YouTube API initialized.");
+
+        // YouTube API
+        function waitForYouTubeAPI() {
+            return new Promise((resolve, reject) => {
+                // Already loaded?
+                if (window.YT && window.YT.Player) {
+                    resolve();
+                    return;
+                }
+
+                const timeout = setTimeout(() => {
+                    reject(new Error('YouTube API timeout – check network or ad‑blocker'));
+                }, 10000);
+
+                // Save any previously assigned callback (none in your code, but safe)
+                const previousCallback = window.onYouTubeIframeAPIReady;
+                window.onYouTubeIframeAPIReady = () => {
+                    clearTimeout(timeout);
+                    if (previousCallback) previousCallback();
+                    resolve();
+                };
+            });
         }
         // Media state globals
-        let youtubePlayer = null;
+        let youtubePlayer = null;          // Single player instance
         let currentAudio = null;
         // Authorization state (from sudo / login)
         let isAuthorized = false;  // set to true when user says "please" or logs in
 
-        function createYouTubePlayer(input, containerId) {
-            if (!window.YTReady) {
-                appendCommandOutput('⚠️ YouTube API still loading...', true);
-                return;
+        async function createYouTubePlayer(input, containerId) {
+            try {
+                await waitForYouTubeAPI();
+            } catch (err) {
+                appendCommandOutput(`⚠️ ${err.message}`, true);
+                return false;
             }
 
-            // Smart detection: if input is a plain 11‑char ID, use it immediately
-            let videoId;
-            let isFullUrl = false;
-            
-            if (input.length === 11 && !input.includes('/') && !input.includes('.') && /^[a-zA-Z0-9_-]{11}$/.test(input)) {
-                videoId = input;
-            } else {
-                // Try to extract from URL
-                const match = input.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=|c\/[^\/\n\s]+\/|user\/[^\/\n\s]+\/|@[^\/\n\s]+\/)|youtu\.be\/)([a-zA-Z0-9_-]{11}|live)/);
-                videoId = (match && match[1] && match[1] !== 'live') ? match[1] : input;
-                isFullUrl = (videoId === input); // true for /live or other non‑ID formats
+            // Robust video ID extractor – handles standard, live, shorts
+            function extractVideoId(url) {
+                if (url.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(url)) {
+                    return url;
+                }
+                const match = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?|live|shorts)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+                return match ? match[1] : null;
             }
-            // 1. GRACEFUL CLEANUP: Stop and destroy previous player
+
+            const videoId = extractVideoId(input);
+            if (!videoId) {
+                appendCommandOutput(`⚠️ Invalid YouTube URL or Video ID format.`, true);
+                return false;
+            }
+
+            // ── TERMINAL CLEANUP: destroy old player so new video appears in fresh container ──
             if (youtubePlayer) {
                 try {
-                    if (typeof youtubePlayer.stopVideo === 'function') {
-                        youtubePlayer.stopVideo();
-                    }
-                    if (typeof youtubePlayer.destroy === 'function') {
-                        youtubePlayer.destroy();
-                    }
+                    if (typeof youtubePlayer.stopVideo === 'function') youtubePlayer.stopVideo();
+                    if (typeof youtubePlayer.destroy === 'function') youtubePlayer.destroy();
                 } catch (e) {
-                    console.warn('Cleanup warning:', e);
+                    // Ignore cleanup errors
                 }
-                youtubePlayer = null; // Clear reference
+                youtubePlayer = null;
             }
 
-            // 2. WAIT for API to reset (100ms sweet spot)
-            setTimeout(() => {
-                try {
-                    youtubePlayer = new YT.Player(containerId, {
-                        height: '250',
-                        width: '100%',
-                        // For /live URLs we leave videoId empty and load via onReady
-                        videoId: isFullUrl ? undefined : videoId,
-                        playerVars: {
-                            autoplay: 1,
-                            modestbranding: 1,
-                            rel: 0,
-                            origin: window.location.origin   // Helps with stricter channels
+            // Ensure the container exists
+            const container = document.getElementById(containerId);
+            if (!container) {
+                appendCommandOutput(`⚠️ Container element not found.`, true);
+                return false;
+            }
+
+            // Create new player in the fresh container
+            try {
+                youtubePlayer = new YT.Player(containerId, {
+                    height: '250',
+                    width: '100%',
+                    videoId: videoId,
+                    playerVars: {
+                        autoplay: 1,
+                        modestbranding: 1,
+                        rel: 0,
+                        origin: window.location.origin.replace(/\/$/, '')  // clean trailing slash
+                    },
+                    events: {
+                        onReady: () => {
+                            appendCommandOutput('🎬 Signal Locked. Stream initialized.');
                         },
-                        events: {
-                            onReady: (event) => {
-                                if (isFullUrl) {
-                                    // Load the full URL (e.g., /live) once player is ready
-                                    event.target.loadVideoByUrl(input);
-                                }
-                                appendCommandOutput('🎬 Signal Locked. Playback started.');
-                                event.target.playVideo();
-                            },
-                            onError: (e) => {
-                                const errorMap = {
-                                    2: 'Invalid ID',
-                                    5: 'HTML5 error',
-                                    100: 'Video not found',
-                                    101: 'Embed restricted',
-                                    150: 'Embed restricted'
-                                };
-                                const msg = errorMap[e.data] || `Error ${e.data}`;
-                                appendCommandOutput(`⚠️ YouTube error: ${msg}`, true);
-                            }
+                        onError: (e) => {
+                            const errorMap = {
+                                2: 'Invalid ID format',
+                                5: 'HTML5 player playback failure',
+                                100: 'Video not found or marked private',
+                                101: 'Embedding restricted by content owner',
+                                150: 'Embedding restricted by content owner (video may be private)'
+                            };
+                            const msg = errorMap[e.data] || `Error Code ${e.data}`;
+                            appendCommandOutput(`⚠️ YouTube Interface: ${msg}`, true);
                         }
-                    });
-                } catch (e) {
-                    console.error('Final attempt failed:', e);
-                    appendCommandOutput(`📡 Neural Link Error: ${e.message}`, true);
-                }
-            }, 100); // 100ms delay gives the API time to clean up
+                    }
+                });
+                return true;
+            } catch (e) {
+                console.error('YouTube player creation failed:', e);
+                appendCommandOutput(`📡 Neural Link Error: ${e.message}`, true);
+                return false;
+            }
         }
 
         // Quick IPTV player – inserts a <video> element into cmd-output
@@ -1989,7 +2010,7 @@
                 cowsay [text], hack, htop, react, rotate, flow,<br>
                 radio [channel], tv [channel], play, stop,<br>
                 iptv all : list all IPTV channels <br>
-                iptv [country_code] : Browse IPTV channels by country (us, gb, fr, ca, jp, au, …)<br>
+                iptv [country_code] : Browse IPTV channels by country (us, uk, fr, ca, jp, au, …)<br>
                 play iptv <url> : Play an IPTV stream in the terminal ,play youtube,<br>
                 iptv cat : List all available categories<br>
                 iptv cat [category] : Browse by category (animation, news, sports, music…)<br>
@@ -3805,7 +3826,7 @@
                         <div>
                             <span onclick="fillInput('game snake')" style="color: #fbff00; cursor:pointer; text-decoration:underline;">game snake</span> : Classic Canvas Snake (Keyboard / Swipe / D‑pad)<br>
                             <span onclick="fillInput('game dodge')" style="color: #fca311; cursor:pointer; text-decoration:underline;">game dodge</span> : Gyroscope Obstacle Avoidance<br>
-                            <span onclick="fillInput('game marble')" style="color: #ef476f cursor:pointer; text-decoration:underline;">game marble</span> : Gyroscope Ball Maze<br>
+                            <span onclick="fillInput('game marble')" style="color: #ef476f; cursor:pointer; text-decoration:underline;">game marble</span> : Gyroscope Ball Maze<br>
                             <span onclick="fillInput('game asteroids')" style="color: #fb00ff; cursor:pointer; text-decoration:underline;">game asteroids</span> : Space Rock Dodger (D‑pad)<br>
                             <span onclick="fillInput('game flappy')" style="color: #09ff00; cursor:pointer; text-decoration:underline;">game flappy</span> : Cyber‑Bird Flap (Tap to Flap)<br>
                             <span onclick="fillInput('game memory')" style="color: #ff0000; cursor:pointer; text-decoration:underline;">game memory</span> : Emoji memory match (Tap cards to flip)<br>
@@ -4411,6 +4432,11 @@
                 return `<span style="color: #555; font-size: 0.8rem;">// Let the concept compile in your mind. //</span>`;
             },
             'run': () => {
+                // Stop other audio sources
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio = null;
+                }
                 if (window._rpg.active) return 'You are already in an RPG session. Type exit to leave.';
                 window._rpg.active = true;
                 window._rpg.inventory = [];
@@ -4442,7 +4468,7 @@
                         box-shadow: 0 0 15px rgba(0,255,0,0.2); max-width: 100%;">`;
                 return `🖼️ Decrypting visual data... seed=${seed}${imgHtml}`;
             },
-            'play': (args) => {
+            'play': async (args) => {
                 // Show help when no arguments or just "play"
                 if (args.length === 0) {
                     return `
@@ -4469,15 +4495,26 @@
                 // ----- YOUTUBE -----
                 if (type === 'youtube' || type === 'yt') {
                     const input = args[1];
-                    if (!input) return '⚠️ Please provide a YouTube URL or ID.<br>type "play" to see how to use it';
+                    if (!input) return '⚠️ Please provide a YouTube URL or ID.';
+
                     const containerId = 'yt-player-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
-                    setTimeout(() => createYouTubePlayer(input, containerId), 50);
-                    return `
+                    
+                    // 1. Create and append the container HTML immediately
+                    const containerHtml = `
                         <div style="margin: 12px 0; border: 1px solid var(--accent-color); border-radius: 8px; overflow: hidden; background: #000; box-shadow: 0 0 15px rgba(0,255,0,0.2);">
                             <div id="${containerId}" style="width: 100%; min-height: 200px;"></div>
                         </div>
-                        <span style="color: #00ffff;">📡 FEED ESTABLISHED</span>
                     `;
+                    appendCommandHTML(containerHtml);
+                    
+                    // 2. Now the container exists in the DOM – create the player
+                    const success = await createYouTubePlayer(input, containerId);
+                    
+                    if (success) {
+                        return '<span style="color: #00ffff;">📡 FEED ESTABLISHED</span>';
+                    } else {
+                        return ''; // errors already shown via appendCommandOutput
+                    }
                 }
 
                 // ----- AUDIO (preset or URL) -----
@@ -4902,7 +4939,7 @@
                 <span class="login-status-text">> SYNCING NEURAL PATHWAYS.................... [ STABLE ]
                 > DECRYPTING AKASHIC RECORDS................. [ VERIFIED ]
                 > WELCOME BACK.</span>
-                <span style="color: #ff03ff; text-shadow: none; display: block; margin-top: 2px;">Type 'about' for The story behind J_OS<br>>[Type 'help' for a list of commands]<</span>
+                <span style="color: #ff03ff; text-shadow: none; display: block; margin-top: 2px;">Type 'about' for The story behind J_OS<br>Type 'help' for a list of commands</span>
                 </pre>`;
             },
 
@@ -7058,12 +7095,6 @@
             }
         }
 
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) refreshSlideshowIfActive();
-        });
-        document.addEventListener('webkitfullscreenchange', () => {
-            if (!document.webkitFullscreenElement) refreshSlideshowIfActive();
-        });
         
         let currentTermFontSize = 8; // 14 matches default
 

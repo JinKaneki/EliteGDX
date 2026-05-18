@@ -350,6 +350,7 @@ The terminal supports YouTube video embedding, direct audio playback, live radio
 | `iss-earth`   | Earth from Space (ISS)      |
 | `lofi`        | Lofi Girl (beats to relax)  |
 | `gumball`     | Amazing World of Gumball    |
+| `topgear`     | Classic Topgear             |
 
 
 Type `radio` or `tv` without arguments to see the channel list directly in the terminal.
@@ -371,7 +372,7 @@ add -loop at the end to play in a continuous loop. e.g: `play audio ascension -l
 
 ## 📡 IPTV Streaming
 - **`iptv all`** – Browse all IPTV channels. **Click any channel name** to start watching directly in the terminal.  
-- **`iptv us`** – Browse USA channels (any ISO country code).
+- **`iptv us`** – Browse USA channels (any ISO country code: us, uk, fr, ca, jp, au, etc).
 - **`iptv cat animation`** – Browse by category (see full list with `iptv cat`).
 - **`play iptv <url>`** – Play a stream directly in the terminal.
 - **`stop`** – Stops all IPTV streams, audio, and YouTube players.
