@@ -1760,39 +1760,73 @@
         // Quick IPTV player – inserts a <video> element into cmd-output
         function playIPTVInTerminal(url, channelName) {
             const containerId = 'iptv-player-' + Date.now();
+            const safeName = channelName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
             const title = channelName
                 ? `<div style="color:var(--accent-color); padding:6px 12px; font-family:monospace; font-size:0.85rem; background:rgba(0,0,0,0.7);">📺 ${channelName}</div>`
                 : '';
             const html = `
             <div id="${containerId}-wrapper" class="iptv-player-wrapper" style="margin:12px 0; border:1px solid var(--accent-color); border-radius:8px; overflow:hidden; background:#000;">
                 ${title}
-                <video id="${containerId}" class="iptv-video" controls autoplay width="100%" style="min-height:200px; display:block;">
-                    <source src="${url}" type="application/x-mpegURL">
-                </video>
+                <video id="${containerId}" class="iptv-video" controls autoplay width="100%" style="min-height:200px; display:block; background:#000;"></video>
             </div>`;
+            
             appendCommandHTML(html);
-
             const video = document.getElementById(containerId);
             if (!video) return;
 
-            // Timeout – if video hasn't started playing in 10 seconds, show error
+            const showError = (customMsg = null) => {
+                const wrapper = document.getElementById(`${containerId}-wrapper`);
+                if (wrapper) {
+                    wrapper.innerHTML = `
+                        <div style="color:#f00; padding:20px; text-align:center; font-family:monospace;">
+                            ⚠️ ${customMsg || 'Stream offline or unavailable.'}<br><br>
+                            <button onclick="playIPTVInTerminal('${url}','${safeName}')" 
+                                    style="background:#333; color:#fff; border:1px solid #f00; cursor:pointer;">
+                                RETRY
+                            </button>
+                        </div>`;
+                }
+            };
+
+            let hasStartedPlaying = false;
+
+            // 10‑second timeout – only triggers if never started playing
             const timeout = setTimeout(() => {
-                if (video.paused || video.readyState < 2) {
-                    const wrapper = document.getElementById(`${containerId}-wrapper`);
-                    if (wrapper) {
-                        wrapper.innerHTML = `<div style="color:#f00; padding:20px; text-align:center; font-family:monospace;">⚠️ Stream offline or unavailable.<br><span style="color:#888;">Try again later or check another source.</span></div>`;
-                    }
+                if (!hasStartedPlaying) {
+                    showError();
                 }
             }, 10000);
 
-            // Also listen for native error (sometimes it does fire)
+            // Clear timeout as soon as playback actually begins
+            video.addEventListener('playing', () => {
+                hasStartedPlaying = true;
+                clearTimeout(timeout);
+            }, { once: true });
+
             video.addEventListener('error', () => {
                 clearTimeout(timeout);
-                const wrapper = document.getElementById(`${containerId}-wrapper`);
-                if (wrapper) {
-                    wrapper.innerHTML = `<div style="color:#f00; padding:20px; text-align:center; font-family:monospace;">⚠️ Stream offline or unavailable.<br><span style="color:#888;">Try again later or check another source.</span></div>`;
-                }
+                showError();
             });
+
+            // HLS.js for Chrome/Firefox/Edge
+            if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+                const hls = new Hls({ maxLoadingDelay: 4 });
+                hls.loadSource(url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.ERROR, (event, data) => {
+                    if (data.fatal) {
+                        clearTimeout(timeout);
+                        showError('HLS fatal error');
+                        hls.destroy();
+                    }
+                });
+            } else if (video.canPlayType('application/x-mpegURL') || video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Safari native HLS
+                video.src = url;
+            } else {
+                clearTimeout(timeout);
+                showError('Your browser does not support HLS streams.');
+            }
         }
 
 
@@ -1822,7 +1856,7 @@
         // Global state for the current puzzle
         window._satorGrid = null;
         // Helper render function 
-       function renderSatorGrid() {
+        function renderSatorGrid() {
             const grid = window._satorGrid;
             if (!grid) return 'No active puzzle. Type <span style="color: #0f0;">sator new</span> to start.';
 
@@ -4712,7 +4746,7 @@
             'tv': (args) => {
                 const channels = {
                     // NASA / Space (embeddable)
-                    'nasa':       { name: 'NASA Live', type: 'youtube', url: 'zPH5KtjJFaQ' },
+                    'nasa':       { name: 'NASA TV', type: 'youtube', url: '21X5lGlDOfg' },  // new working ID
                     'iss-earth':  { name: 'Earth from Space (ISS)', type: 'youtube', url: 'vytmBNhc9ig' },
 
                     // Entertainment (embeddable)
@@ -4747,68 +4781,9 @@
             },
             'iptv': async (args) => {
                 const sub = args[0]?.toLowerCase();
-                const page = Math.max(1, parseInt(args[1]) || 1);
+                let page = 1;
                 const perPage = 40;
 
-                // ── Category browsing: iptv cat animation, iptv cat news, etc. ──
-                if (sub === 'cat' || sub === 'category') {
-                    const catName = args[1]?.toLowerCase();
-                    if (!catName) {
-                        // Show available categories
-                        return `<b style="color:#0f0;">📂 IPTV Categories</b><br><br>
-                        ${categoriesList.map(c => `<span style="color:#0ff; cursor:pointer; text-decoration:underline;" onclick="fillInput('iptv cat ${c}')">${c}</span>`).join(' &nbsp;·&nbsp; ')}
-                        <br><br><span style="color:#888;">Click a category or type <b>iptv cat &lt;name&gt;</b></span>`;
-                    }
-
-                    const page = Math.max(1, parseInt(args[2]) || 1);   // <-- page shoulb be the 3rd argument
-                    const perPage = 40;
-
-                    const playlistUrl = `https://iptv-org.github.io/iptv/categories/${catName}.m3u`;
-                    const loading = document.createElement('div');
-                    loading.style.color = '#888';
-                    loading.textContent = `📡 Fetching ${catName} channels…`;
-                    cmdOutput.appendChild(loading);
-                    cmdOutput.scrollTop = cmdOutput.scrollHeight;
-
-                    try {
-                        const resp = await fetch(playlistUrl);
-                        if (!resp.ok) { loading.remove(); return `⚠️ Category "${catName}" not found.`; }
-                        const text = await resp.text();
-                        const lines = text.split('\n');
-                        const channels = [];
-                        for (let i = 0; i < lines.length; i++) {
-                            if (lines[i].startsWith('#EXTINF:')) {
-                                const name = lines[i].split(',')[1]?.trim() || 'Unknown';
-                                const url = lines[i + 1]?.trim();
-                                if (url && url.startsWith('http')) channels.push({ name, url });
-                            }
-                        }
-                        loading.remove();
-                        if (channels.length === 0) return 'No channels found in this category.';
-
-                        const totalPages = Math.ceil(channels.length / perPage);
-                        const start = (page - 1) * perPage;
-                        const slice = channels.slice(start, start + perPage);
-
-                        let output = `<b style="color:#0f0;">📺 IPTV – ${catName.toUpperCase()}</b> `;
-                        output += `<span style="color:#888;">(${channels.length} channels, page ${page}/${totalPages})</span><br><br>`;
-                        slice.forEach((ch, i) => {
-                            const idx = start + i + 1;
-                            const safeName = ch.name.replace(/'/g, "\\'");
-                            output += `<span style="color:#fff;">[${idx}]</span> <span style="color:#0ff; cursor:pointer; text-decoration:underline;" onclick="playIPTVInTerminal('${ch.url}','${safeName}')">${ch.name}</span><br>`;
-                        });
-                        if (page < totalPages) {
-                            output += `<br><span style="color:#888;">Type <b style="color:#0f0;">iptv cat ${catName} ${page+1}</b> for next page.</span>`;
-                        }
-                        return output;
-                    } catch (e) {
-                        loading.remove();
-                        return '⚠️ Could not fetch category playlist.';
-                    }
-                }
-
-                // ── Country browsing: iptv za, iptv us, etc. ──
-                const country = sub || 'all';
                 const loading = document.createElement('div');
                 loading.style.color = '#888';
                 loading.textContent = '📡 Fetching IPTV channels…';
@@ -4816,22 +4791,71 @@
                 cmdOutput.scrollTop = cmdOutput.scrollHeight;
 
                 try {
-                    const playlistUrl = country === 'all'
-                        ? 'https://iptv-org.github.io/iptv/index.m3u'
-                        : `https://raw.githubusercontent.com/iptv-org/iptv/master/streams/${country}.m3u`;
+                    let playlistUrl = '';
+                    let titleLabel = '';
+                    let nextCmdBase = '';
+                    let customChannels = []; // for merging later
 
+                    // --- Load custom channels (if available) ---
+                    let customMap = {};
+                    try {
+                        const resp = await fetch('./custom-channels.json');
+                        if (resp.ok) customMap = await resp.json();
+                    } catch(e) { /* ignore */ }
+
+                    // --- Category or Country ---
+                    if (sub === 'cat' || sub === 'category') {
+                        const catName = args[1]?.toLowerCase();
+                        if (!catName) {
+                            loading.remove();
+                            return `<b style="color:#0f0;">📂 IPTV Categories</b><br><br>
+                            ${categoriesList.map(c => `<span style="color:#0ff; cursor:pointer; text-decoration:underline;" onclick="fillInput('iptv cat ${c}')">${c}</span>`).join(' &nbsp;·&nbsp; ')}
+                            <br><br><span style="color:#888;">Click a category or type <b>iptv cat &lt;name&gt;</b></span>`;
+                        }
+                        page = Math.max(1, parseInt(args[2]) || 1);
+                        playlistUrl = `https://iptv-org.github.io/iptv/categories/${catName}.m3u`;
+                        titleLabel = `CAT – ${catName.toUpperCase()}`;
+                        nextCmdBase = `iptv cat ${catName}`;
+                        customChannels = customMap[catName] || [];
+                    } else {
+                        const country = sub || 'all';
+                        page = Math.max(1, parseInt(args[1]) || 1);
+                        playlistUrl = country === 'all'
+                            ? 'https://iptv-org.github.io/iptv/index.m3u'
+                            : `https://raw.githubusercontent.com/iptv-org/iptv/master/streams/${country}.m3u`;
+                        titleLabel = country.toUpperCase();
+                        nextCmdBase = `iptv ${country}`;
+                        customChannels = customMap[country] || [];
+                    }
+
+                    // Fetch main playlist
                     const resp = await fetch(playlistUrl);
-                    if (!resp.ok) { loading.remove(); return `⚠️ Country code "${country}" not found.`; }
+                    if (!resp.ok) {
+                        loading.remove();
+                        return `⚠️ Playlist not found.`;
+                    }
+
                     const text = await resp.text();
                     const lines = text.split('\n');
                     const channels = [];
+
+                    // Parse M3U with safe checks
                     for (let i = 0; i < lines.length; i++) {
                         if (lines[i].startsWith('#EXTINF:')) {
                             const name = lines[i].split(',')[1]?.trim() || 'Unknown';
-                            const url = lines[i + 1]?.trim();
+                            const url = lines[i + 1] ? lines[i + 1].trim() : null;
                             if (url && url.startsWith('http')) channels.push({ name, url });
                         }
                     }
+
+                    // Merge custom channels (avoid duplicates by URL)
+                    const existingUrls = new Set(channels.map(c => c.url));
+                    for (const cust of customChannels) {
+                        if (!existingUrls.has(cust.url)) {
+                            channels.push(cust);
+                        }
+                    }
+
                     loading.remove();
                     if (channels.length === 0) return 'No channels found.';
 
@@ -4839,20 +4863,23 @@
                     const start = (page - 1) * perPage;
                     const slice = channels.slice(start, start + perPage);
 
-                    let output = `<b style="color:#0f0;">📺 IPTV – ${country.toUpperCase()}</b> `;
+                    let output = `<b style="color:#0f0;">📺 IPTV – ${titleLabel}</b> `;
                     output += `<span style="color:#888;">(${channels.length} channels, page ${page}/${totalPages})</span><br><br>`;
+
                     slice.forEach((ch, i) => {
                         const idx = start + i + 1;
-                        const safeName = ch.name.replace(/'/g, "\\'");
+                        const safeName = ch.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                         output += `<span style="color:#fff;">[${idx}]</span> <span style="color:#0ff; cursor:pointer; text-decoration:underline;" onclick="playIPTVInTerminal('${ch.url}','${safeName}')">${ch.name}</span><br>`;
                     });
+
                     if (page < totalPages) {
-                        output += `<br><span style="color:#888;">Type <b style="color:#0f0;">iptv ${country} ${page+1}</b> for next page.</span>`;
+                        output += `<br><span style="color:#888;">Type <b style="color:#0f0;">${nextCmdBase} ${page + 1}</b> for next page.</span>`;
                     }
                     return output;
+
                 } catch (e) {
                     loading.remove();
-                    return '⚠️ Could not fetch IPTV playlist.';
+                    return '⚠️ Could not fetch IPTV playlist. Network error.';
                 }
             },
             'ipset': (args) => {
