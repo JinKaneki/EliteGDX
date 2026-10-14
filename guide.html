@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EliteGDX - Operations Manual</title>
-    <!-- Comfortaa for that premium rounded look, Fira Code for terminal snippets -->
+    <meta name="description" content="The EliteGDX manual: clocks, Master's Astrolabe, Gnosis, Tree of Life and the J_OS terminal." />
+    <link rel="icon" type="image/png" sizes="32x32" href="images/icons/favicon-32.png" />
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
-
     <style>
         /* ============================================================ */
         /*  RESET & BASE VARIABLES                                      */
@@ -409,16 +409,50 @@
             color: var(--gold);
         }
 
+    
+        /* ---- added in the v4.5 manual ---- */
+        .toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.2rem 1.5rem;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:24px;padding:1.4rem 2rem;margin:2rem 0}
+        .toc a{display:block;padding:.3rem 0;font-size:1.05rem}
+        .shot{margin:2rem 0}.shot img{width:100%;height:auto;border-radius:18px;border:1px solid var(--border-color);box-shadow:0 10px 40px rgba(0,255,204,.08);background:#000}
+        .shot figcaption{font-size:.95rem;color:var(--text-secondary);margin-top:.6rem;text-align:center}
+        .shot.narrow{max-width:520px;margin-left:auto;margin-right:auto}
+        .callout{border-left:4px solid var(--gold);background:rgba(255,215,0,.06);padding:1rem 1.4rem;border-radius:0 16px 16px 0;margin:1.5rem 0}
+        .callout.warn{border-color:#ff5555;background:rgba(255,85,85,.07)}.callout.ok{border-color:var(--accent);background:rgba(0,255,204,.05)}
+        .callout p{margin:.3rem 0;max-width:none}
+        table.ref,table.keys{width:100%;border-collapse:collapse;margin:.5rem 0 1rem}
+        table.ref td,table.keys td,table.keys th{padding:.55rem .8rem;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:top;font-size:1rem;color:var(--text-secondary)}
+        table.ref td:first-child{white-space:nowrap}table.keys th{text-align:left;color:var(--gold);font-weight:600}
+        .al{color:#6b6b73;font-size:.85em}
+        details.cmd-cat{background:var(--bg-surface);border:1px solid var(--border-color);border-radius:18px;margin:.7rem 0;padding:.2rem 1.2rem}
+        details.cmd-cat summary{cursor:pointer;font-weight:700;color:var(--accent);padding:.8rem 0;font-size:1.15rem}
+        details.cmd-cat .n{color:var(--gold);font-weight:400;font-size:.9rem;margin-left:.5rem}
+        #cmd-filter{width:100%;max-width:520px;background:var(--bg-surface);border:1px solid var(--border-color);color:#fff;padding:.8rem 1.1rem;border-radius:14px;font:inherit;margin:.5rem 0 1rem}
+        .steps{counter-reset:s;list-style:none;padding:0}.steps li{counter-increment:s;position:relative;padding-left:3rem;margin-bottom:1.1rem}
+        .steps li::before{content:counter(s);position:absolute;left:0;top:0;width:2.1rem;height:2.1rem;border-radius:50%;background:var(--accent);color:#000;font-weight:700;display:flex;align-items:center;justify-content:center}
+        .faq-item{border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:1.3rem;margin-bottom:1.3rem}.faq-item .q{font-weight:700;color:var(--text-primary);font-size:1.15rem}
+        kbd{white-space:nowrap}
+        @media (min-width:1181px){.nav-menu{gap:1rem}}   /* 7 links + Return no longer fit at the original spacing */
+        /* hamburger for tablets: the original CSS only switched at 600px, which was sized for 5 links */
+        @media (min-width:601px) and (max-width:1180px){
+          .nav-toggle-label{display:block;cursor:pointer;width:30px;height:20px;position:relative;z-index:1001}
+          .nav-toggle-label span,.nav-toggle-label span::before,.nav-toggle-label span::after{display:block;background:var(--text-primary);height:2px;width:100%;position:absolute;transition:all .3s ease}
+          .nav-toggle-label span::before{content:'';top:-8px}.nav-toggle-label span::after{content:'';bottom:-8px}
+          .nav-menu{position:fixed;top:0;right:-100%;height:100vh;width:100%;max-width:400px;background:var(--bg-pure);flex-direction:column;justify-content:center;align-items:center;gap:1rem;transition:right .4s cubic-bezier(.4,0,.2,1);border-left:1px solid var(--border-color)}
+          .nav-toggle:checked~.nav-menu{right:0}
+          .nav-toggle:checked~.nav-toggle-label span{background:transparent}
+          .nav-toggle:checked~.nav-toggle-label span::before{transform:rotate(45deg);top:0}
+          .nav-toggle:checked~.nav-toggle-label span::after{transform:rotate(-45deg);bottom:0}
+        }
+        @media print{.site-header,#cmd-filter,.nav-toggle-label{display:none}body{background:#fff;color:#000}p,li,td{color:#222!important}h1,h2,h3{color:#000!important}}
     </style>
 </head>
 <body>
 
-    <!-- ===== HEADER ===== -->
     <header class="site-header">
         <div class="brand">
             <span class="brand-icon">🌀</span>
             <span>EliteGDX</span>
-            <span class="version-badge" style="font-size: small; color: gold;">v2.0 MANUAL</span>
+            <span class="version-badge" style="font-size: small; color: gold;">v4.5 MANUAL</span>
         </div>
 
         <input type="checkbox" id="nav-toggle" class="nav-toggle" />
@@ -432,424 +466,212 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
             </button>
             <a href="#overview" onclick="document.getElementById('nav-toggle').checked = false;">Overview</a>
-            <a href="#features" onclick="document.getElementById('nav-toggle').checked = false;">Features</a>
-            <a href="#terminal" onclick="document.getElementById('nav-toggle').checked = false;">J_OS Terminal</a>
-            <a href="#engineering" onclick="document.getElementById('nav-toggle').checked = false;">Engineering</a>
+            <a href="#quickstart" onclick="document.getElementById('nav-toggle').checked = false;">Start</a>
+            <a href="#dashboard" onclick="document.getElementById('nav-toggle').checked = false;">Dashboard</a>
+            <a href="#astrolabe" onclick="document.getElementById('nav-toggle').checked = false;">Astrolabe</a>
+            <a href="#gnosis" onclick="document.getElementById('nav-toggle').checked = false;">Gnosis</a>
+            <a href="#terminal" onclick="document.getElementById('nav-toggle').checked = false;">Terminal</a>
             <a href="#faq" onclick="document.getElementById('nav-toggle').checked = false;">FAQ</a>
+            
             <!-- State-Preserving Return Button -->
             <button onclick="window.history.back()" class="btn-outline">← Return</button>
         </nav>
     </header>
-
     <div class="container">
 
-        <!-- ===== HERO ===== -->
+        <!-- ===== OVERVIEW ===== -->
         <section class="hero" id="overview" style="padding-top: 15vh;">
             <h1>Elite Gems Dashboard</h1>
-            <p style="font-size: 1.4rem; color: gold; font-weight: 600;">
-                An ambient, cyber-punk inspired dashboard with multiple clock faces, a rotating image gallery, and a powerful built-in terminal command runner (CLI).
-            </p>
-            <p>
-                An "Always-On" productivity clock and personal gallery engineered for professional workspaces. The dashboard combines the serenity of a premium desk clock with the raw power of a hacker's command center - all in a single, persistent web page that never sleeps. The Screen Wake Lock API prevents your device from dimming or going to sleep while the tab is active, with visibilitychange listeners that re-acquire the lock when you return to the tab.
-            </p>
-
-            <!-- Placeholder for Main UI Screenshot -->
-            <img src="https://via.placeholder.com/1200x600/0f0f13/00ffcc?text=Dashboard+Main+Interface+Preview" alt="Dashboard Interface" class="placeholder-img" />
-
+            <p style="font-size: 1.4rem; color: gold; font-weight: 600;">An ambient dashboard for always-on screens: six clock faces, a living sky, a temple of old wisdom, and a terminal with 134 commands.</p>
+            <p>It runs entirely in your browser (no account, no server of ours), installs like an app, and keeps working offline. Leave it on a spare screen, or dive in with the terminal.</p>
+            <figure class="shot"><img src="images/guide/dashboard-main.webp" alt="The EliteGDX dashboard: theme selector, Cistercian alarm, two quote widgets and the analog clock" width="1100" height="1160" loading="lazy"><figcaption>The main dashboard. Everything below this fold — gallery, Astrolabe, Gnosis, the Tree of Life — is reached by scrolling.</figcaption></figure>
+            <div class="mantra">“All things serve the Beam.”</div>
+            <nav class="toc" aria-label="Contents">
+                <a href="#quickstart">1 · Quick start (3 minutes)</a><a href="#dashboard">2 · The dashboard</a><a href="#astrolabe">3 · Master's Astrolabe &amp; the sky</a>
+                <a href="#gnosis">4 · Gnosis, the Scroll &amp; the Tree</a><a href="#terminal">5 · The J_OS terminal</a><a href="#data">6 · Your data, backups, privacy</a>
+                <a href="#faq">7 · Troubleshooting</a><a href="#whatsnew">8 · What's new</a><a href="#credits">9 · Credits</a>
+            </nav>
         </section>
 
-        <!-- ===== OVERVIEW ===== -->
-        <section class="hero" id="overview">
-            <h1>Omnipresent Omniscient Dashboard</h1>
-            <p class="sub">
-                Real-time celestial physics · Ancient philosophy · UNIX emulation · Minimalist timekeeping
-            </p>
-            <p>
-                Whomever you are, a phygital nomad or a developer, EliteGDX offers a unique space to <span class="highlight-cyan">learn , meditate, reflect, contemplate time and explore the cosmos, track the luminaries and interact with a living system</span>.
-            </p>
-            <div class="mantra">“All things serve all things.”</div>
-
-            <h2 style="margin-top: 5rem;">System Overview</h2>
-            <p>
-                EliteGDX is an always-on workspace companion designed to eliminate distraction while offering
-                deep utility. It blends the visual language of a terminal operator view with accurate
-                planetary orbital dynamics and timeless wisdom modules.
-            </p>
-            <p>
-                Built with full touch-gesture mapping (swipe for clock transitions, double-tap for background lock)
-                and responsive canvas scaling – ready for monitors, tablets, or wall-mounted displays.
-            </p>
+        <!-- ===== QUICK START ===== -->
+        <section id="quickstart">
+            <h2>1 · Quick start</h2>
+            <ol class="steps">
+                <li><b>Open it</b> in any modern browser. On a phone or desktop Chrome/Edge use <i>Install</i> / <i>Add to Home Screen</i> to get the full-screen app.</li>
+                <li><b>Pick a clock face.</b> Press the <code>STYLE</code> button, swipe left/right on the clock, or type <code>clock cistercian</code> in the terminal.</li>
+                <li><b>Open the terminal</b> with <code>💻 Command Runner</code>. Type <code>commands</code> to see everything, <code>help &lt;command&gt;</code> for details, and press <kbd>Tab</kbd> to complete.</li>
+                <li><b>Look up.</b> Run <code>planets</code>, <code>moon</code> or <code>sun</code>, then scroll to <b>Master's Astrolabe</b> and press <b>Jump to… → Next Full Moon</b>.</li>
+                <li><b>Make it yours.</b> Pick a colour profile (top), try <code>oled on</code> for true-black, and type <code>backup</code> once to save your settings.</li>
+            </ol>
+            <div class="callout ok"><p><b>Tip:</b> everything is reversible. The only destructive command is <code>nuke</code>, and it asks for <code>--yes</code> first.</p></div>
         </section>
 
-        <!-- ===== FEATURES ===== -->
-        <section id="features">
-            <h2>Core Features & Displays</h2>
-
+        <!-- ===== DASHBOARD ===== -->
+        <section id="dashboard">
+            <h2>2 · The dashboard</h2>
+            <h3>🕐 Six clock faces</h3>
+            <p>Classic, Glass, Digital, Cistercian, Cosmic and Celestial. Cycle with <code>STYLE</code>, swipe on touch screens, or choose one directly: <code>clock classic|glass|digital|cistercian|cosmic|celestial</code>.</p>
             <div class="grid-split">
-                <div>
-                    <h3>🕐 Timepieces</h3>
-                    <ul>
-                        <li><strong style="color: #00ffcc;">Analog Clock</strong> – Classic face with glowing second hand.</li>
-                        <li><strong style="color: #ff00ff;">Glass Mode</strong> – Transparent glass analog clock.</li>
-                        <li><strong style="color: #ffd700;">Digital Clock</strong> – Minimalist, stack-style digital display.</li>
-                        <li><strong style="color: #33ff57;">Cistercian Clock</strong> – Displays the full time (hours + minutes + seconds) as a single medieval numeral with rainbow-coloured lines. The Cistercian numeral system, developed by 13th-century Cistercian monks, represents any number from 0 to 9999 using a single glyph constructed from horizontal, vertical, and diagonal strokes. Each digit occupies a quadrant, making the entire time readable at a glance once you learn the system.</li>
-                        <li><strong style="color: #ff8800;">Cosmic Wheel</strong> – Live Mazzaroth zodiac wheel with accurate planetary positions. Powered by a self-hosted ephemeris engine that calculates true planetary positions using J2000 orbital equations, the wheel displays the Sun, Moon, Mercury, Venus, Mars, Jupiter, and Saturn in their real-time zodiacal positions, along with AC/MC (Ascendant/Midheaven) lines for astrological chart work.</li>
-                        <li><strong style="color: #aa88ff;">Celestial Clock</strong> – Glass analog clock overlaid on the Cosmic Wheel.</li>
-                    </ul>
-                    <p>
-                        <strong>Cistercian Date Display</strong> – Below the main clock, year, month, and day are displayed as three separate Cistercian numerals with rainbow-coloured strokes and natural spacing, turning the date into a piece of living medieval calligraphy.
-                    </p>
-                </div>
-                <div>
-                    <h3>🎛️ Interaction Protocols</h3>
-                    <ul>
-                        <li><strong style="color: #ffd700;">Mirror Mode</strong> – Minimalist full-screen display for any clock mode. Hides all UI elements except the active clock and the Tao Te Ching widget, adding a large empty space under the clock for pure aesthetic contemplation.</li>
-                        <li><strong style="color: #ff00ff;">Stealth Controls</strong> – Double-click the background (avoiding any UI element) to freeze/unfreeze immediately with a Ghost UI indicator. The same effect is triggered by pressing the <kbd>B</kbd> key.</li>
-                        <li><strong style="color: #00ffcc;">Hide Controls Toggle</strong> – A dedicated button in the top-left corner hides/shows all control buttons - FREEZE MOMENT, BG: SYNCED / INDEPENDENT, STYLE, CLEAN VIEW, and the volume slider. When hidden, the buttons remain in the layout (space is preserved) so there's no layout shift.</li>
-                        <li><strong style="color: #33ff57;">Mechanical Sound Engine</strong> – Web Audio API generated ticks/tocks with adjustable volume and instant mute. The sound provides satisfying auditory feedback for every clock tick, button press, and state change.</li>
-                        <li><strong style="color: #ff8800;">Cycle Clock Styles</strong> – Use the STYLE button to cycle through all six clock modes: Classic → Glass → Digital → Cistercian → Cosmic → Celestial.</li>
-                    </ul>
-                </div>
+                <figure class="shot"><img src="images/guide/clock-cistercian.webp" alt="The Cistercian clock face" width="1100" height="1160" loading="lazy"><figcaption><b>Cistercian</b> — the time as medieval monastic numerals.</figcaption></figure>
+                <figure class="shot"><img src="images/guide/clock-celestial.webp" alt="The Celestial clock: an analog clock over the planetary wheel" width="1100" height="1160" loading="lazy"><figcaption><b>Celestial</b> — an analog clock laid over the live planetary wheel.</figcaption></figure>
             </div>
-
-            <!-- Placeholder for Clock Displays -->
-            <img src="https://via.placeholder.com/1200x400/0f0f13/00ffcc?text=Clock+Styles+Gallery+(Cistercian,+Cosmic,+Glass)" alt="Clock Styles" class="placeholder-img" />
-
-            <div style="margin-top: 2rem;">
-                <h3>Astrological & Cosmic Tools</h3>
-                    <ul>
-                        <li><strong style="color: #ffd700;">Mazzaroth Wheel</strong> – A live zodiac wheel with AC/MC lines and planetary positions. Toggle on/off via the Cosmic Array Toggles in the Unified Astrolabe Engine. The AC (Ascendant) line marks the eastern horizon, while the MC (Midheaven) marks the highest point in the sky – both are calculated in real-time based on your anchor coordinates (default: Great Pyramid of Giza).</li>
-                        <li><strong style="color: #00ffcc;">Flat Earth Projection</strong> – Two views (circular and stretched) with a day/night spotlight that realistically dims the terrain in shadow. The azimuthal projection places you at the North Pole looking out, with the Sun and Moon tracking across the sky in real time.</li>
-                        <li><strong style="color: #ff00ff;">Unified Astrolabe Engine</strong> – A dual-layer canvas system that overlays a DPI-scaled cosmic Mazzaroth wheel onto the flat-earth azimuthal projection. Both layers share a single UTC time source, providing a seamless celestial dashboard where the earthly and heavenly align perfectly.</li>
-                    </ul>
-            </div>
-
-            <!-- Placeholder for Cosmic Wheel -->
-            <img src="https://via.placeholder.com/1200x400/0f0f13/00ffcc?text=Cosmic+Wheel+and+Azimuthal+Projection" alt="Cosmic Tools" class="placeholder-img" />
-
-            <div style="margin-top: 2rem;">
-                <h3>🖼️ Gallery & Background Engine</h3>
-                    <ul>
-                        <li><strong style="color: #33ff57;">Dual‑Mode Backgrounds</strong> – <strong>Synced</strong> mode mirrors the central gallery image, while <strong>Independent</strong> mode cycles backgrounds on its own 30-second timer, separate from the minute clock.</li>
-                        <li><strong style="color: #ff8800;">Fisher‑Yates (Knuth) Shuffle</strong> – Gallery content is randomised with mathematical perfection. The O(n) algorithm ensures all items are shown exactly once before the deck is reshuffled – no repeats, no bias.</li>
-                        <li><strong style="color: #ff00ff;">Freeze Moment</strong> – Pause the image rotation to pin a specific image or quote.</li>
-                    </ul>
-            </div>
+            <h3>🖼️ Gallery &amp; backgrounds</h3>
+            <p>Slides rotate every minute. The background can follow the slide (<i>Synced</i>), cycle on its own from the independent folder (<i>Independent</i>), or be off.</p>
+            <table class="keys"><tr><th>Do this</th><th>…to get this</th></tr>
+            <tr><td><code>gallery next</code> / <code>gallery prev</code></td><td>step the slideshow forwards / backwards</td></tr>
+            <tr><td><code>bg next</code> / <code>bg prev</code></td><td>step the independent background folder (switches BG to <i>Independent</i>; the 30-second timer restarts)</td></tr>
+            <tr><td><kbd>B</kbd> · double-click the background · <code>FREEZE</code></td><td>freeze / unfreeze the current slide and background</td></tr>
+            <tr><td><code>Hide Controls</code> · <code>Clean View</code></td><td>hide the buttons; Clean View has three states (all · text hidden · images + text hidden)</td></tr>
+            <tr><td>the <b>⛶</b> button</td><td>fullscreen</td></tr></table>
+            <h3>🌑 True-black for OLED screens</h3>
+            <p><code>oled on</code> switches every background off (pure black pixels are <i>off</i> on OLED), removes blur and glow, and nudges the picture 0–2 px every three minutes to prevent burn-in. <code>oled auto</code> turns it on from your local sunset to sunrise (set the place with <code>anchor</code>). The choice survives reloads.</p>
+            <figure class="shot"><img src="images/guide/oled.webp" alt="True-black mode: a black screen with only the controls visible" width="1100" height="773" loading="lazy"><figcaption><code>oled on</code> — the slideshow layer is hidden entirely.</figcaption></figure>
+            <h3>⏰ Cistercian alarm</h3>
+            <p>Set a time at the top and press <b>Set Alarm</b>. Browsers only allow sound after you have touched the page once, so tap anywhere after loading before relying on an alarm overnight.</p>
         </section>
 
-        <!-- ===== J-OS TERMINAL DEEP DIVE ===== -->
+        <!-- ===== ASTROLABE ===== -->
+        <section id="astrolabe">
+            <h2>3 · Master's Astrolabe &amp; the sky</h2>
+            <p>The Astrolabe, the Cosmic/Celestial clock and the projection view now share <b>one clock</b>. Move time in any of them and all of them follow.</p>
+            <figure class="shot"><img src="images/guide/astrolabe.webp" alt="The Master&#x27;s Astrolabe with the precision ring, planets with exact degrees and aspect lines" width="756" height="1265" loading="lazy"><figcaption>The Astrolabe with the Precision layer on: gold sign boundaries, 1° / 5° / 10° bars, planets with their exact degree and ℞ when retrograde, and aspect lines.</figcaption></figure>
+            <h3>The control panel</h3>
+            <p>Date-time picker, ±1-year scrubber, a speed ladder in plain words (<i>60× · 1 s = 1 min</i> … <i>1 s = 1 year</i>), event presets (next new moon, first quarter, full moon, last quarter, equinoxes, solstices, next sunrise/sunset), latitude/longitude with a 📍 button, and a live readout: moon phase and age, next full moon with a countdown, sunrise/noon/sunset and the next solstice or equinox.</p>
+            <figure class="shot"><img src="images/guide/astro-controls.webp" alt="The astro controls panel" width="670" height="193" loading="lazy"><figcaption><code>&lt;astro-controls&gt;</code> — presets, picker, scrubber and live readout.</figcaption></figure>
+            <h3>Layers</h3>
+            <p><b>ZODIAC · PLANETS · AC/MC · CLOCK · PRECISION</b> toggle the layers. <b>Precision</b> adds the 1° bars with degree numbers, de-cluttered planet glyphs with their true degree (a thin leader line points to the exact position), ℞ marks and aspect lines — conjunction, sextile, square, trine, opposition — which are brighter the tighter they are.</p>
+            <h3>Share a moment</h3>
+            <p>The address bar always describes what you are looking at, e.g. <code>#t=2026-12-21T20:49:00Z&amp;lat=29.979&amp;lon=31.134&amp;rate=60</code>. Copy the URL and anyone opening it sees the same sky, place and speed. Live mode (now, 1×) leaves out the time on purpose.</p>
+            <h3>Sky commands</h3>
+            <table class="keys"><tr><th>Command</th><th>Shows</th></tr>
+            <tr><td><code>planets</code> (alias <code>sky</code>)</td><td>Sun…Pluto: sign, degree and minute, ℞</td></tr>
+            <tr><td><code>moon</code></td><td>phase, % lit, age and the next four phases with dates</td></tr>
+            <tr><td><code>sun</code></td><td>sunrise / noon / sunset at your anchor, and the next equinox or solstice</td></tr>
+            <tr><td><code>anchor &lt;lat&gt; &lt;lon&gt;</code> · <code>anchor giza|greenwich|jerusalem|mecca|kyoto|me</code></td><td>sets the observer location used above</td></tr></table>
+            <div class="callout"><p><b>How accurate is it?</b> Sun about 0.01°, planets about 1–2 arc-minutes (1800–2050), the Moon about 0.1–0.3°. Equinoxes, solstices, oppositions and eclipses were checked against published dates. It is a precise visualisation, not a replacement for a professional ephemeris such as Swiss Ephemeris — particularly for the Moon's exact minute.</p></div>
+        </section>
+
+        <!-- ===== GNOSIS ===== -->
+        <section id="gnosis">
+            <h2>4 · Gnosis, the Scroll &amp; the Tree of Life</h2>
+            <h3>The Gnosis temple</h3>
+            <p>Press <b>GNOSIS</b> (the button carries the spiral emblem). The page unrolls sideways between two rollers. A sticky <b>wheel of gates</b> follows your reading — click a gate, or use <kbd>←</kbd> <kbd>→</kbd> while it has focus, and the wheel turns to the section. The hub opens the second book, <i>The Living Dashboard</i>. Close it with the <b>CLOSE</b> button.</p>
+            <figure class="shot"><img src="images/guide/gnosis-open.webp" alt="The Gnosis panel opened like a scroll with two gilded rollers, the spiral emblem and the gate wheel" width="1100" height="773" loading="lazy"><figcaption>Gnosis opened: rollers at both edges, the spiral emblem above the title, the gate wheel at the top-left.</figcaption></figure>
+            <figure class="shot"><img src="images/guide/gnosis-gate.webp" alt="The gate wheel turned to the final gate" width="1100" height="773" loading="lazy"><figcaption>Click a gate and the wheel turns so the current gate is always at the top.</figcaption></figure>
+            <h3>The Scroll of Torah · Tao · Mysteries</h3>
+            <p>The slowly turning wheel below the GNOSIS button unrolls a hidden scroll from top to bottom. Three tabs: Genesis 1:1–3 in Hebrew with the 1917 JPS English, Tao Te Ching chapter 1 (Legge, 1891) and a few Hermetic lines. Click the wheel again to roll it up.</p>
+            <figure class="shot"><img src="images/guide/scroll-torah.webp" alt="The unrolled scroll showing Genesis in Hebrew and English" width="1100" height="773" loading="lazy"><figcaption>The scroll, open on the Torah tab.</figcaption></figure>
+            <h3>The Tree of Life (Sephirot)</h3>
+            <p>Click any sephirah to see its pillar, planet, divine name, archangel and a question to contemplate — and, for the planetary ones, <b>where that planet is right now</b>. The 22 paths carry their Hebrew letters (Golden Dawn attribution). The light crosses the Tree along the Lightning Flash from Kether to Malkuth.</p>
+            <div class="grid-split"><div><figure class="shot"><img src="images/guide/sephirot.webp" alt="The Tree of Life with Hebrew letters on the paths and the Tiphareth panel" width="520" height="1199" loading="lazy"><figcaption>Tiphareth selected: its paths glow and the Sun's live position is shown.</figcaption></figure></div>
+            <div><table class="keys"><tr><th>Command</th><th>Does</th></tr>
+            <tr><td><code>flash</code></td><td>walks the Flash again and again (6 s per sephirah) until you stop it</td></tr>
+            <tr><td><code>flash 3</code></td><td>…3 seconds per sephirah (2–30)</td></tr>
+            <tr><td><code>flash --view</code></td><td>…and scrolls the Tree into view first</td></tr>
+            <tr><td><code>flash --once</code></td><td>one pass only</td></tr>
+            <tr><td><code>flash stop</code> or <kbd>Ctrl</kbd> + <kbd>C</kbd></td><td>stop</td></tr></table>
+            <p>The <b>⚡ WALK THE FLASH</b> button walks the Tree once and stops.</p></div></div>
+            <h3>Cistercian numbers</h3>
+            <p><code>cistercian 2026</code> draws a number (0–9999) as a monastic glyph, <code>cistercian now</code> your current time, <code>cistercian learn</code> the nine shapes and the four quadrants.</p>
+        </section>
+
+        <!-- ===== TERMINAL ===== -->
         <section id="terminal">
-            <h2>J_OS Terminal: Your Personal Command Center</h2>
-            <p>
-                <em>"You know how some people have a clock screensaver? I made something way cooler. It's a web page I keep open that not only tells time but also lets me type commands... It's like my own little command center."</em>
-            </p>
-            <p>
-                Don't let the hacker-style interface intimidate you. The built-in <strong>J_OS // (AZKNC)</strong> is a full-featured terminal emulator with over 100 commands, fullscreen support, and a cyber-mystical aesthetic. By simply typing short words, you can stream television, listen to the radio, play games, or talk to people around the world. Open it by clicking the <code>Command Runner</code> button.
-            </p>
-
-            <h3>⚡ Core Command Categories</h3>
-            <div class="cmd-grid">
-
-                <div class="cmd-group">
-                    <span class="label">📺 Streaming & Media</span>
-                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">Turn your dashboard into an entertainment hub.</p>
-                    <div class="cmds">
-                        <code>play youtube [url]</code> – Embed a YouTube video or live stream in the terminal.<br>
-                        <code>tv [channel]</code> – Watch curated live TV: NASA, ISS, Lofi, Gumball, and more.<br>
-                        <code>radio [channel]</code> – Tune into curated Akashic radio frequencies (defcon, lofi, etc.).<br>
-                        <code>iptv all</code> – Browse all available IPTV channels by country or category.<br>
-                        <code>play iptv [url]</code> – Play a stream directly in the terminal.<br>
-                        <code>ipset</code> – Your personal curated list (Curiosity Now, MovieSphere, True History, Bon Appétit, France 24, BFM TV, 20 Minutes TV, Africa 24).<br>
-                        <code>stop</code> – Halts all playing media (YouTube, audio, IPTV).
-                    </div>
-                </div>
-
-                <div class="cmd-group">
-                    <span class="label">📻 Music & Audio</span>
-                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">Listen to built-in presets or live global radio.</p>
-                    <div class="cmds">
-                        <code>play audio [preset]</code> – Start a built-in sound: <em>siren, bell, gong, ascension, medit, deeptown, elite, cote</em>.<br>
-                        <code>play audio [preset] -loop</code> – Loop a preset continuously (stop with <code>stop</code>).<br>
-                        <code>play audio [url]</code> – Play an external audio file (MP3, OGG, WAV).<br>
-                        <code>radio defcon</code> – Tune into the DEF CON radio frequency.<br>
-                        <code>siren</code> – Play the 1-minute civil defense siren.
-                    </div>
-                </div>
-
-                <div class="cmd-group">
-                    <span class="label">📡 Global Communication</span>
-                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">Chat with others on live global frequencies.</p>
-                    <div class="cmds">
-                        <code>chat mqtt</code> – Global public frequency chat with an IoT / radio vibe.<br>
-                        <code>chat p2p</code> – Encrypted peer-to-peer direct tunnel.<br>
-                        <code>chat firebase</code> – Persistent chat archive with message history.<br>
-                        <code>chat -all</code> – Open all three chat channels at once.<br>
-                        <code>status</code> – Show live connection status for all chat protocols.<br>
-                        <code>disconnect</code> – Gracefully shut down all network connections.<br>
-                        <code>mesh</code> – Animated LoRa mesh topology simulator (canvas).<br>
-                        <code>netorbit</code> – Live world map (Braille-style dot matrix) with packet sniffing.
-                    </div>
-                </div>
-
-                <div class="cmd-group">
-                    <span class="label">🎮 Cyberpunk RPG & Games</span>
-                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">Play games directly in the console text.</p>
-                    <div class="cmds">
-                        <code>run</code> – Start the cyberpunk text RPG. Play as Neo-J, a neural operative battling the rogue AI KRYPTOS. Three different endings await.<br>
-                        <code>game snake noclip</code> – Classic Snake with portal-wrapping walls (never die from walls or tail).<br>
-                        <code>game dino godmode</code> – Cyber-packet runner in god mode (invincible, obstacles pass through you).<br>
-                        <code>game [snake|dodge|marble|asteroids|flappy|dino]</code> – Play interactive canvas games with D-pad and gyro controls.<br>
-                        <code>piano</code> – Interactive on-screen piano with sustain, chords, and keyboard.<br>
-                        <code>sator</code> – Interactive 4x4 Sator word square puzzle.
-                    </div>
-                </div>
-
-                <div class="cmd-group">
-                    <span class="label">🔍 Intelligence & Utilities</span>
-                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">Fetch live data, weather, or web content.</p>
-                    <div class="cmds">
-                        <code>weather [city]</code> – Get weather for any city (type alone for automatic IP-based location).<br>
-                        <code>news</code> – BBC World News headlines.<br>
-                        <code>hackernews</code> – Top 5 Hacker News stories.<br>
-                        <code>crypto [coin]</code> – Live cryptocurrency price.<br>
-                        <code>define [word]</code> – Full dictionary entry with phonetics, definitions, synonyms, antonyms.<br>
-                        <code>wiki [topic]</code> – Wikipedia summary lookup.<br>
-                        <code>remoteview [url]</code> – Extract text content from a webpage.<br>
-                        <code>portal [url]</code> – Embed a website inside the terminal.<br>
-                        <code>grabimg [url]</code> – Download images from the web.
-                    </div>
-                </div>
-
-                <div class="cmd-group">
-                    <span class="label">🧘 Wisdom & Spirituality</span>
-                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">Take a moment to reflect and breathe.</p>
-                    <div class="cmds">
-                        <code>tao</code> – Random Tao Te Ching chapter (81 chapters).<br>
-                        <code>yhn</code> – Random YHN Te Ching chapter (81 chapters).<br>
-                        <code>buddha</code> – Quote from Buddha, Dogen, or Thich Nhat Hanh.<br>
-                        <code>koan</code> – Random Zen koan for contemplation.<br>
-                        <code>stoic</code> – Stoic wisdom from Marcus Aurelius and Seneca.<br>
-                        <code>bible / verse</code> – Random Bible verse.<br>
-                        <code>sutra</code> – Buddhist teaching from the Pali Canon.<br>
-                        <code>wisdom</code> – Inspirational quote.
-                    </div>
-                </div>
-
-                <div class="cmd-group">
-                    <span class="label">🔐 Cipher & Cryptography Suite</span>
-                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">The Akashic Cipher Suite for the digitally initiated.</p>
-                    <div class="cmds">
-                        <code>cipher</code> – Full usage manual for all ciphers (encrypt/decrypt).<br>
-                        <code>vigenere [enc|dec] [key] [msg]</code> – Vigenère cipher (polyalphabetic).<br>
-                        <code>vault [enc|dec] [pw] [msg]</code> – AES-256-GCM real encryption (password-based).<br>
-                        <code>stegano [hide|reveal] "cover" "secret"</code> – Hide & extract secret messages inside normal text.<br>
-                        <code>mirror [msg]</code> – Atbash mirror cipher (self-inverse).<br>
-                        <code>shift [n] [msg]</code> – Caesar cipher (letters and digits wrap).<br>
-                        <code>kryptos [enc|dec] [bin|hex] [text]</code> – Convert text to/from binary or hex stream.<br>
-                        <code>tag [set|get|clear|view] [key] [value]</code> – Cipher dictionary – store, retrieve, list, or delete hidden key-value pairs.
-                    </div>
-                </div>
-
-                <div class="cmd-group">
-                    <span class="label">🖥️ Cyber Operations</span>
-                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">Pentest toolbox simulations for the ethically curious.</p>
-                    <div class="cmds">
-                        <code>kali [module]</code> – Pentest toolbox: hash, scan, crack, inject, genkey, dragon, arch.<br>
-                        <code>wifite</code> – Wi-Fi attack simulation.<br>
-                        <code>airmon [iface]</code> – Monitor mode simulation.<br>
-                        <code>nmap [target]</code> – Nmap scan simulation.<br>
-                        <code>flipper [subghz|nfc|badusb|off]</code> – Flipper Zero emulator.<br>
-                        <code>raspberry</code> – Virtual Raspberry Pi system dashboard (temps, uptime, GPIO).<br>
-                        <code>gpio [status|on|off] [pin]</code> – Raspberry Pi GPIO pin simulator.
-                    </div>
-                </div>
-
-                <div class="cmd-group">
-                    <span class="label">🎨 Visuals & Effects</span>
-                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">Cyber-mystical eye candy for the ambience.</p>
-                    <div class="cmds">
-                        <code>glitch</code> – Activate glitch effect for 10 seconds.<br>
-                        <code>intersect</code> – Neural-link flash sequence (45 sec).<br>
-                        <code>intersectslow</code> – Deep neural integration (60 sec).<br>
-                        <code>graph</code> – Toggle the live Obsidian-style command-co-occurrence overlay.<br>
-                        <code>image</code> – Display a random Picsum photo.<br>
-                        <code>walls</code> – Fetch a random wallpaper from 0xnotkyo/walls.<br>
-                        <code>rotate</code> – Matrix-style character scrambler animation.<br>
-                        <code>ascii [1-7]</code> – Display specific cyber-mystical ASCII art (random if no number).
-                    </div>
-                </div>
-
-                <div class="cmd-group">
-                    <span class="label">🧠 Neural Graph & Brain</span>
-                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">Live command-co-occurrence visualisation.</p>
-                    <div class="cmds">
-                        <code>graph</code> – Toggle the live Obsidian-style graph overlay showing command relationships in real-time.<br>
-                        <code>brain clear</code> – Erase all nodes and connections from the neural graph.<br>
-                        <code>brain layout</code> – Toggle between freeform and circular layout for the graph.
-                    </div>
-                </div>
-
-            </div>
-
-            <h3>📋 Complete Command Reference</h3>
-            <p>
-                The J_OS terminal is constantly evolving. Here's the full command roster as of the current version:
-            </p>
-
-            <div class="cmd-ref" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 2rem; background: var(--bg-surface); border: 1px solid var(--gold); border-radius: 24px; padding: 2rem; margin-top: 1rem;">
-                <div>
-                    <p><code>help</code> – List all available commands</p>
-                    <p><code>about</code> – Read the story behind J_OS and its Akashic origin</p>
-                    <p><code>clear</code> – Clear terminal output</p>
-                    <p><code>echo [text]</code> – Print text</p>
-                    <p><code>whoami</code> – Rotating cyber-spiritual persona</p>
-                    <p><code>ls</code> – List fake directories</p>
-                    <p><code>history</code> – Show command history</p>
-                    <p><code>sudo</code> – Try to make a sandwich (say please)</p>
-                    <p><code>fetch</code> – Open the original gem-logo system panel</p>
-                    <p><code>neofetch</code> – Trigger the JOHAN_OS system info</p>
-                    <p><code>fastfetch</code> – Display system info with a random Linux logo (Debian, Arch, Kali)</p>
-                    <p><code>shutdown</code> – Enter Magic Mirror mode</p>
-                    <p><code>motd</code> – Message of the Day – random mystical status</p>
-                    <p><code>system</code> – Unified neural link status (auth, audio feed, uptime)</p>
-                    <p><code>ping</code> – Test network latency to Google</p>
-                    <p><code>date [utc|iso|unix]</code> – Display current date/time with optional formats</p>
-                    <p><code>spinner</code> – Start a terminal spinner animation</p>
-                    <p><code>timer [seconds]</code> – Start a countdown with Morse beeps (bigger font)</p>
-                    <p><code>theme [name]</code> – Switch color profile (cyan, magenta, amber, matrix)</p>
-                    <p><code>mode [name|off]</code> – Terminal theme (flipper, midnight, matrix, crimson, cyber)</p>
-                    <p><code>zoom [in|out|reset]</code> – Adjust output text size</p>
-                    <p><code>pause</code> – Freeze/unfreeze background</p>
-                </div>
-                <div>
-                    <p><code>learn</code> – Random educational fact</p>
-                    <p><code>physics</code> – Random physics/math formula</p>
-                    <p><code>electronics</code> – Electronics formulas and hardware facts</p>
-                    <p><code>engineering</code> – Engineering marvels and history</p>
-                    <p><code>biology</code> – Fascinating biology facts</p>
-                    <p><code>space</code> – Random astronomy fact</p>
-                    <p><code>cstip</code> – Computer science tip</p>
-                    <p><code>fortune</code> – Unix/coding fortune</p>
-                    <p><code>case</code> – Engineering diagnostics (resistor, decode, Ohm's Law, etc.)</p>
-                    <p><code>encode [msg]</code> – Base64 encode a message</p>
-                    <p><code>decode [b64]</code> – Decode a Base64 string</p>
-                    <p><code>handshake [set|clear] [key]</code> – Store or clear a personal encryption key locally</p>
-                    <p><code>joke</code> – Random dad joke</p>
-                    <p><code>riddle</code> – Riddle with hidden answer (click to reveal)</p>
-                    <p><code>poem / poetry</code> – Classic poetry</p>
-                    <p><code>anime</code> – Top 10 anime + currently airing</p>
-                    <p><code>qr [text]</code> – Generate scannable QR code</p>
-                    <p><code>cowsay [text]</code> – An ASCII cow speaks your message</p>
-                    <p><code>hack</code> – Simulate a fake hacking sequence (animated)</p>
-                    <p><code>htop</code> – Show a fake system monitor (CPU, memory, processes)</p>
-                    <p><code>react</code> – Simulate a React build process</p>
-                    <p><code>reverse [message]</code> – Reverse-text cipher (TENET inversion)</p>
-                    <p><code>palindrome [check|square|tenet|make]</code> – Palindrome verifier, maker & ancient Sator Square</p>
-                    <p><code>login</code> – Display the J_OS Akashic Zero-Point Kryptos Neural Center splash screen</p>
-                    <p><code>nuke</code> – Factory reset – clears localStorage, stops animations, resets terminal</p>
-                </div>
-            </div>
-
-            <!-- Placeholder for Terminal Interface -->
-            <img src="https://via.placeholder.com/1200x500/0f0f13/00ffcc?text=J_OS+Terminal+Showing+IPTV+and+Weather" alt="J_OS Terminal" class="placeholder-img" />
-
+            <h2>5 · The J_OS terminal</h2>
+            <figure class="shot"><img src="images/guide/terminal.webp" alt="The terminal showing help, planets, moon and a Cistercian numeral" width="1100" height="773" loading="lazy"><figcaption>Open it with the Command Runner button.</figcaption></figure>
+            <h3>Moving around</h3>
+            <table class="keys"><tr><th>Key</th><th>Does</th></tr>
+            <tr><td><kbd>Tab</kbd></td><td>complete a command, then its arguments; press twice to list the choices</td></tr>
+            <tr><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>previous / next command (kept across reloads; passwords are never stored)</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>L</kbd></td><td>clear the screen</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>C</kbd></td><td>stop running effects, timers, spinners and the looping Flash</td></tr>
+            <tr><td><kbd>Esc</kbd></td><td>close the terminal</td></tr></table>
+            <p>Mistype a command and it suggests the closest ones as clickable chips. <code>help &lt;command&gt;</code> shows usage; <code>commands &lt;word&gt;</code> searches names and descriptions.</p>
+            <h3>The ones you will use most</h3>
+            <table class="keys"><tr><th>Command</th><th>What for</th></tr>
+            <tr><td><code>planets</code> <code>moon</code> <code>sun</code> <code>anchor</code></td><td>the sky, from your place</td></tr>
+            <tr><td><code>clock &lt;style&gt;</code> <code>gallery next|prev</code> <code>bg next|prev</code> <code>oled</code></td><td>look &amp; feel</td></tr>
+            <tr><td><code>remoteview &lt;url&gt;</code> <code>fetchpage &lt;url&gt;</code> <code>grabimg &lt;url&gt;</code> <code>portal &lt;url&gt;</code></td><td>read, inspect, collect images from, or embed a web page</td></tr>
+            <tr><td><code>iptv search &lt;words&gt;</code> <code>iptv all 2</code> <code>tv</code> <code>radio</code></td><td>live TV and radio (search covers the whole 10 000-channel index)</td></tr>
+            <tr><td><code>youtube &lt;url&gt;</code> (alias of <code>play youtube</code>)</td><td>play a video inside the terminal</td></tr>
+            <tr><td><code>define &lt;word&gt;</code> <code>wiki &lt;topic&gt;</code> <code>weather</code> <code>news</code></td><td>information</td></tr>
+            <tr><td><code>cistercian</code> <code>flash</code> <code>tao</code> <code>koan</code></td><td>mysticism</td></tr>
+            <tr><td><code>backup</code> <code>nuke</code> <code>perf</code> <code>libs</code></td><td>housekeeping and diagnostics</td></tr></table>
+            <h3>Full command reference (134 commands)</h3>
+            <p>Generated from the running dashboard, so it always matches the code. Type to filter.</p>
+            <input id="cmd-filter" type="search" placeholder="Filter commands… (e.g. moon, cipher, tv)" aria-label="Filter commands">
+            <div id="cmd-ref-list"><details class="cmd-cat"><summary>Cipher Lab <span class="n">13</span></summary><table class="ref"><tbody><tr><td><code>cipher</code></td><td>Cipher manual</td></tr><tr><td><code>cistercian &lt;0-9999&gt; | now | date | learn</code></td><td>Draw a number as a medieval Cistercian glyph <span class=al>alias: cist</span></td></tr><tr><td><code>decode</code></td><td>Decode</td></tr><tr><td><code>encode</code></td><td>Base64 / binary / hex encode</td></tr><tr><td><code>handshake</code></td><td>Set vault password</td></tr><tr><td><code>kryptos</code></td><td>Kryptos cipher</td></tr><tr><td><code>mirror</code></td><td>Atbash mirror cipher</td></tr><tr><td><code>reverse</code></td><td>Reverse text</td></tr><tr><td><code>shift</code></td><td>Caesar shift</td></tr><tr><td><code>stegano &lt;hide|reveal&gt; …</code></td><td>Zero-width steganography</td></tr><tr><td><code>tag &lt;set|get|view|clear&gt; …</code></td><td>Private tag store</td></tr><tr><td><code>vault &lt;enc|dec&gt; &lt;password&gt; &lt;text&gt;</code></td><td>AES-256-GCM vault</td></tr><tr><td><code>vigenere</code></td><td>Vigenère cipher</td></tr></tbody></table></details>
+<details class="cmd-cat"><summary>Cyber-Ops <span class="n">9</span></summary><table class="ref"><tbody><tr><td><code>airmon</code></td><td>Simulated airmon-ng</td></tr><tr><td><code>gpio</code></td><td>GPIO helper</td></tr><tr><td><code>hack</code></td><td>Fake hacking animation</td></tr><tr><td><code>hashcat</code></td><td>Simulated hashcat</td></tr><tr><td><code>htop</code></td><td>System monitor</td></tr><tr><td><code>kali &lt;hash|scan|crack|inject|genkey|banner|arch&gt;</code></td><td>Kali toolkit</td></tr><tr><td><code>nmap</code></td><td>Simulated nmap</td></tr><tr><td><code>raspberry</code></td><td>Raspberry Pi pinout</td></tr><tr><td><code>wifite</code></td><td>Simulated wifi audit</td></tr></tbody></table></details>
+<details class="cmd-cat"><summary>Games &amp; FX <span class="n">19</span></summary><table class="ref"><tbody><tr><td><code>anime</code></td><td>Anime top 10</td></tr><tr><td><code>ascii [n]</code></td><td>ASCII art</td></tr><tr><td><code>banner</code></td><td>Banner</td></tr><tr><td><code>cowsay &lt;text&gt;</code></td><td>Cowsay</td></tr><tr><td><code>flow</code></td><td>Flow visual</td></tr><tr><td><code>game &lt;name&gt;</code></td><td>Mini-games</td></tr><tr><td><code>glitch</code></td><td>Glitch effect</td></tr><tr><td><code>intersect [--yes]</code></td><td>⚠ 45 s full-screen flashing at 10 Hz</td></tr><tr><td><code>intersectslow</code></td><td>60 s slow neural sequence</td></tr><tr><td><code>joke</code></td><td>Dad joke</td></tr><tr><td><code>palindrome</code></td><td>Palindrome check</td></tr><tr><td><code>piano</code></td><td>Play the piano</td></tr><tr><td><code>react</code></td><td>React build simulator</td></tr><tr><td><code>riddle</code></td><td>Riddle with reveal</td></tr><tr><td><code>rotate</code></td><td>Rotate/scramble text</td></tr><tr><td><code>run</code></td><td>RPG: Akashic Mainframe</td></tr><tr><td><code>sator</code></td><td>Sator square</td></tr><tr><td><code>scroll</code></td><td>Scroll bounce</td></tr><tr><td><code>slide</code></td><td>Slideshow</td></tr></tbody></table></details>
+<details class="cmd-cat"><summary>Intel &amp; Info <span class="n">16</span></summary><table class="ref"><tbody><tr><td><code>biology</code></td><td>Biology fact</td></tr><tr><td><code>case [resistor|decode|ohm|…]</code></td><td>Engineering calculator</td></tr><tr><td><code>crypto [coin]</code></td><td>Crypto price</td></tr><tr><td><code>cstip</code></td><td>Computer-science tip</td></tr><tr><td><code>define &lt;word&gt;</code></td><td>Dictionary</td></tr><tr><td><code>electronics</code></td><td>Electronics fact</td></tr><tr><td><code>engineering</code></td><td>Engineering marvel</td></tr><tr><td><code>hackernews</code></td><td>Hacker News top 5</td></tr><tr><td><code>learn</code></td><td>Learn something</td></tr><tr><td><code>news</code></td><td>BBC world news</td></tr><tr><td><code>physics</code></td><td>Physics formula</td></tr><tr><td><code>qr &lt;text&gt;</code></td><td>QR code</td></tr><tr><td><code>space</code></td><td>Space fact</td></tr><tr><td><code>technology</code></td><td>Tech headlines</td></tr><tr><td><code>weather [city]</code></td><td>Weather</td></tr><tr><td><code>wiki &lt;topic&gt;</code></td><td>Wikipedia summary</td></tr></tbody></table></details>
+<details class="cmd-cat"><summary>Media <span class="n">8</span></summary><table class="ref"><tbody><tr><td><code>homing</code></td><td>Homing beacon tone</td></tr><tr><td><code>ipset</code></td><td>Personal IPTV list</td></tr><tr><td><code>iptv</code></td><td>IPTV channel browser</td></tr><tr><td><code>play &lt;audio|youtube&gt; &lt;url&gt;</code></td><td>Play media</td></tr><tr><td><code>radio</code></td><td>Radio stations</td></tr><tr><td><code>stop</code></td><td>Stop media &amp; animations</td></tr><tr><td><code>tv</code></td><td>Live TV</td></tr><tr><td><code>youtube &lt;url|id&gt;</code></td><td>Alias for: play youtube &lt;url&gt; <span class=al>alias: yt</span></td></tr></tbody></table></details>
+<details class="cmd-cat"><summary>Network <span class="n">8</span></summary><table class="ref"><tbody><tr><td><code>aprsmap [fi|direct]</code></td><td>APRS ham-radio map</td></tr><tr><td><code>chat [mqtt|p2p|firebase|-all]</code></td><td>Chat channels</td></tr><tr><td><code>disconnect</code></td><td>Close chat links</td></tr><tr><td><code>mesh</code></td><td>Mesh network visual</td></tr><tr><td><code>netorbit</code></td><td>Network orbit visual</td></tr><tr><td><code>ping</code></td><td>MQTT radar sweep</td></tr><tr><td><code>pingg</code></td><td>Network ping</td></tr><tr><td><code>pingstop</code></td><td>Stop radar</td></tr></tbody></table></details>
+<details class="cmd-cat"><summary>Remote Viewing <span class="n">6</span></summary><table class="ref"><tbody><tr><td><code>fetchpage &lt;url&gt;</code></td><td>Title, OG/Twitter data, icons, feeds, JSON-LD, page stats</td></tr><tr><td><code>grabimg &lt;url&gt; [--all]</code></td><td>Every image on a page: img, srcset, lazy, og:image, CSS</td></tr><tr><td><code>image</code></td><td>Random image</td></tr><tr><td><code>portal [--mobile] &lt;url|shortcut&gt;</code></td><td>Embed a site in a sandboxed iframe</td></tr><tr><td><code>remoteview &lt;url&gt; [--full]</code></td><td>Readable text of any page (proxy chain + reader fallback)</td></tr><tr><td><code>walls</code></td><td>Random wallpaper</td></tr></tbody></table></details>
+<details class="cmd-cat"><summary>Sky <span class="n">4</span></summary><table class="ref"><tbody><tr><td><code>anchor &lt;lat&gt; &lt;lon&gt; | &lt;place&gt; | me</code></td><td>Set the observer location used by sky commands</td></tr><tr><td><code>moon</code></td><td>Phase, illumination, age and the next four phases</td></tr><tr><td><code>planets</code></td><td>Positions of Sun…Pluto right now (sign, degree, retrograde) <span class=al>alias: sky</span></td></tr><tr><td><code>sun</code></td><td>Sunrise/noon/sunset at your anchor + next equinox/solstice</td></tr></tbody></table></details>
+<details class="cmd-cat"><summary>System <span class="n">29</span></summary><table class="ref"><tbody><tr><td><code>about</code></td><td>About J_OS</td></tr><tr><td><code>backup | backup import</code></td><td>Save / restore your EliteGDX data as a file</td></tr><tr><td><code>brain</code></td><td>Graph help / reset</td></tr><tr><td><code>clear</code></td><td>Clear the terminal</td></tr><tr><td><code>commands [search]</code></td><td>Every command, grouped. Click one to fill it in. <span class=al>alias: cmds, apropos</span></td></tr><tr><td><code>date [utc|iso|unix]</code></td><td>Date/time</td></tr><tr><td><code>echo &lt;text&gt;</code></td><td>Print text</td></tr><tr><td><code>fastfetch</code></td><td>Quick system info</td></tr><tr><td><code>fetch</code></td><td>System info panel</td></tr><tr><td><code>fetchpanel</code></td><td>System info panel</td></tr><tr><td><code>graph</code></td><td>Neural command graph</td></tr><tr><td><code>help [command]</code></td><td>Command list, or details for one command</td></tr><tr><td><code>history [-c]</code></td><td>Show / clear command history</td></tr><tr><td><code>libs</code></td><td>Lazy-loaded libraries and their state</td></tr><tr><td><code>login</code></td><td>Akashic splash</td></tr><tr><td><code>ls</code></td><td>List virtual files</td></tr><tr><td><code>motd</code></td><td>Message of the day</td></tr><tr><td><code>neofetch</code></td><td>ASCII system info</td></tr><tr><td><code>nuke [--export] [--yes]</code></td><td>Factory reset (EliteGDX data only)</td></tr><tr><td><code>perf</code></td><td>Render loops: state and real frames-per-second</td></tr><tr><td><code>shutdown</code></td><td>Enter Mirror Mode</td></tr><tr><td><code>spinner</code></td><td>Spinner animation</td></tr><tr><td><code>status</code></td><td>Status report</td></tr><tr><td><code>stopspinner</code></td><td>Stop spinner</td></tr><tr><td><code>stoptimer</code></td><td>Stop the timer</td></tr><tr><td><code>sudo</code></td><td>Ask nicely</td></tr><tr><td><code>system</code></td><td>System monitor</td></tr><tr><td><code>timer &lt;seconds&gt;</code></td><td>Countdown with beeps</td></tr><tr><td><code>whoami</code></td><td>Show your persona</td></tr></tbody></table></details>
+<details class="cmd-cat"><summary>Theme &amp; UI <span class="n">9</span></summary><table class="ref"><tbody><tr><td><code>bg next | bg prev</code></td><td>Step the independent background folder forwards / backwards (switches BG to independent)</td></tr><tr><td><code>clock &lt;classic|glass|digital|cistercian|cosmic|celestial&gt;</code></td><td>Pick a clock style directly</td></tr><tr><td><code>flipper</code></td><td>Flipper Zero skin / subghz</td></tr><tr><td><code>gallery next | gallery prev</code></td><td>Step the slideshow forwards / backwards</td></tr><tr><td><code>mode [flipper|midnight|matrix|crimson|cyber|hologram|stealth|off]</code></td><td>Terminal skin</td></tr><tr><td><code>oled [on|off|auto]</code></td><td>True-black mode with pixel-shift (auto = black from sunset to sunrise)</td></tr><tr><td><code>pause</code></td><td>Freeze/resume the background</td></tr><tr><td><code>theme [cyan|magenta|amber|matrix]</code></td><td>Colour profile</td></tr><tr><td><code>zoom [in|out|reset]</code></td><td>Zoom the page</td></tr></tbody></table></details>
+<details class="cmd-cat"><summary>Wisdom <span class="n">13</span></summary><table class="ref"><tbody><tr><td><code>bible</code></td><td>Random verse</td></tr><tr><td><code>buddha</code></td><td>Buddha quote</td></tr><tr><td><code>flash [seconds] [--view] [--once] | flash stop</code></td><td>Walk the Lightning Flash Kether→Malkuth, repeating until you stop it <span class=al>alias: walkflash</span></td></tr><tr><td><code>fortune</code></td><td>Fortune</td></tr><tr><td><code>koan</code></td><td>Zen koan</td></tr><tr><td><code>poem</code></td><td>Poem</td></tr><tr><td><code>poetry</code></td><td>Poetry</td></tr><tr><td><code>stoic</code></td><td>Stoic quote</td></tr><tr><td><code>sutra</code></td><td>Buddhist sutra</td></tr><tr><td><code>tao</code></td><td>Tao Te Ching</td></tr><tr><td><code>verse</code></td><td>Bible verse</td></tr><tr><td><code>wisdom</code></td><td>Random wisdom</td></tr><tr><td><code>yhn</code></td><td>Yohan Te Ching</td></tr></tbody></table></details></div>
+            <figure class="shot"><img src="images/guide/terminal-commands.webp" alt="The commands list grouped by category with clickable chips" width="1100" height="773" loading="lazy"><figcaption><code>commands</code> inside the terminal: grouped, clickable, with tooltips.</figcaption></figure>
         </section>
 
-        <!-- ===== ENGINEERING ===== -->
-        <section id="engineering">
-            <h2>Engineering & Architecture</h2>
-            <p>
-                EliteGDX isn't just a pretty interface; it demonstrates that even a simple utility like a clock can be elevated through high-level engineering and browser-specific APIs.
-            </p>
-
-            <div class="grid-split">
-                <div>
-                    <h3>🏗️ Software Architecture</h3>
-                    <ul>
-                        <li><strong>Frontend Core:</strong> Built entirely with pure vanilla HTML5, CSS3, and JavaScript, strictly eliminating the need for bulky external package managers.</li>
-                        <li><strong>Static Deployment:</strong> Employs optimised file routing and relative pathing configured specifically for seamless, high-performance static hosting on GitHub Pages.</li>
-                        <li><strong>Screen Wake Lock API:</strong> Prevents device dimming or sleep mode while the tab is active, automatically re-acquiring the lock if you switch away and return.</li>
-                        <li><strong>Deterministic State Management:</strong> UI transitions are synchronised precisely at <code>00</code> seconds of every minute, respecting the "Minute Reset" rule regardless of page load timing.</li>
-                        <li><strong>Router-Pattern Command Parser:</strong> Executes sync commands instantly, async commands with loading indicators. CORS-aware APIs use <code>rss2json</code> proxy for RSS feeds and direct fetch for CORS-enabled services.</li>
-                        <li><strong>PWA Support:</strong> Manifest and service worker (sw.js) enable offline caching and installable app behaviour.</li>
-                    </ul>
-                </div>
-                <div>
-                    <h3>🧮 Systems & Simulation</h3>
-                    <ul>
-                        <li><strong>Ephemeris Physics Engine:</strong> Calculates true planetary positions using self-hosted mathematical ephemeris data and J2000 orbital equations to power the live Mazzaroth Wheel.</li>
-                        <li><strong>Fisher-Yates Shuffle:</strong> Gallery content is randomised with mathematical perfection, ensuring all items are shown exactly once before the deck is reshuffled.</li>
-                        <li><strong>Engineering Case Simulator:</strong> The <code>case</code> command acts as a field toolkit, calculating LED resistance stress tests, decoding resistor bands, and solving Ohm's law with live failure warnings.</li>
-                        <li><strong>Cistercian Numeral Engine:</strong> Implements the medieval monk numeral system (0-9999) using the <a href="https://github.com/hsablonniere/cistercian-numerals" target="_blank">cistercian-numerals</a> Web Components library, with custom rainbow styling.</li>
-                        <li><strong>Neural Graph Overlay:</strong> The <code>graph</code> command toggles a live Obsidian-style command-co-occurrence visualisation, mapping the relationships between every command you type in real-time.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div style="margin-top: 2rem;">
-                <h3>🎨 Customisation & Theming</h3>
-                <ul>
-                    <li><strong>Color Themes</strong> – Choose from Cyan Night, Magenta Dream, Amber Glow, or Matrix Green. Your preference is saved in <code>localStorage</code> and persists across sessions.</li>
-                    <li><strong>Typewriter Effect</strong> – Terminal-style name-plate with custom typing/deletion speeds.</li>
-                    <li><strong>Neumorphic Design</strong> – Hybrid light/dark modes using CSS variables for smooth theme transitions.</li>
-                    <li><strong>Space Preservation</strong> – When clean view hides images, the layout reserves the exact space – the clock never jumps.</li>
-                </ul>
-            </div>
-
-            <div style="margin-top: 2rem;">
-                <h3>⏰ Cistercian Alarm</h3>
-                <ul>
-                    <li>Set a time (HH:MM). At the chosen time, a continuous beep plays and a full-screen overlay shows the alarm time as a Cistercian numeral. Dismiss stops the sound.</li>
-                </ul>
-            </div>
-
-            <div style="margin-top: 2rem;">
-                <h3>📜 Wisdom & Quotes</h3>
-                <ul>
-                    <li><strong>Online quote API</strong> – Random quotes from <code>dummyjson.com</code> (falls back to local cache).</li>
-                    <li><strong>Tao Te Ching widget</strong> – Random chapters from a local JSON file (81 chapters).</li>
-                    <li><strong>YHN Te Ching widget</strong> – Random chapters from a local JSON file (81 chapters).</li>
-                </ul>
-            </div>
+        <!-- ===== DATA ===== -->
+        <section id="data">
+            <h2>6 · Your data, backups &amp; privacy</h2>
+            <h3>What is stored on your device</h3>
+            <p>Settings, command history (never passwords), your private tags, the vault key from <code>handshake</code>, your sky location and a few flags — all under the prefix <code>eg:</code> in your browser's local storage. Nothing is sent to us; there is no account.</p>
+            <h3>Backup &amp; restore</h3>
+            <ul>
+                <li><code>backup</code> downloads one JSON file with everything above.</li>
+                <li><code>backup import</code> opens a file chooser and restores it — on the same browser after a mistake, or on a <b>new phone or computer</b> (local storage does not travel between devices).</li>
+                <li><code>nuke</code> alone only warns. <code>nuke --export</code> makes the backup, then <code>nuke --yes</code> erases only EliteGDX's own data (never other sites).</li>
+            </ul>
+            <div class="callout warn"><p><b>Keep backup files private:</b> they contain your vault key and tags in plain text. Import accepts only <code>eg:</code> keys, so a stray file cannot overwrite anything else.</p></div>
+            <h3>What the page contacts</h3>
+            <table class="keys"><tr><th>When</th><th>Who</th><th>Why</th></tr>
+            <tr><td>on every visit</td><td>Google Fonts, GoatCounter (privacy-friendly visit counter), unpkg (the Cistercian clock library), dummyjson (quotes)</td><td>fonts, anonymous statistics, the clock face, the quote widget</td></tr>
+            <tr><td>only when you use a feature</td><td>YouTube (iframe API), the pinned player libraries (HLS, MQTT, PeerJS, QR, Firebase — local copies when vendored)</td><td>video, live TV, chat, QR codes</td></tr>
+            <tr><td>only when you run <code>remoteview</code> / <code>fetchpage</code> / <code>grabimg</code></td><td>a CORS proxy (your Worker first, then public ones), then Jina Reader or Microlink as fallbacks</td><td>browsers cannot read other sites directly; the chosen proxy sees the URL you asked for</td></tr>
+            <tr><td>only for <code>weather</code>, <code>define</code>, <code>wiki</code>, <code>crypto</code>, news…</td><td>the public API behind each command</td><td>live information</td></tr></table>
+            <h3>Offline &amp; updates</h3>
+            <p>After the first visit the dashboard opens without a connection (the clocks, Astrolabe, Gnosis, Tree and terminal all work; live-data commands need a network). When a new version is ready a toast says <b>New version ready — Refresh</b>; it never reloads behind your back.</p>
         </section>
 
         <!-- ===== FAQ ===== -->
         <section id="faq">
-            <h2>Diagnostics & FAQ</h2>
-
+            <h2>7 · Troubleshooting &amp; FAQ</h2>
             <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 24px; padding: 2rem;">
-                <h3>Frequently Asked Questions</h3>
-
-                <div style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
-                    <p style="font-weight: 700; color: var(--text-primary); font-size: 1.2rem;">Q: How do I completely reset my dashboard preferences?</p>
-                    <p style="color: var(--text-secondary); font-size: 1.05rem;">A: Open the terminal and execute the command <code>nuke</code>. This wipes local storage, clears cached states, and reinitialises the UI.</p>
-                </div>
-
-                <div style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
-                    <p style="font-weight: 700; color: var(--text-primary); font-size: 1.2rem;">Q: Why does the Moon position differ slightly from simple calendar apps?</p>
-                    <p style="color: var(--text-secondary); font-size: 1.05rem;">A: EliteGDX calculates true astronomical orbital physics using J2000 equations rather than static rounded dates. The <code>fetch</code> command can refresh ephemeris feeds if needed.</p>
-                </div>
-
-                <div style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
-                    <p style="font-weight: 700; color: var(--text-primary); font-size: 1.2rem;">Q: How do updates reach ambient/always-on screens?</p>
-                    <p style="color: var(--text-secondary); font-size: 1.05rem;">A: Simply trigger a browser refresh. The Service Worker automatically updates assets in the background on launch.</p>
-                </div>
-
-                <div style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
-                    <p style="font-weight: 700; color: var(--text-primary); font-size: 1.2rem;">Q: How do I freeze the background?</p>
-                    <p style="color: var(--text-secondary); font-size: 1.05rem;">A: Double-tap the background (avoiding any UI element) or press <kbd>B</kbd>. A ghost indicator <code>👻 MESSAGE</code> will appear for confirmation.</p>
-                </div>
-
-                <div>
-                    <p style="font-weight: 700; color: var(--text-primary); font-size: 1.2rem;">Q: What's the difference between "Synced" and "Independent" background modes?</p>
-                    <p style="color: var(--text-secondary); font-size: 1.05rem;">A: <strong>Synced</strong> mode mirrors the central gallery image. <strong>Independent</strong> mode cycles backgrounds on its own 30-second timer, separate from the minute clock.</p>
-                </div>
-
+                <div class="faq-item"><p class="q">Q: <code>tv</code> or <code>youtube</code> says it could not load a library.</p><p>A: Press F12 → Console and read the red line. “blocked by CORS policy” means a stale copy of the loader (update <code>eg-core.js</code> and <code>libs.config.js</code> — YouTube must be marked <code>plain: true</code>). <code>ERR_BLOCKED_BY_CLIENT</code> means an ad-blocker is stopping the YouTube script; pause it for this site.</p></div>
+                <div class="faq-item"><p class="q">Q: <code>define</code> returns nothing.</p><p>A: It tries a free dictionary API and falls back to Wiktionary. If both fail you are offline or rate-limited; try again in a minute.</p></div>
+                <div class="faq-item"><p class="q">Q: <code>fetchpage</code> / <code>grabimg</code> / <code>remoteview</code> fail.</p><p>A: Public proxies come and go. Deploy your own free Cloudflare Worker (<code>tools/cors-worker.js</code>) and put its address in <code>script/libs.config.js</code> as <code>workerUrl</code>. Sites that block bots, or pages rendered entirely by JavaScript, may still return little.</p></div>
+                <div class="faq-item"><p class="q">Q: I changed the code but the browser shows the old version.</p><p>A: Bump <code>VERSION</code> in <code>sw.js</code> and <code>EG.VERSION</code> in <code>eg-core.js</code>, reload, then press <b>Refresh</b> in the toast. During development tick <i>Update on reload</i> in DevTools → Application → Service Workers.</p></div>
+                <div class="faq-item"><p class="q">Q: The favicon did not change.</p><p>A: Browsers cache favicons aggressively. Open the site in a private window, or hard-reload with <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd>.</p></div>
+                <div class="faq-item"><p class="q">Q: How do I completely reset my preferences?</p><p>A: <code>nuke --export</code> to keep a copy, then <code>nuke --yes</code>. Restore any time with <code>backup import</code>.</p></div>
+                <div class="faq-item"><p class="q">Q: Why does the Moon differ by a few arc-minutes from another site?</p><p>A: This dashboard computes the Moon from its principal terms (about 0.1–0.3°). Other tools use thousands of terms. Phases and eclipse dates still agree to minutes.</p></div>
+                <div class="faq-item"><p class="q">Q: The alarm was silent.</p><p>A: Browsers block sound until you interact with the page. Tap anywhere after loading, and keep the tab open (background tabs are throttled).</p></div>
+                <div class="faq-item" style="border:0;margin:0;padding:0"><p class="q">Q: How do I keep the screen awake?</p><p>A: The dashboard requests a wake-lock when you open it and asks again whenever the tab becomes visible. If your device refuses (low battery, iOS in some modes) change the system's auto-lock setting.</p></div>
             </div>
         </section>
 
-        <!-- ===== FOOTER ===== -->
-        <footer>
+        <!-- ===== WHAT'S NEW ===== -->
+        <section id="whatsnew">
+            <h2>8 · What's new in 4.5</h2>
+            <ul>
+                <li>New spiral emblem on the GNOSIS button and inside the temple; the Gnosis page now unrolls sideways between two rollers.</li>
+                <li>One shared clock for every astro panel, a full control panel, event presets and shareable <code>#t=…</code> links.</li>
+                <li>Precision layer for the Astrolabe: 1° bars, exact degrees, ℞, de-cluttered glyphs and aspect lines; real planetary positions.</li>
+                <li><code>flash</code>, <code>gallery next|prev</code>, <code>bg next|prev</code>, <code>oled</code>, <code>backup</code>, <code>iptv search</code>, <code>cistercian</code>, <code>youtube</code> and the sky commands.</li>
+                <li>Safer: third-party text is sanitised, <code>portal</code> is sandboxed, passwords never reach history, <code>nuke</code> asks first.</li>
+                <li>Faster and lighter: libraries load only when used, idle animation callbacks dropped from ~160 per second to 0.</li>
+            </ul>
+        </section>
+
+        <!-- ===== CREDITS ===== -->
+        <section id="credits">
+            <h2>9 · Credits</h2>
+            <p>Engineered by Johan_nlb. Scroll texts: Hebrew Genesis (Masoretic), JPS 1917 English, Tao Te Ching by James Legge (1891) — all public domain. Astronomy: Meeus' <i>Astronomical Algorithms</i> and the JPL approximate Keplerian elements. Libraries: hls.js, mqtt.js, PeerJS, qrcode-generator, Firebase, cistercian-numerals. “All things serve the Beam.”</p>
+        </section>
+    </div>
+    <footer>
             <div style="display: flex; gap: 1.5rem; justify-content: space-between; text-align: center; align-items: center; flex-wrap: wrap;">
                 <a href="https://github.com/JinKaneki/EliteGDX" class="btn-outline" style="font-size: 1rem; font-weight: 600;">🐙 GitHub</a>
                 <a href="https://jinkaneki.github.io/EliteGDX/" class="btn-outline" style="font-size: 1rem; font-weight: 600;">Live Dashboard 🌐</a>
@@ -858,8 +680,6 @@
                 Copyright &copy; <span id="year"></span> EliteGDX - All Rights Reserved
             </div>
         </footer>
-
-    </div>
 
     <script>
         // ---- Auto-update year ----
@@ -904,5 +724,20 @@
         });
     </script>
 
+    <script>
+        // ---- command-reference filter ----
+        (function () {
+            const box = document.getElementById('cmd-filter'); if (!box) return;
+            const cats = [...document.querySelectorAll('details.cmd-cat')];
+            box.addEventListener('input', () => {
+                const q = box.value.trim().toLowerCase();
+                cats.forEach(d => {
+                    let any = false;
+                    d.querySelectorAll('tr').forEach(tr => { const hit = !q || tr.textContent.toLowerCase().includes(q); tr.hidden = !hit; any = any || hit; });
+                    d.hidden = !any; if (q) d.open = any; else d.open = false;
+                });
+            });
+        })();
+    </script>
 </body>
 </html>

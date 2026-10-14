@@ -1,0 +1,208 @@
+/* =====================================================================
+   temple.css — loaded AFTER styles.css.   (EliteGDX v4.4)
+   1. Gnosis → "sacred temple" treatment (gold on obsidian, double-frame door,
+      turning Dharma wheel, 12-gate wheel navigator, drop caps).
+   2. Small UX / accessibility fixes that do not belong in styles.css.
+   Nothing here touches your colour themes: only .gnosis-* and a few utility rules.
+   ===================================================================== */
+:root {
+  --eg-dharma-mask: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E%3Cg fill=%22none%22 stroke=%22%23000%22 stroke-width=%229%22 stroke-linecap=%22round%22%3E%3Ccircle cx=%22100%22 cy=%22100%22 r=%2282%22/%3E%3Ccircle cx=%22100%22 cy=%22100%22 r=%2222%22/%3E%3Cline x1=%22124.00%22 y1=%22100.00%22 x2=%22182.00%22 y2=%22100.00%22/%3E%3Cline x1=%22116.97%22 y1=%22116.97%22 x2=%22157.98%22 y2=%22157.98%22/%3E%3Cline x1=%22100.00%22 y1=%22124.00%22 x2=%22100.00%22 y2=%22182.00%22/%3E%3Cline x1=%2283.03%22 y1=%22116.97%22 x2=%2242.02%22 y2=%22157.98%22/%3E%3Cline x1=%2276.00%22 y1=%22100.00%22 x2=%2218.00%22 y2=%22100.00%22/%3E%3Cline x1=%2283.03%22 y1=%2283.03%22 x2=%2242.02%22 y2=%2242.02%22/%3E%3Cline x1=%22100.00%22 y1=%2276.00%22 x2=%22100.00%22 y2=%2218.00%22/%3E%3Cline x1=%22116.97%22 y1=%2283.03%22 x2=%22157.98%22 y2=%2242.02%22/%3E%3C/g%3E%3C/svg%3E");
+  --t-gold: #e8c46a;
+  --t-gold-dim: #a98a3d;
+  --t-gold-glow: rgba(232, 196, 106, .35);
+  --t-obsidian: #06050a;
+  --t-ink: #ddd7c8;
+  --t-serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+}
+
+/* ---------- the gate (toggle button) ---------- */
+.gnosis-btn {
+  position: relative;
+  display: inline-flex; align-items: center; gap: .8em;
+  font-family: 'comfortaa' !important;
+  font-size: 1.05rem !important; font-weight: 600 !important;
+  letter-spacing: .38em !important; text-indent: .38em;
+  
+  background: linear-gradient(180deg, rgba(232,196,106,.08), rgba(0,0,0,.65)) !important;
+  
+  /*padding: 14px 34px !important;
+  box-shadow: 0 0 0 4px rgba(0,0,0,.6), 0 0 0 5px rgba(232,196,106,.25), 0 0 26px rgba(232,196,106,.12) !important;
+  text-shadow: 0 0 10px var(--t-gold-glow) !important;
+  transition: box-shadow .4s, transform .3s, color .3s !important;*/
+}
+
+
+/* ---------- the temple door (panel) ---------- */
+.gnosis-panel {
+  position: relative;
+  border-radius: 22px !important;
+  background:
+    radial-gradient(120% 50% at 50% 0%, rgba(232,196,106,.11), transparent 62%),
+    linear-gradient(180deg, #0c0b12 0%, var(--t-obsidian) 100%) !important;
+ 
+  backdrop-filter: none !important;
+  scrollbar-width: thin; scrollbar-color: var(--t-gold-dim) transparent;
+  overscroll-behavior: contain;
+}
+.gnosis-panel.visible {
+  max-height: min(78vh, 780px) !important;
+  padding: 0 34px 34px !important;
+  border-color: rgba(232,196,106,.5) !important;
+  overflow-y: auto !important;
+}
+.gnosis-panel::-webkit-scrollbar-thumb { background: var(--t-gold-dim) !important; box-shadow: none !important; }
+.gnosis-panel::-webkit-scrollbar-track { background: rgba(0,0,0,.35) !important; }
+
+/* reading progress — a hairline of gold along the top edge */
+.gnosis-progress { position: sticky; top: 0; z-index: 5; height: 2px; margin: 0 -34px; background: rgba(232,196,106,.12); }
+.gnosis-progress > i { display: block; height: 100%; width: calc(var(--prog, 0) * 100%); background: linear-gradient(90deg, transparent, var(--t-gold)); box-shadow: 0 0 8px var(--t-gold); }
+
+/* ---------- sticky wheel navigator ---------- */
+.gnosis-nav {
+  position: sticky; top: 2px; z-index: 4;
+  display: flex; align-items: center; gap: 18px;
+  margin: 0 -34px 6px; padding: 10px 34px;
+  background: linear-gradient(180deg, #08070c 0, #08070c 80%, rgba(8,7,12,0)) !important;   /* opaque: text must never ghost through the header */
+  isolation: isolate;
+}
+.gnosis-wheel { position: relative; width: 132px; height: 132px; flex: none; }
+.gnosis-wheel .gw-sol { position: absolute; inset: 0; width: 100%; height: 100%; color: var(--t-gold); opacity: .22; animation: eg-spin 160s linear infinite reverse; }
+.gnosis-wheel .gw-ring { position: absolute; inset: 0; transform: rotate(var(--turn, 0deg)); transition: transform 1s cubic-bezier(.3,.7,.2,1); }
+.gnosis-wheel .gw-gate {
+  position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; padding: 0; cursor: pointer;
+  border-radius: 50%; border: 1px solid var(--t-gold-dim); background: #0a090e;
+  transform: rotate(var(--a)) translateY(-54px) rotate(calc(var(--a) * -1)) scale(var(--s, 1));   /* scale INSIDE the chain, or it would also stretch the 54px radius */
+  transition: background .3s, box-shadow .3s, transform .3s;
+}
+.gnosis-wheel .gw-gate:hover, .gnosis-wheel .gw-gate:focus-visible { background: var(--t-gold-dim); outline: none; --s: 1.25; }
+.gnosis-wheel .gw-gate[aria-current="true"] { background: var(--t-gold); box-shadow: 0 0 14px var(--t-gold); --s: 1.35; }
+.gnosis-wheel .gw-hub {
+  position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; padding: 0; cursor: pointer;
+  background: none; border: 0; color: var(--t-gold); filter: drop-shadow(0 0 6px var(--t-gold-glow));
+}
+.gnosis-wheel .gw-hub svg { width: 100%; height: 100%; animation: eg-spin 50s linear infinite; }
+.gnosis-wheel .gw-hub:focus-visible { outline: 1px dashed var(--t-gold); outline-offset: 3px; border-radius: 50%; }
+.gnosis-here { min-width: 0; text-align: left; }
+.gnosis-here .gh-num { font-family: var(--t-serif); font-size: .72rem; letter-spacing: .35em; color: var(--t-gold-dim); text-transform: uppercase; }
+.gnosis-here .gh-title { font-family: var(--t-serif); font-size: 1.15rem; color: var(--t-gold); letter-spacing: .06em; line-height: 1.3; margin-top: 2px; }
+
+/* ---------- header ---------- */
+.gnosis-header { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 8px; }
+.gnosis-header .gnosis-symbol { display: none; }
+.gnosis-logo {                              /* NEW: the logo above "THE SOURCE AND THE JOURNEY": circular, black, turning slowly */
+  width: 112px; height: 112px; padding: 9px; box-sizing: border-box; border-radius: 50%; background: #000; object-fit: contain;
+  box-shadow: 0 0 0 1px rgba(232,196,106,.55), 0 0 0 6px #000, 0 0 0 7px rgba(232,196,106,.28), 0 0 30px rgba(90,110,255,.45);
+  animation: eg-spin 30s linear infinite reverse;
+}
+.gnosis-emblem { width: 96px; height: 96px; color: var(--t-gold); filter: drop-shadow(0 0 14px var(--t-gold-glow)); animation: eg-spin 90s linear infinite; }
+.gnosis-main-title {
+  font-family: var(--t-serif) !important; font-weight: 600; font-size: clamp(1.15rem, 3.4vw, 1.6rem) !important;
+  letter-spacing: .28em; text-indent: .28em; color: var(--t-gold) !important; text-shadow: 0 0 18px var(--t-gold-glow); margin: 6px 0 0 !important;
+}
+.gnosis-subtitle { font-family: var(--t-serif); font-style: italic; font-weight: 400 !important; font-size: 1.02rem !important; color: #b9b2a0 !important; margin: 6px 0 0 !important; }
+.gnosis-opening-quote { font-family: var(--t-serif) !important; font-style: italic; font-weight: 400; font-size: clamp(1.15rem, 3vw, 1.45rem) !important; line-height: 1.5; color: var(--t-gold) !important; text-shadow: 0 0 24px var(--t-gold-glow) !important; max-width: 34ch; margin: 18px auto !important; }
+
+/* ornamental divider:  ────── ◆ ────── */
+.gnosis-divider { position: relative; height: 18px; border: 0 !important; background: linear-gradient(90deg, transparent, var(--t-gold-dim) 18%, var(--t-gold-dim) 82%, transparent) center / 100% 1px no-repeat !important; margin: 14px 0 !important; }
+.gnosis-divider::after { content: '◆'; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -52%); padding: 0 12px; background: #09080d; color: var(--t-gold); font-size: 11px; }
+.gnosis-divider.subtle { opacity: .55; }
+
+/* ---------- body ---------- */
+.gnosis-section { margin-bottom: 8px; scroll-margin-top: 170px; }
+.gnosis-heading {
+  --hc: var(--t-gold);
+  font-family: var(--t-serif) !important; font-weight: 600 !important; font-variant: small-caps;
+  font-size: 1.3rem !important; letter-spacing: .14em !important; color: var(--t-gold) !important;
+  text-shadow: 0 0 14px var(--t-gold-glow); display: flex; align-items: center; gap: .6em; margin: 26px 0 10px !important; border-top: 0 !important; padding-top: 0 !important;
+}
+.gnosis-heading::before { content: '◆'; font-size: .55em; color: var(--hc); text-shadow: 0 0 10px var(--hc); flex: none; }
+.gnosis-heading.cyan { --hc: #5fe9ff; } .gnosis-heading.magenta { --hc: #ff6bf0; } .gnosis-heading.green { --hc: #5dff8a; } .gnosis-heading.orange { --hc: #ffa94d; }
+.gnosis-heading.center-text { justify-content: center; text-align: center; }
+.gnosis-heading[style*="1.8rem"] { font-size: 1.55rem !important; }
+.gnosis-text {
+  font-family: var(--t-serif) !important; color: var(--t-ink) !important; font-size: 1.08rem !important; line-height: 1.85 !important;
+  border-left: 1px solid rgba(232,196,106,.18) !important; padding-left: 16px !important; margin: 0 0 14px !important; text-align: left;
+}
+.gnosis-content > .gnosis-section > .gnosis-text:first-of-type::first-letter {
+  float: left; font-size: 3.1em; line-height: .82; padding: 6px 10px 0 0; color: var(--t-gold); text-shadow: 0 0 18px var(--t-gold-glow);
+}
+.highlight-gold { color: var(--t-gold) !important; text-shadow: none !important; }
+
+/* ---------- global bits ---------- */
+@keyframes eg-spin { to { transform: rotate(360deg); } }
+
+.eg-toast {
+  position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 99999;
+  display: flex; align-items: center; gap: 14px; max-width: 92vw; padding: 10px 18px;
+  background: rgba(10,9,14,.94); color: #eee; border: 1px solid var(--t-gold-dim); border-radius: 12px; font-size: .95rem;
+  box-shadow: 0 6px 30px rgba(0,0,0,.6);
+}
+.eg-toast button { background: var(--t-gold); color: #111; border: 0; border-radius: 6px; padding: 6px 16px; cursor: pointer; font-weight: 700; }
+.eg-toast .eg-toast-x { background: transparent; color: #999; padding: 4px 8px; font-weight: 400; }
+
+/* tiny controls were 7px — below any legibility/tap-target guideline */
+#fe-toggle-btn { font-size: 12px !important; min-height: 36px; }
+/* contrast: replace pure blue / darkcyan on near-black */
+.eg-contrast-blue { color: #7aa8ff !important; } .eg-contrast-cyan { color: #2fd0d0 !important; }
+
+:focus-visible { outline: 2px solid var(--t-gold); outline-offset: 2px; }
+#cmd-input:focus-visible { outline: none; }
+
+@media (max-width: 640px) {
+  .gnosis-panel.visible { padding: 0 18px 24px !important; }
+  .gnosis-progress, .gnosis-nav { margin-left: -18px; margin-right: -18px; }
+  .gnosis-nav { padding: 8px 18px; gap: 12px; }
+  .gnosis-wheel { width: 100px; height: 100px; }
+  .gnosis-wheel .gw-gate { width: 12px; height: 12px; margin: -6px 0 0 -6px; transform: rotate(var(--a)) translateY(-40px) rotate(calc(var(--a) * -1)) scale(var(--s, 1)); }
+  .gnosis-wheel .gw-hub { width: 36px; height: 36px; margin: -18px 0 0 -18px; }
+  .gnosis-here .gh-title { font-size: 1rem; }
+  .gnosis-emblem { width: 76px; height: 76px; }
+  .gnosis-logo { width: 92px; height: 92px; }
+  /*.gnosis-btn { letter-spacing: .28em !important; padding: 12px 24px !important; }*/
+}
+
+/* respect people who ask for less motion (also covers blink/glitch loops in styles.css) */
+@media (prefers-reduced-motion: reduce) {
+  .gnosis-logo, .gnosis-emblem, .gnosis-btn::before, .gnosis-wheel .gw-sol, .gnosis-wheel .gw-hub svg { animation: none !important; }
+  .gnosis-wheel .gw-ring { transition: none; }
+  *, *::before, *::after { scroll-behavior: auto !important; }
+}
+
+/* true-black: OLED pixels switch fully OFF, not just "dark" */
+html.oled, html.oled body { background: #000 !important; background-image: none !important; }   /* !important beats the inline background your slideshow sets */
+html.oled * { backdrop-filter: none !important; text-shadow: none !important; }                  /* blurs/glows keep pixels lit */
+html.oled img { opacity: .55; }
+html.oled body { position: relative; left: var(--sx, 0px); top: var(--sy, 0px); transition: left 2s, top 2s; }   /* pixel-shift (see JS) */
+
+/* ---------- NEW: the Gnosis panel opens like a scroll — two rollers part from the centre and the page unrolls sideways ---------- */
+.gnosis-unroll { position: relative; margin-top: 15px; --gm: 0px; }
+.gnosis-unroll .gnosis-panel {
+  margin: 0 var(--gm) !important;
+  clip-path: inset(0 50% 0 50% round 6px);                                     /* closed: a thin vertical slit in the middle */
+  transition: clip-path 1.2s cubic-bezier(.3,.7,.2,1), max-height 0s linear 1.2s, opacity 0s linear 1.2s, padding 0s linear 1.2s !important;   /* closing: let the slit shut FIRST, then collapse the height */
+}
+.gnosis-unroll .gnosis-panel.visible {
+  clip-path: inset(0 0 0 0 round 22px);
+  transition: clip-path 1.2s cubic-bezier(.3,.7,.2,1), max-height 0s, opacity 0s, padding 0s !important;
+}
+.gnosis-unroll .gr {
+  position: absolute; top: -8px; bottom: -8px; width: 22px; margin-left: -11px; left: 50%; opacity: 0; pointer-events: none; z-index: 6;
+  border-radius: 11px;
+  background: linear-gradient(90deg, #3a2a0d, #e8c46a 42%, #8a6a24 62%, #2a1d08);                 /* a turned wooden/gilded roller */
+  box-shadow: 0 0 14px rgba(0,0,0,.85), inset 0 0 4px rgba(0,0,0,.6);
+  transition: left 1.2s cubic-bezier(.3,.7,.2,1), opacity .3s linear .95s;
+}
+.gnosis-unroll .gr::before, .gnosis-unroll .gr::after {                                           /* round finials at both ends */
+  content: ''; position: absolute; left: 50%; width: 30px; height: 30px; margin-left: -15px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff3c9, #e8c46a 40%, #6d5420);
+  box-shadow: 0 2px 8px rgba(0,0,0,.8);
+}
+.gnosis-unroll .gr::before { top: -12px; } .gnosis-unroll .gr::after { bottom: -12px; }
+.gnosis-unroll .gnosis-panel.visible ~ .gr { opacity: 1; transition: left 1.2s cubic-bezier(.3,.7,.2,1), opacity .2s linear 0s; }
+.gnosis-unroll .gnosis-panel.visible ~ .gl { left: calc(var(--gm) - 2px); }
+.gnosis-unroll .gnosis-panel.visible ~ .gr-r { left: calc(100% - var(--gm) + 2px); }
+@media (max-width: 640px) { .gnosis-unroll { --gm: 18px; } }
+@media (prefers-reduced-motion: reduce) { .gnosis-unroll .gnosis-panel, .gnosis-unroll .gr { transition: none !important; } }
+
+/* true-black must also hide your slideshow layer (.fixed-bg) — the rules above only covered <body> */
+html.oled .fixed-bg, html.oled .fixed-bg::before, html.oled .fixed-bg::after { display: none !important; }

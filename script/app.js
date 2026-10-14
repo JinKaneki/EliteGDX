@@ -4,14 +4,14 @@
         });
 
         // VERSION CHECK NOTIFICATION
-        const APP_VERSION = '4.3.0';
+        const APP_VERSION = EG.VERSION;   // single source of truth lives in eg-core.js
 
         function checkVersion() {
-            const storedVersion = localStorage.getItem('eliteGDX_version');
+            const storedVersion = EG.store.get('eliteGDX_version');
             if (storedVersion && storedVersion !== APP_VERSION) {
-                showUpdateNotification();
+                EG.toast('✨ EliteGDX updated to <b>v' + APP_VERSION + '</b>');
             }
-            localStorage.setItem('eliteGDX_version', APP_VERSION);
+            EG.store.set('eliteGDX_version', APP_VERSION);
         }
 
         function showUpdateNotification() {
@@ -280,7 +280,7 @@
             'hide-controls-btn', 'hide-info-btn', 'freeze-btn', 'bg-toggle-btn',
             'zen-toggle-btn', 'magic-mirror-btn', 'mirror-exit-btn', 'fe-toggle-btn',
             'open-fetch-btn', 'toggle-fetch-btn', 'open-cmd-runner', 'close-cmd-runner',
-            'gnosis-toggle-btn', 'azimuthal-toggle-btn',
+            'gnosis-toggle-btn', 
         ];
 
         // Also include any buttons with specific classes (e.g., .cosmic-btn inside #cosmic-wrapper)
@@ -462,7 +462,7 @@
         // Load saved graph from localStorage
         function loadGraph() {
             try {
-                const saved = JSON.parse(localStorage.getItem('akashic_graph'));
+                const saved = JSON.parse(EG.store.get('akashic_graph'));
                 if (saved && saved.nodes && saved.links) {
                     nodes = saved.nodes;
                     links = saved.links;
@@ -472,7 +472,7 @@
 
         // Save graph to localStorage
         function saveGraph() {
-            localStorage.setItem('akashic_graph', JSON.stringify({ nodes, links }));
+            EG.store.set('akashic_graph', JSON.stringify({ nodes, links }));
         }
 
         // Add a command to the graph
@@ -1098,7 +1098,7 @@
         const body = document.body;
 
         // Slideshow Variables
-        let blocks = Array.from(document.querySelectorAll('.block'));
+        let blocks = Array.from(document.querySelectorAll('.content-blocks > .block'));   // was '.block' — it also grabbed the static Project-Intent block, giving an empty slide now and then
         let currentBlockIndex = 0;
         let lastMinute = new Date().getMinutes();
         let isFrozen = false;
@@ -1118,6 +1118,7 @@
         if(blocks.length > 0) {
             blocks.forEach(b => b.classList.remove('active')); // Clean slate
             blocks[0].classList.add('active');
+            if (window.EG_prefetch) { EG_prefetch(blocks[0]); EG_prefetch(blocks[1]); }
         }
 
         // Freeze Toggle Logic
@@ -1353,10 +1354,25 @@
             
             // Show next
             blocks[currentBlockIndex].classList.add('active');
+            if (window.EG_prefetch) EG_prefetch(blocks[(currentBlockIndex + 1) % blocks.length]);   // next slide is ready before the fade
 
             // NEW: Tell the background to update to match the new block! this call the global function
             updateBackground();
         }
+
+        // NEW: go to the PREVIOUS slide (mirror of cycleBlocks, no reshuffle)
+        function cycleBlocksBack() {
+            if (isFrozen) return;
+            blocks[currentBlockIndex].classList.remove('active');
+            currentBlockIndex = (currentBlockIndex - 1 + blocks.length) % blocks.length;
+            blocks[currentBlockIndex].classList.add('active');
+            if (window.EG_prefetch) EG_prefetch(blocks[(currentBlockIndex - 1 + blocks.length) % blocks.length]);
+            updateBackground();
+        }
+        EG.gallery = {
+            next() { if (isFrozen) return 'frozen — press Freeze (or double-click the background) to resume'; cycleBlocks(); return 'slide ' + (currentBlockIndex + 1) + '/' + blocks.length; },
+            prev() { if (isFrozen) return 'frozen — press Freeze (or double-click the background) to resume'; cycleBlocksBack(); return 'slide ' + (currentBlockIndex + 1) + '/' + blocks.length; },
+        };
 
         // --- 1. GLOBAL VARIABLES ---
         let isBgFrozen = false;
@@ -1541,8 +1557,26 @@
         function setRandomIndependentBg() {
             if (!independentBgImages || independentBgImages.length === 0) return;
             const randomIndex = Math.floor(Math.random() * independentBgImages.length);
+            independentIdx = randomIndex;                 // remember it, so `bg next` / `bg prev` continue from here
             document.querySelector('.fixed-bg').style.backgroundImage = `url('${independentBgImages[randomIndex]}')`;
         }
+        // NEW: step the independent-folder background forwards/backwards (used by the `bg next` / `bg prev` commands)
+        let independentIdx = -1;
+        EG.bg = {
+            step(dir) {
+                if (isBgFrozen) return 'background is frozen — double-click the background to unfreeze';
+                const n = independentBgImages.length; if (!n) return 'no independent backgrounds';
+                if (bgMode !== 'independent') {                     // switch into independent mode first (same state changes as the BG button)
+                    bgMode = 'independent'; bgToggleBtn.classList.add('independent'); bgToggleBtn.innerText = ' BG: INDEPENDENT';
+                }
+                independentIdx = independentIdx < 0 ? (dir > 0 ? 0 : n - 1) : (independentIdx + dir + n) % n;
+                document.querySelector('.fixed-bg').style.backgroundImage = `url('${independentBgImages[independentIdx]}')`;
+                startIndependentInterval();                         // restart the 30 s auto-cycle so it does not flip again immediately
+                return 'background ' + (independentIdx + 1) + '/' + n + ' — ' + independentBgImages[independentIdx].split('/').pop();
+            },
+            next() { return EG.bg.step(+1); }, prev() { return EG.bg.step(-1); },
+            status() { return 'mode: ' + bgMode + (independentIdx >= 0 ? ' · image ' + (independentIdx + 1) + '/' + independentBgImages.length : '') + (isBgFrozen ? ' · FROZEN' : ''); },
+        };
         function stopIndependentInterval() {
             if (independentInterval) {
                 clearInterval(independentInterval);
@@ -2265,7 +2299,7 @@
             root.style.setProperty('--digital-clock-color', t.digital);
 
             // Save to LocalStorage
-            localStorage.setItem('elite-color-profile', themeName);
+            EG.store.set('elite-color-profile', themeName);
         }
 
         // 1. Listen for user changes
@@ -2279,7 +2313,7 @@
 
         // 2. Load saved theme on page startup
         function loadSavedTheme() {
-            const savedTheme = localStorage.getItem('elite-color-profile') || 'cyan'; // Default to cyan
+            const savedTheme = EG.store.get('elite-color-profile') || 'cyan'; // Default to cyan
             themeSelect.value = savedTheme; // Update the dropdown UI
             applyColorTheme(savedTheme);    // Apply the colors
         }
@@ -2309,6 +2343,7 @@
                     if (previousCallback) previousCallback();
                     resolve();
                 };
+                EG.loadLib('youtube').catch(() => {});   // script is fetched now, AFTER the callback exists
             });
         }
         // Media state globals
@@ -2580,6 +2615,7 @@
         
         // For plain text (use this for most commands)
         function appendCommandOutput(text, isError = false) {
+            EG.trimOutput(cmdOutput);   // keep the DOM small on always-on screens
             const line = document.createElement('div');
             line.style.color = isError ? '#ff5555' : '#0f0';
             line.textContent = text;          // textContent escapes HTML automatically
@@ -4556,11 +4592,11 @@ The same keyword must be used for both encryption and decryption.`;
                 if (cmd === 'set') {
                     const key = args.slice(1).join(' ');
                     if (!key) return '⚠️ Please provide a key to store.';
-                    localStorage.setItem('akashic_handshake_key', key);
+                    EG.store.set('akashic_handshake_key', key);
                     return '🤝 Handshake key stored locally.';
                 }
                 if (cmd === 'clear') {
-                    localStorage.removeItem('akashic_handshake_key');
+                    EG.store.remove('akashic_handshake_key');
                     return '🤝 Handshake key cleared.';
                 }
                 return `⚠️ Unknown subcommand. Use 'set [key]' or 'clear'.`;
@@ -4571,7 +4607,7 @@ The same keyword must be used for both encryption and decryption.`;
                 // --- argument parsing (unchanged) ---
                 let pw, mode, text;
                 if (args.length === 2) {
-                    const storedKey = localStorage.getItem('akashic_handshake_key');
+                    const storedKey = EG.store.get('akashic_handshake_key');
                     if (!storedKey) return '⚠️ No password provided and no handshake key set.';
                     mode = args[0];
                     text = args[1];
@@ -4726,15 +4762,15 @@ vault dec <hex>      (uses stored handshake key)`;
 
                 if (cmd === 'set') {
                     if (!key || !value) return 'Usage: tag set [key] [secret]';
-                    const db = JSON.parse(localStorage.getItem('akashic_tags') || '{}');
+                    const db = JSON.parse(EG.store.get('akashic_tags') || '{}');
                     db[key] = value;
-                    localStorage.setItem('akashic_tags', JSON.stringify(db));
+                    EG.store.set('akashic_tags', JSON.stringify(db));
                     return `🔖 Tag stored: "${key}" → <span style="color: #ff00ff;">[HIDDEN]</span>`;
                 }
 
                 if (cmd === 'get') {
                     if (!key) return 'Usage: tag get [key]';
-                    const db = JSON.parse(localStorage.getItem('akashic_tags') || '{}');
+                    const db = JSON.parse(EG.store.get('akashic_tags') || '{}');
                     if (db[key]) return `🔖 Secret for "${key}": <span style="color: #0f0;">${db[key]}</span>`;
                     return '<span style="color: #888;">No secret tagged under that word.</span>';
                 }
@@ -4742,17 +4778,17 @@ vault dec <hex>      (uses stored handshake key)`;
                 if (cmd === 'clear') {
                     if (!key) return 'Usage: tag clear [key]  (or "all" to wipe everything)';
                     if (key === 'all') {
-                        localStorage.removeItem('akashic_tags');
+                        EG.store.remove('akashic_tags');
                         return '🗑️ All tags erased.';
                     }
-                    const db = JSON.parse(localStorage.getItem('akashic_tags') || '{}');
+                    const db = JSON.parse(EG.store.get('akashic_tags') || '{}');
                     delete db[key];
-                    localStorage.setItem('akashic_tags', JSON.stringify(db));
+                    EG.store.set('akashic_tags', JSON.stringify(db));
                     return `🗑️ Tag "${key}" removed.`;
                 }
 
                 if (cmd === 'view') {
-                    const db = JSON.parse(localStorage.getItem('akashic_tags') || '{}');
+                    const db = JSON.parse(EG.store.get('akashic_tags') || '{}');
                     const keys = Object.keys(db);
                     if (keys.length === 0) return '<span style="color: #888;">📋 No tags stored.</span>';
                     return `📋 Stored tags: ${keys.join(', ')}`;
@@ -5725,6 +5761,14 @@ ${channelList}<br><br>
                 let page = 1;
                 const perPage = 40;
 
+                // channel names/URLs come from a THIRD-PARTY playlist, so clicks are handled by ONE delegated listener
+                // that reads data-* attributes — never by inline onclick strings built from that text
+                if (!window.__iptvDelegate) {
+                    window.__iptvDelegate = true;
+                    cmdOutput.addEventListener('click', (e) => { const el = e.target.closest('.iptv-ch'); if (el) playIPTVInTerminal(el.dataset.url, el.dataset.name); });
+                }
+                let searchTerm = '';
+
                 const loading = document.createElement('div');
                 loading.style.color = '#888';
                 loading.textContent = '📡 Fetching IPTV channels…';
@@ -5744,8 +5788,18 @@ ${channelList}<br><br>
                         if (resp.ok) customMap = await resp.json();
                     } catch(e) { /* ignore */ }
 
+                    // --- Search (NEW): iptv search <words> [page]  — filters the whole 10k+ channel index by name ---
+                    if (sub === 'search' || sub === 's') {
+                        const parts = args.slice(1);
+                        if (parts.length > 1 && /^\d+$/.test(parts[parts.length - 1])) page = Math.max(1, parseInt(parts.pop()));
+                        searchTerm = parts.join(' ').toLowerCase().trim();
+                        if (!searchTerm) { loading.remove(); return 'Usage: iptv search &lt;words&gt; [page]<br>Example: iptv search nasa'; }
+                        playlistUrl = 'https://iptv-org.github.io/iptv/index.m3u';
+                        titleLabel = `SEARCH – ${searchTerm.toUpperCase()}`;
+                        nextCmdBase = `iptv search ${searchTerm}`;
+                    }
                     // --- Category or Country ---
-                    if (sub === 'cat' || sub === 'category') {
+                    else if (sub === 'cat' || sub === 'category') {
                         const catName = args[1]?.toLowerCase();
                         if (!catName) {
                             loading.remove();
@@ -5769,16 +5823,19 @@ ${channelList}<br><br>
                         customChannels = customMap[country] || [];
                     }
 
-                    // Fetch main playlist
-                    const resp = await fetch(playlistUrl);
-                    if (!resp.ok) {
-                        loading.remove();
-                        return `⚠️ Playlist not found.`;
+                    // Fetch main playlist (cached for the session: page 2, 3… of the same list no longer re-download several MB)
+                    const m3uCache = (EG._m3u = EG._m3u || {});
+                    let text = m3uCache[playlistUrl];
+                    if (!text) {
+                        const resp = await fetch(playlistUrl);
+                        if (!resp.ok) {
+                            loading.remove();
+                            return `⚠️ Playlist not found.`;
+                        }
+                        text = m3uCache[playlistUrl] = await resp.text();
                     }
-
-                    const text = await resp.text();
                     const lines = text.split('\n');
-                    const channels = [];
+                    let channels = [];
 
                     // Parse M3U with safe checks
                     for (let i = 0; i < lines.length; i++) {
@@ -5797,24 +5854,25 @@ ${channelList}<br><br>
                         }
                     }
 
+                    if (searchTerm) channels = channels.filter(c => c.name.toLowerCase().includes(searchTerm));
+
                     loading.remove();
-                    if (channels.length === 0) return 'No channels found.';
+                    if (channels.length === 0) return searchTerm ? `No channels match "${EG.esc(searchTerm)}".` : 'No channels found.';
 
                     const totalPages = Math.ceil(channels.length / perPage);
                     const start = (page - 1) * perPage;
                     const slice = channels.slice(start, start + perPage);
 
-                    let output = `<b style="color:#0f0;">📺 IPTV – ${titleLabel}</b> `;
+                    let output = `<b style="color:#0f0;">📺 IPTV – ${EG.esc(titleLabel)}</b> `;
                     output += `<span style="color:#888;">(${channels.length} channels, page ${page}/${totalPages})</span><br><br>`;
 
                     slice.forEach((ch, i) => {
                         const idx = start + i + 1;
-                        const safeName = ch.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                        output += `<span style="color:#fff;">[${idx}]</span> <span style="color:#0ff; cursor:pointer; text-decoration:underline;" onclick="playIPTVInTerminal('${ch.url}','${safeName}')">${ch.name}</span><br>`;
+                        output += `<span style="color:#fff;">[${idx}]</span> <span class="iptv-ch" data-url="${EG.esc(ch.url)}" data-name="${EG.esc(ch.name)}" style="color:#0ff; cursor:pointer; text-decoration:underline;">${EG.esc(ch.name)}</span><br>`;
                     });
 
                     if (page < totalPages) {
-                        output += `<br><span style="color:#888;">Type <b style="color:#0f0;">${nextCmdBase} ${page + 1}</b> for next page.</span>`;
+                        output += `<br><span style="color:#888;">Type <b style="color:#0f0;">${EG.esc(nextCmdBase)} ${page + 1}</b> for next page.</span>`;
                     }
                     return output;
 
@@ -6373,9 +6431,42 @@ if (viewport) output += `<b>📱 Viewport:</b> ${viewport}<br>`;
                 if (!word) return 'Usage: define [word]';
 
                 try {
-                    const resp = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-                    if (!resp.ok) throw new Error('Not found');
-                    const data = await resp.json();
+                    let data;
+                    try {
+                        // 1st choice: dictionaryapi.dev (7-second timeout with AbortController, URL-encoded word)
+                        const ctl = new AbortController(); 
+                        const to = setTimeout(() => ctl.abort(), 7000);
+                        
+                        const resp = await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + encodeURIComponent(word), { signal: ctl.signal });
+                        clearTimeout(to); 
+                        
+                        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                        data = await resp.json();
+                        
+                    } catch (e1) {
+                        // Fallback: Wiktionary REST API (reliable, CORS-enabled, handles words primary API misses)
+                        const resp = await fetch('https://en.wiktionary.org/api/rest_v1/page/definition/' + encodeURIComponent(word.toLowerCase()));
+                        if (!resp.ok) throw new Error('Not found');
+                        
+                        // Helper to strip HTML tags returned in Wiktionary definition snippets
+                        const strip = (h) => new DOMParser().parseFromString(h, 'text/html').body.textContent.trim();
+                        const jsonResp = await resp.json();
+
+                        // Reshape Wiktionary structure so the rest of your rendering code works without changes
+                        data = [{ 
+                            phonetics: [], 
+                            sourceUrls: ['https://en.wiktionary.org/wiki/' + encodeURIComponent(word)],              
+                            meanings: (jsonResp.en || []).map(m => ({ 
+                                partOfSpeech: m.partOfSpeech, 
+                                synonyms: [], 
+                                antonyms: [],                
+                                definitions: m.definitions.slice(0, 4).map(d => ({ 
+                                    definition: strip(d.definition), 
+                                    example: d.examples && d.examples[0] ? strip(d.examples[0]) : '' 
+                                })) 
+                            })) 
+                        }];
+                    }
 
                     let output = `<strong style="color: var(--accent-color);">📘 ${escapeHtml(word)}</strong>`;
 
@@ -6391,19 +6482,19 @@ if (viewport) output += `<b>📱 Viewport:</b> ${viewport}<br>`;
                             output += `<br><br><strong style="color: #ffaa00;">${escapeHtml(meaning.partOfSpeech)}</strong>`;
 
                             meaning.definitions.forEach((def, i) => {
-                                output += `<br>  ${i + 1}. ${escapeHtml(def.definition)}`;
+                                output += `<br> &nbsp;${i + 1}. ${escapeHtml(def.definition)}`;
                                 if (def.example) {
-                                    output += `<br><span style="color: #666;">     “${escapeHtml(def.example)}”</span>`;
+                                    output += `<br><span style="color: #666;"> &nbsp;&nbsp; “${escapeHtml(def.example)}”</span>`;
                                 }
                             });
 
                             if (meaning.synonyms?.length) {
                                 const escapedSynonyms = meaning.synonyms.map(s => escapeHtml(s)).join(', ');
-                                output += `<br>  <span style="color: #0f0;">Synonyms:</span> ${escapedSynonyms}`;
+                                output += `<br> &nbsp;<span style="color: #0f0;">Synonyms:</span> ${escapedSynonyms}`;
                             }
                             if (meaning.antonyms?.length) {
                                 const escapedAntonyms = meaning.antonyms.map(a => escapeHtml(a)).join(', ');
-                                output += `<br>  <span style="color: #f55;">Antonyms:</span> ${escapedAntonyms}`;
+                                output += `<br> &nbsp;<span style="color: #f55;">Antonyms:</span> ${escapedAntonyms}`;
                             }
                         });
                     });
@@ -6722,7 +6813,7 @@ _________________________
 
                 if (mode === 'off') {
                     clearModes();
-                    const savedTheme = localStorage.getItem('elite-color-profile') || 'cyan';
+                    const savedTheme = EG.store.get('elite-color-profile') || 'cyan';
                     if (typeof applyColorTheme === 'function') applyColorTheme(savedTheme);
                     return '✅ Terminal mode cleared. Back to default theme.';
                 }
@@ -7907,7 +7998,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
                 await new Promise(r => setTimeout(r, 600));
 
                 // Clear localStorage completely
-                localStorage.clear();
+                EG.store.clearAll();
                 // Clear command history (if you keep it)
                 if (typeof commandHistory !== 'undefined') commandHistory = [];
                 // Clear terminal output
@@ -8230,7 +8321,8 @@ ${pins.slice(0, 10).join('<br>')}<br>
             }
             
             // Add to history
-            commandHistory.push(rawCmd);
+            commandHistory.push(EG.maskCmd(rawCmd));   // passwords never stay in memory history
+            EG.history.push(rawCmd);                    // persisted history (secret commands excluded)
             
             // Parse command and arguments
             const args = rawCmd.split(' ');
@@ -8241,18 +8333,20 @@ ${pins.slice(0, 10).join('<br>')}<br>
             addNodeToGraph(main);
             
             // Show the command in output
-            appendCommandOutput(`$ ${rawCmd}`);
+            appendCommandOutput(`$ ${EG.maskCmd(rawCmd)}`);
             
             // Check if command exists
-            if (!commands[main]) {
-                appendCommandOutput(`Command not found: ${main}`, true);
+            // registry first, legacy `commands` object second
+            const cmdFunc = EG.resolveCommand(main, commands);
+            if (!cmdFunc) {
+                EG.unknownCommand(main);   // "Did you mean …?" chips
                 return;
             }
-            
-            const cmdFunc = commands[main];
             let result;
             
             try {
+                // lazy-load hls / mqtt / peerjs / firebase / qrcode / youtube only when this command needs them
+                await EG.beforeRun(main, restArgs);
                 // execute the command
                 result = cmdFunc(restArgs);
                 
@@ -8267,6 +8361,8 @@ ${pins.slice(0, 10).join('<br>')}<br>
                     result = await result;
                     loadingLine.remove();         // remove loading indicator
                 }
+                
+                result = EG.afterRun(main, result);   // third-party text is sanitised (no scripts / on* handlers / javascript: links)
                 
                 // Display result if not empty
                 if (result && result.trim() !== '') {
@@ -10020,7 +10116,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
                 
                 // ---- ALL OTHER PLANETS: Use JSON linear ----
                 const days = (date - EPHEMERIS.refDate) / (1000 * 60 * 60 * 24);
-                const lon = EPHEMERIS.refLon[planet] + EPHEMERIS.dailyMotion[planet] * days;
+                const lon = (window.EG && EG.ephem && EG.ephem.has(planet)) ? EG.ephem.lon(planet, date) : EPHEMERIS.refLon[planet] + EPHEMERIS.dailyMotion[planet] * days;
                 return ((lon % 360) + 360) % 360;
             }
 
@@ -10048,7 +10144,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
                 const rect = canvas.getBoundingClientRect();
 
                 // 🛑 1. EARLY ABORT: If the canvas is hidden, stop immediately.
-                if (rect.width === 0 || rect.height === 0) return;
+                if (rect.width < 60 || rect.height < 60) return;   // was === 0: a canvas mid-transition is tiny but not 0 → negative arc radius
                 
                 const displayWidth = rect.width;
                 const displayHeight = rect.height;
@@ -10067,10 +10163,8 @@ ${pins.slice(0, 10).join('<br>')}<br>
                 const delta = (timestamp - lastTimestamp) / 1000;
                 lastTimestamp = timestamp;
 
-                if (isPlaying) {
-                    const deltaMs = delta * 1000 * speedMultiplier;
-                    simTime = new Date(simTime.getTime() + deltaMs);
-                }
+                // SHARED CLOCK: this view no longer integrates time itself — it follows EG.sim (so every panel and <astro-controls> agree)
+                simTime = EG.sim.date(); isPlaying = EG.sim.playing; speedMultiplier = EG.sim.rate;
 
                 // ---- All measurements use DISPLAY pixels (not canvas pixels) ----
                 const cx = displayWidth / 2;
@@ -10232,39 +10326,42 @@ ${pins.slice(0, 10).join('<br>')}<br>
                 ctx.fillText('🌀', cx, cy - 2);
                 ctx.shadowBlur = 0;
 
-                animFrame = requestAnimationFrame(drawCosmicClock);
+                animFrame = EG.next('cosmic-clock', drawCosmicClock, { el: canvas, interval: () => EG.rateInterval(isPlaying, speedMultiplier) });
             }
 
             // ---- Resize handler ----
             const resizeObserver = new ResizeObserver(() => {
-                if (animFrame) cancelAnimationFrame(animFrame);
+                if (animFrame) EG.cancel(animFrame);
                 lastTimestamp = 0;
                 drawCosmicClock();
             });
             resizeObserver.observe(canvas);
 
             window.addEventListener('resize', () => {
-                if (animFrame) cancelAnimationFrame(animFrame);
+                if (animFrame) EG.cancel(animFrame);
                 lastTimestamp = 0;
                 drawCosmicClock();
             });
 
             // ---- Controls ----
             document.getElementById('c-play-pause').onclick = (e) => {
-                isPlaying = !isPlaying;
-                e.target.innerText = isPlaying ? "⏸PAUSE" : "▶PLAY";
+                EG.sim.set({ playing: !EG.sim.playing });
+                isPlaying = EG.sim.playing;
+                e.target.innerText = isPlaying ? "⏸ PAUSE" : "▶ PLAY";
                 if (isPlaying) lastTimestamp = 0;
             };
             document.getElementById('c-now').onclick = () => {
+                EG.sim.live();
                 isPlaying = true;
-                document.getElementById('c-play-pause').innerText = "⏸PAUSE";
-                simTime = new Date();
+                document.getElementById('c-play-pause').innerText = "⏸ PAUSE";
+                simTime = EG.sim.date();
                 lastTimestamp = 0;
             };
             const addTime = (ms) => {
+                EG.sim.set({ playing: false }); EG.sim.step(ms);
                 isPlaying = false;
-                document.getElementById('c-play-pause').innerText = "▶PLAY";
-                simTime = new Date(simTime.getTime() + ms);
+                document.getElementById('c-play-pause').innerText = "▶ PLAY";
+                simTime = EG.sim.date();
                 lastTimestamp = 0;
             };
             document.getElementById('c-next-hr').onclick = () => addTime(3600000);
@@ -10279,8 +10376,8 @@ ${pins.slice(0, 10).join('<br>')}<br>
             let speedIndex = 0;
             speedBtn.innerText = `⚡1x`;
             speedBtn.onclick = () => {
-                speedIndex = (speedIndex + 1) % speeds.length;
-                speedMultiplier = speeds[speedIndex];
+                speedIndex = (speeds.reduce((b, v, i) => (v <= EG.sim.rate ? i : b), 0) + 1) % speeds.length;   // continue from where the SHARED clock really is, not from a stale index
+                speedMultiplier = speeds[speedIndex]; EG.sim.set({ rate: speedMultiplier });
                 speedBtn.innerText = `⚡${speedMultiplier}x`;
                 lastTimestamp = 0;
             };
@@ -10369,7 +10466,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
 
             function getPlanetPosition(planet, date) {
                 const days = (date - EPHEMERIS.refDate) / (1000 * 60 * 60 * 24);
-                const lon = EPHEMERIS.refLon[planet] + EPHEMERIS.dailyMotion[planet] * days;
+                const lon = (window.EG && EG.ephem && EG.ephem.has(planet)) ? EG.ephem.lon(planet, date) : EPHEMERIS.refLon[planet] + EPHEMERIS.dailyMotion[planet] * days;
                 return ((lon % 360) + 360) % 360;
             }
 
@@ -10727,9 +10824,8 @@ ${pins.slice(0, 10).join('<br>')}<br>
                 const delta = (timestamp - lastTimestamp) / 1000;
                 lastTimestamp = timestamp;
 
-                if (isPlaying) {
-                    simTime = new Date(simTime.getTime() + delta * 1000 * speedMultiplier);
-                }
+                // SHARED CLOCK: this view no longer integrates time itself — it follows EG.sim (so every panel and <astro-controls> agree)
+                simTime = EG.sim.date(); isPlaying = EG.sim.playing; speedMultiplier = EG.sim.rate;
 
                 if (timeDisplay) {
                     timeDisplay.innerText = `[ PROJECTION TIME: ${simTime.toUTCString()} ]`;
@@ -10738,27 +10834,30 @@ ${pins.slice(0, 10).join('<br>')}<br>
                 drawCircular();
                 drawStretched();
 
-                animFrame = requestAnimationFrame(drawFlatEarth);
+                animFrame = EG.next('flat-earth', drawFlatEarth, { el: canvas, interval: () => EG.rateInterval(isPlaying, speedMultiplier) });
             }
 
             // ---- Controls ----
             document.getElementById('fe-play-pause').onclick = (e) => {
-                isPlaying = !isPlaying;
-                e.target.innerText = isPlaying ? "⏸PAUSE" : "▶PLAY";
+                EG.sim.set({ playing: !EG.sim.playing });
+                isPlaying = EG.sim.playing;
+                e.target.innerText = isPlaying ? "⏸ PAUSE" : "▶ PLAY";
                 if (isPlaying) lastTimestamp = 0;
             };
             
             document.getElementById('fe-now').onclick = () => {
+                EG.sim.live();
                 isPlaying = true;
-                document.getElementById('fe-play-pause').innerText = "⏸PAUSE";
-                simTime = new Date();
+                document.getElementById('fe-play-pause').innerText = "⏸ PAUSE";
+                simTime = EG.sim.date();
                 lastTimestamp = 0;
             };
 
             const addTime = (ms) => {
+                EG.sim.set({ playing: false }); EG.sim.step(ms);
                 isPlaying = false;
-                document.getElementById('fe-play-pause').innerText = "▶PLAY";
-                simTime = new Date(simTime.getTime() + ms);
+                document.getElementById('fe-play-pause').innerText = "▶ PLAY";
+                simTime = EG.sim.date();
                 lastTimestamp = 0;
             };
 
@@ -10774,8 +10873,8 @@ ${pins.slice(0, 10).join('<br>')}<br>
             const speeds = [1, 60, 600, 1440, 6000, 60000, 600000, 6000000];
             let speedIndex = 0;
             speedBtn.onclick = () => {
-                speedIndex = (speedIndex + 1) % speeds.length;
-                speedMultiplier = speeds[speedIndex];
+                speedIndex = (speeds.reduce((b, v, i) => (v <= EG.sim.rate ? i : b), 0) + 1) % speeds.length;   // continue from where the SHARED clock really is, not from a stale index
+                speedMultiplier = speeds[speedIndex]; EG.sim.set({ rate: speedMultiplier });
                 speedBtn.innerText = `⚡ ${speedMultiplier}x`;
                 lastTimestamp = 0;
             };
@@ -10783,7 +10882,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
             drawFlatEarth();
         }
 
-        initFlatEarthClock();
+        // (removed a second top-level initFlatEarthClock() — it is already called in DOMContentLoaded and ran two competing 60fps loops)
 
 
 
@@ -11240,7 +11339,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
                         if (dayOfYear === 0) year++;
                     }
                     renderFrame();
-                    animationId = requestAnimationFrame(renderLoop);
+                    animationId = EG.next('azimuthal-engine', renderLoop, { el: canvas, interval: 0 });   // speed here is per-frame, so only visibility-gate it
                 }
                 // ---- Load and draw map image ----
                 // (Duplicate code removed – we already load the image once above)
@@ -11262,7 +11361,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
                 if (isRunning) {
                     renderLoop();
                 } else {
-                    if (animationId) cancelAnimationFrame(animationId);
+                    if (animationId) EG.cancel(animationId);
                 }
             });
 
@@ -11302,7 +11401,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
             });
 
             resetBtn.addEventListener('click', () => {
-                if (animationId) cancelAnimationFrame(animationId);
+                if (animationId) EG.cancel(animationId);
                 isRunning = false;
                 playBtn.textContent = '▶ Play';
                 syncToActualTime();
@@ -11399,6 +11498,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
             let showZodiac = true;
             let showPlanets = true;
             let showACMC = true;
+            let showPrecision = true;   // NEW: astrotheme-style precision layer (1° bars, true degrees, de-cluttered glyphs, aspect lines)
 
             // ---------- Cosmic helpers (same as before) ----------
             const ZODIAC = ['♈︎','♉︎','♊︎','♋︎','♌︎','♍︎','♎︎','♏︎','♐︎','♑︎','♒︎','♓︎'];
@@ -11443,7 +11543,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
                 
                 // ---- ALL OTHER PLANETS: Use JSON linear ----
                 const days = (date - EPHEMERIS.refDate) / (1000 * 60 * 60 * 24);
-                const lon = EPHEMERIS.refLon[planet] + EPHEMERIS.dailyMotion[planet] * days;
+                const lon = (window.EG && EG.ephem && EG.ephem.has(planet)) ? EG.ephem.lon(planet, date) : EPHEMERIS.refLon[planet] + EPHEMERIS.dailyMotion[planet] * days;
                 return ((lon % 360) + 360) % 360;
             }
             function getACMC(date, lat, lon) {
@@ -11475,7 +11575,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
             // 1. Azimuthal (DPI scaling)
             function renderAzimuthal() {
                 const rect = azCanvas.getBoundingClientRect();
-                if (rect.width === 0 || rect.height === 0) return;
+                if (rect.width < 60 || rect.height < 60) return;   // was === 0: a canvas mid-transition is tiny but not 0 → negative arc radius
 
                 const dpr = window.devicePixelRatio || 1;
                 const displayWidth = rect.width;
@@ -11737,7 +11837,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
             // 2. Cosmic (DPI‑scaled)
             function renderCosmic() {
                 const rect = cosCanvas.getBoundingClientRect();
-                if (rect.width === 0 || rect.height === 0) return;
+                if (rect.width < 60 || rect.height < 60) return;   // was === 0: a canvas mid-transition is tiny but not 0 → negative arc radius
                 
                 const dpr = window.devicePixelRatio || 1;
                 const displayWidth = rect.width;
@@ -11851,8 +11951,19 @@ ${pins.slice(0, 10).join('<br>')}<br>
                     cosCtx.shadowBlur = 0;
                 }
 
+                // ---- PRECISION LAYER (toggle): 1° bars + degree numbers, aspect chords, then (below) de-cluttered glyphs with true degrees ----
+                const precisionOn = showPrecision && window.EG && EG.astroDraw && EG.ephem;
+                const Rp = rZodiac - 30;                       // ring sits on the inner edge of the zodiac band
+                if (precisionOn) {
+                    cosCtx.shadowBlur = 0;
+                    EG.astroDraw.ring(cosCtx, cx, cy, Rp, getAngle);                       // getAngle = YOUR longitude→canvas-angle mapping
+                    if (showPlanets) EG.astroDraw.aspects(cosCtx, cx, cy, Rp, getAngle, simTime);
+                }
+
                 // ---- Planets (toggle) ----
-                if (showPlanets) {
+                if (showPlanets && precisionOn) {
+                    EG.astroDraw.bodies(cosCtx, cx, cy, Rp, getAngle, simTime);            // replaces the plain glyph row while Precision is ON
+                } else if (showPlanets) {
                     cosCtx.font = '20px "Segoe UI Symbol", "Arial Unicode MS", Arial, sans-serif';
                     for (const p in planetData) {
                         const lonDeg = planetData[p];
@@ -12024,7 +12135,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
                 const hours = String(simTime.getUTCHours()).padStart(2, '0');
                 const mins = String(simTime.getUTCMinutes()).padStart(2, '0');
                 const secs = String(simTime.getUTCSeconds()).padEnd(2, '0')
-                timeDisplay.textContent = `📅 ${month} ${day}, ${year} (GMT) | 🕐 ${hours}:${mins}:${secs} | ⚡ ${speedMultiplier}x`;
+                timeDisplay.textContent = `📅 ${day} ${month}, ${year} |🕐 ${hours}:${mins}:${secs} (GMT) | ⚡ ${speedMultiplier}x`;
             }
 
             // ---------- Main loop ----------
@@ -12036,14 +12147,12 @@ ${pins.slice(0, 10).join('<br>')}<br>
                 const delta = (timestamp - lastTimestamp) / 1000;
                 lastTimestamp = timestamp;
 
-                if (isRunning) {
-                    const deltaMs = delta * 1000 * speedMultiplier;
-                    simTime = new Date(simTime.getTime() + deltaMs);
-                }
+                // SHARED CLOCK: this view no longer integrates time itself — it follows EG.sim (so every panel and <astro-controls> agree)
+                simTime = EG.sim.date(); isRunning = EG.sim.playing; speedMultiplier = EG.sim.rate;
 
                 renderAzimuthal();
                 renderCosmic();
-                requestAnimationFrame(mainLoop);
+                EG.next('astrolabe', mainLoop, { el: azCanvas, interval: () => EG.rateInterval(isRunning, speedMultiplier) });
             }
 
             // ---------- Controls ----------
@@ -12058,27 +12167,30 @@ ${pins.slice(0, 10).join('<br>')}<br>
             const resetBtn = document.getElementById('astro-reset');
 
             function addTime(ms) {
+                EG.sim.set({ playing: false }); EG.sim.step(ms);
                 isRunning = false;
                 playBtn.textContent = '▶ Play';
-                simTime = new Date(simTime.getTime() + ms);
+                simTime = EG.sim.date();
             }
 
             playBtn.addEventListener('click', () => {
-                isRunning = !isRunning;
+                EG.sim.set({ playing: !EG.sim.playing });
+                isRunning = EG.sim.playing;
                 playBtn.textContent = isRunning ? '⏸ Pause' : '▶ Play';
                 if (isRunning) lastTimestamp = 0;
             });
 
             syncBtn.addEventListener('click', () => {
+                EG.sim.live();
                 isRunning = true;
                 playBtn.textContent = '⏸ Pause';
-                simTime = new Date();
+                simTime = EG.sim.date();
                 lastTimestamp = 0;
             });
 
             speedBtn.addEventListener('click', () => {
-                speedIndex = (speedIndex + 1) % speeds.length;
-                speedMultiplier = speeds[speedIndex];
+                speedIndex = (speeds.reduce((b, v, i) => (v <= EG.sim.rate ? i : b), 0) + 1) % speeds.length;   // continue from where the SHARED clock really is, not from a stale index
+                speedMultiplier = speeds[speedIndex]; EG.sim.set({ rate: speedMultiplier });
                 speedBtn.textContent = `⚡${speedMultiplier}x`;
             });
 
@@ -12089,9 +12201,10 @@ ${pins.slice(0, 10).join('<br>')}<br>
             yearBtn.addEventListener('click', () => addTime(86400000 * 365));
 
             resetBtn.addEventListener('click', () => {
+                EG.sim.set({ t: Date.now(), rate: 1, playing: false });
                 isRunning = false;
                 playBtn.textContent = '▶ Play';
-                simTime = new Date();
+                simTime = EG.sim.date();
                 speedMultiplier = 1;
                 speedIndex = 0;
                 speedBtn.textContent = '⚡1x';
@@ -12115,6 +12228,13 @@ ${pins.slice(0, 10).join('<br>')}<br>
             document.getElementById('toggle-acmc').addEventListener('click', function() {
                 showACMC = !showACMC;
                 this.textContent = `AC/MC: ${showACMC ? 'ON' : 'OFF'}`; 
+            });
+
+            // ---------- Precision toggle (NEW) ----------
+            const precisionBtn = document.getElementById('toggle-precision');
+            if (precisionBtn) precisionBtn.addEventListener('click', function() {
+                showPrecision = !showPrecision;
+                this.textContent = `Precision: ${showPrecision ? 'ON' : 'OFF'}`;
             });
 
             // ---------- Clock toggle ----------
@@ -12170,9 +12290,9 @@ ${pins.slice(0, 10).join('<br>')}<br>
             }
 
             // ---------- Start ----------
-            simTime = new Date();
-            isRunning = true;
-            playBtn.textContent = '⏸ Pause';
+            simTime = EG.sim.date();              // honour a shared #t=… link or whatever the shared clock already says
+            isRunning = EG.sim.playing;
+            playBtn.textContent = isRunning ? '⏸ Pause' : '▶ Play';
             renderAzimuthal();
             renderCosmic();
             requestAnimationFrame(mainLoop);
@@ -12215,9 +12335,8 @@ ${pins.slice(0, 10).join('<br>')}<br>
                 isVisible = !isVisible;
                 panel.classList.toggle('visible', isVisible);
                 toggleBtn.textContent = isVisible ? 'CLOSES' : 'GNOSIS';
-                toggleBtn.style.borderColor = isVisible ? '#ffd700' : '';
-                toggleBtn.style.color = isVisible ? '#ffd700' : '';
-                toggleBtn.style.boxShadow = isVisible ? '0 0 30px #ffd70033' : '';
+                toggleBtn.classList.toggle('active', isVisible);
+                toggleBtn.setAttribute('aria-expanded', String(isVisible));
 
                 if (isVisible && navigator.vibrate) {
                     navigator.vibrate(10);
@@ -12282,7 +12401,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
             if (!tourOverlay) return;
 
             // If user has already seen the tour, hide it and exit.
-            if (localStorage.getItem('eliteGDX_tour_seen')) {
+            if (EG.store.get('eliteGDX_tour_seen')) {
                 tourOverlay.style.display = 'none';
                 return;
             }
@@ -12304,7 +12423,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
 
             function finishTour() {
                 tourOverlay.style.display = 'none';
-                localStorage.setItem('eliteGDX_tour_seen', 'true');
+                EG.store.set('eliteGDX_tour_seen', 'true');
             }
 
             // Show the tour
@@ -12340,7 +12459,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
             if (!helpBtn || !guideOverlay) return;
 
             // Show the `?` button only if the guide has NOT been shown before
-            if (!localStorage.getItem('eliteGDX_guide_shown')) {
+            if (!EG.store.get('eliteGDX_guide_shown')) {
                 helpBtn.style.display = 'block';
             }
 
@@ -12353,7 +12472,7 @@ ${pins.slice(0, 10).join('<br>')}<br>
             window.closeGuide = function() {
                 guideOverlay.style.display = 'none';
                 helpBtn.style.display = 'none';
-                localStorage.setItem('eliteGDX_guide_shown', 'true');
+                EG.store.set('eliteGDX_guide_shown', 'true');
             };
         });
 
@@ -12370,8 +12489,8 @@ ${pins.slice(0, 10).join('<br>')}<br>
         // Automatically update copyright year
         document.getElementById('year').textContent = new Date().getFullYear();
 
-        if ('serviceWorker' in navigator) {
+        if (EG.canUseSW()) {   // navigator.serviceWorker throws inside sandboxed iframes
             navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('SW registered', reg))
+            .then(reg => { console.log('SW registered', reg); EG.watchServiceWorker(reg); })
             .catch(err => console.log('SW failed', err));
         }

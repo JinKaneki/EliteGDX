@@ -15,25 +15,21 @@
     <link rel="preconnect" href="https://www.gstatic.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="icon" href="data:,">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/icons/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/icons/favicon-16.png">
+    <link rel="shortcut icon" href="images/icons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/icons/apple-touch-icon.png">
 
     <!-- Preload frequently used resources -->
     <link rel="preload" href="./TTC/tao-te-ching.json" as="fetch" crossorigin="anonymous">
 
     <!-- External stylesheet -->
     <link rel="stylesheet" href="./styles/styles.css">
+    <link rel="stylesheet" href="./styles/temple.css">
 
     <!-- External scripts with defer -->
-    <script src="https://unpkg.com/cistercian-numerals" type="module"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.min.js" defer></script>
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js" defer></script>
-    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js" defer></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js" defer></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js" defer></script>
+    <script src="https://unpkg.com/cistercian-numerals@1.1.1" type="module"></script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script data-goatcounter="https://elitegdx.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
     <!-- Primary SEO -->
@@ -68,6 +64,11 @@
     <title>EliteGDX - Akashic Neural Center</title>
 </head>
 <body>
+    <!-- sacred geometry sprite: Dharmachakra (8 spokes) + 12-ray Sol rosette -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="eg-dharma" viewBox="0 0 200 200"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="100" cy="100" r="84" stroke-width="7"/><circle cx="100" cy="100" r="72" stroke-width="1.6" opacity=".75"/><circle cx="100" cy="100" r="25" stroke-width="5"/><circle cx="100" cy="100" r="11" stroke-width="2.5"/><circle cx="100" cy="100" r="3" fill="currentColor" stroke="none"/><line x1="126.00" y1="100.00" x2="172.00" y2="100.00" stroke-width="5.5"/><path d="M186.92 113.77 L197.00 100.00 L186.92 86.23" stroke-width="2.4" fill="currentColor" fill-opacity=".35"/><circle cx="152.66" cy="121.81" r="4.2" stroke-width="1.8"/><line x1="118.38" y1="118.38" x2="150.91" y2="150.91" stroke-width="5.5"/><path d="M151.73 171.19 L168.59 168.59 L171.19 151.73" stroke-width="2.4" fill="currentColor" fill-opacity=".35"/><circle cx="121.81" cy="152.66" r="4.2" stroke-width="1.8"/><line x1="100.00" y1="126.00" x2="100.00" y2="172.00" stroke-width="5.5"/><path d="M86.23 186.92 L100.00 197.00 L113.77 186.92" stroke-width="2.4" fill="currentColor" fill-opacity=".35"/><circle cx="78.19" cy="152.66" r="4.2" stroke-width="1.8"/><line x1="81.62" y1="118.38" x2="49.09" y2="150.91" stroke-width="5.5"/><path d="M28.81 151.73 L31.41 168.59 L48.27 171.19" stroke-width="2.4" fill="currentColor" fill-opacity=".35"/><circle cx="47.34" cy="121.81" r="4.2" stroke-width="1.8"/><line x1="74.00" y1="100.00" x2="28.00" y2="100.00" stroke-width="5.5"/><path d="M13.08 86.23 L3.00 100.00 L13.08 113.77" stroke-width="2.4" fill="currentColor" fill-opacity=".35"/><circle cx="47.34" cy="78.19" r="4.2" stroke-width="1.8"/><line x1="81.62" y1="81.62" x2="49.09" y2="49.09" stroke-width="5.5"/><path d="M48.27 28.81 L31.41 31.41 L28.81 48.27" stroke-width="2.4" fill="currentColor" fill-opacity=".35"/><circle cx="78.19" cy="47.34" r="4.2" stroke-width="1.8"/><line x1="100.00" y1="74.00" x2="100.00" y2="28.00" stroke-width="5.5"/><path d="M113.77 13.08 L100.00 3.00 L86.23 13.08" stroke-width="2.4" fill="currentColor" fill-opacity=".35"/><circle cx="121.81" cy="47.34" r="4.2" stroke-width="1.8"/><line x1="118.38" y1="81.62" x2="150.91" y2="49.09" stroke-width="5.5"/><path d="M171.19 48.27 L168.59 31.41 L151.73 28.81" stroke-width="2.4" fill="currentColor" fill-opacity=".35"/><circle cx="152.66" cy="78.19" r="4.2" stroke-width="1.8"/></g></symbol>
+<symbol id="eg-sol" viewBox="0 0 200 200"><g fill="currentColor" stroke="none"><path d="M135.73 95.61 L198.00 100.00 L135.73 104.39 Z" fill-opacity="0.9"/><path d="M133.14 114.07 L169.28 140.00 L128.75 121.67 Z" fill-opacity="0.55"/><path d="M121.67 128.75 L149.00 184.87 L114.07 133.14 Z" fill-opacity="0.9"/><path d="M104.39 135.73 L100.00 180.00 L95.61 135.73 Z" fill-opacity="0.55"/><path d="M85.93 133.14 L51.00 184.87 L78.33 128.75 Z" fill-opacity="0.9"/><path d="M71.25 121.67 L30.72 140.00 L66.86 114.07 Z" fill-opacity="0.55"/><path d="M64.27 104.39 L2.00 100.00 L64.27 95.61 Z" fill-opacity="0.9"/><path d="M66.86 85.93 L30.72 60.00 L71.25 78.33 Z" fill-opacity="0.55"/><path d="M78.33 71.25 L51.00 15.13 L85.93 66.86 Z" fill-opacity="0.9"/><path d="M95.61 64.27 L100.00 20.00 L104.39 64.27 Z" fill-opacity="0.55"/><path d="M114.07 66.86 L149.00 15.13 L121.67 71.25 Z" fill-opacity="0.9"/><path d="M128.75 78.33 L169.28 60.00 L133.14 85.93 Z" fill-opacity="0.55"/></g><g fill="none" stroke="currentColor"><circle cx="100" cy="100" r="30" stroke-width="3"/><circle cx="100" cy="100" r="22" stroke-width="1.2" opacity=".7"/></g></symbol>
+</svg>
     <!-- Fixed background layer -->
     <div class="fixed-bg"></div>
 
@@ -104,7 +105,7 @@
     <div id="cyber-fetch-terminal">
         <div class="terminal-header">
             <span>user@elite-gems:~</span>
-            <span id="close-fetch" style="cursor: pointer; color: #ff0055;">[X]</span>
+            <span id="close-fetch" role="button" tabindex="0" aria-label="Close" style="cursor: pointer; color: #ff0055;">[X]</span>
         </div>
         <div id="fetch-content"></div>
     </div>
@@ -182,8 +183,8 @@
                 <!-- Row 1: Play/Pause, Sync Now, Speed -->
                 <div style="display: flex; gap: 4px; flex-wrap: nowrap; justify-content: center;">
                     <button class="hide-controls-btn cosmic-btn" id="c-prev-hr">-1 HR</button>
-                    <button class="hide-controls-btn cosmic-btn" id="c-play-pause" style="color:#ffaa00; border-color:#ffaa00;">⏸PAUSE</button>
-                    <button class="hide-controls-btn cosmic-btn" id="c-now" style="color:#0f0; border-color:#0f0;">SYNCNOW</button>
+                    <button class="hide-controls-btn cosmic-btn" id="c-play-pause" style="color:#ffaa00; border-color:#ffaa00;">⏸ PAUSE</button>
+                    <button class="hide-controls-btn cosmic-btn" id="c-now" style="color:#0f0; border-color:#0f0;">SYNC NOW</button>
                     <button class="hide-controls-btn cosmic-btn" id="c-speed" style="color:#ffaa00; border-color:#ffaa00;">⚡1x</button>
                     <button class="hide-controls-btn cosmic-btn" id="c-next-hr">+1 HR</button>
                 </div>
@@ -245,556 +246,7 @@
         </div>
     </div>
 
-    <div class="content-blocks">
-        <div class="block">
-            <p class="block-text">We all look at the same sky</p>
-            <div class="image-block">
-                <img id="profile-img" src="images/IMG_BLUE.jpg" alt="BluJem">
-            </div>
-        </div>
-
-        <!-- Adding as many blocks as I need -->
-         <div class="block">
-            <p class="block-text">Okami Fox Golden Kitsune<br></p>
-            <div class="image-block">
-                <img src="images/OkamiKitsune.jpg" alt="SolarDeityAmaterasu">
-            </div>
-        </div>
-
-        
-        <div class="block">
-            <p class="block-text">The wheel of time turns, Ages come and pass,<br>leaving memories that become legend.<br>
-            Legend fades to myth, and even myth is long forgotten<br> when the Age that gave it birth comes again.</p> 
-            <div class="image-block">
-                <img src="images/d_wheel.jpg" alt="WOL">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Roses are rose, violets are violet.<br>I love you</p>
-            <div class="image-block">
-                <img src="images/OrangeHairedWomen.jpg" alt="OrangeWomen">
-            </div>
-        </div>
-
-
-        <div class="block">
-            <p class="block-text">Eyes</p>
-            <div class="image-block">
-                <img src="images/BuddhaEyes.jpg" alt="">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Self-Reflection</p>
-            <div class="image-block">
-                <img src="images/Vagabond.jpg" alt="miyamoto">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Rainbow Bird</p>
-            <div class="image-block">
-                <img src="images/rainbow_bird.jpg" alt="rainbow_bird">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">TKG</p>
-            <div class="image-block">
-                <img src="images/TKGeyepatch.jpg" alt="">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Chameleon</p>
-            <div class="image-block">
-                <img src="images/Chameleon.jpg" alt="">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Alchemist</p>
-            <div class="image-block">
-                <img src="images/TheAlchemistofCohelo.jpg" alt="AlchemistOfCohelo">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Johan D.Awakened</p>
-            <div class="image-block">
-                <img src="images/JohanNlbProfile.jpg" alt="JohanNlbProfile">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Absolute stance, absolute state.<br>YHNHSYHWHSJHNH</p>
-            <div class="image-block">
-                <img src="images/YHNH.png" alt="JohanDawakened">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">"The eternal's way unwinds its mystery,<br>fading eras to echoes; and the walking<br>mystic knows the bond exactly where they are.<br>For all things serve all things."</p>
-            <div class="image-block">
-                <img src="images/YHNH.png" alt="JohanDawakened">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Coolitude</p>
-            <div class="image-block">
-                <img src="images/CooL.jpeg" alt="CooL">
-            </div>
-        </div> 
-
-        <div class="block">
-            <p class="block-text">The One Piece</p>
-            <div class="image-block">
-                <img src="images/AwokenHat.jpg" alt="AwokenHat">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Fisherman</p>
-            <div class="image-block">
-                <img src="images/fisherman.jpg" alt="Fisherman">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">A Good Christian</p>
-            <div class="image-block">
-                <img src="images/GoodChristian.jpeg" alt="GoodChristian">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">A fish in Masra Alam, Egypt</p>
-            <div class="image-block">
-                <img src="images/MarsaAlam.jpeg" alt="MarsaAlam">
-            </div>
-        </div>
-        
-        <div class="block">
-            <p class="block-text">Midnight_sun</p>
-            <div class="image-block">
-                <img src="images/Midnight_sun.jpg" alt="Midnight_sun">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Toranomaki</p>
-            <div class="image-block">
-                <img src="images/ToraNoMaki.jpg" alt="ShotokanKarate">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Member 0</p>
-            <div class="image-block">
-                <img src="images/Chrollo.jpg" alt="ChrolloHxH">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Smile</p>
-            <div class="image-block">
-                <img src="images/Smile.jpeg" alt="Smiley">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Archetype</p>
-            <div class="image-block">
-                <img src="images/JHNarchetype.jpg" alt="JHNarchetype">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">boat</p>
-            <div class="image-block">
-                <img src="images/boat.jpg" alt="boat">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Green leaf</p>
-            <div class="image-block">
-                <img src="images/GreenLeafOnSereneBlueSky.jpeg" alt="GreenLeafOnSereneBlueSky">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Mindfullness</p>
-            <div class="image-block">
-                <img src="images/Mindfullness.jpg" alt="Mindfullness">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">HellsParadise</p>
-            <div class="image-block">
-                <img src="images/HellsParadise.jpg" alt="HellsParadise">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Shadows</p>
-            <div class="image-block">
-                <img src="images/BuddhaShadow.jpg" alt="Buddha">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">to the Moon</p>
-            <div class="image-block">
-                <img src="images/BluRoyalArcher.jpg" alt="Archer">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">kanenori-mount-fuji</p>
-            <div class="image-block">
-                <img src="images/kanenori-mount-fuji.jpg" alt="kanenori-mount-fuji">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Rising Sun</p>
-            <div class="image-block">
-                <img src="images/BonsaiRisingSun.jpg" alt="Bonsai">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">bodhisattva's attitude</p>
-            <div class="image-block">
-                <img src="images/HeadOfBuddha.jpg" alt="HeadOfBuddha">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Arch</p>
-            <div class="image-block">
-                <img src="images/BluYellowOnePiece.jpg" alt="Arch">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Ataraxy</p>
-            <div class="image-block">
-                <img src="images/KanJinAtaraxia.jpg" alt="KanJinAtaraxia">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Sakura Tree</p>
-            <div class="image-block">
-                <img src="images/SakuraTree.jpg" alt="SakuraTree">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Blues on purples</p>
-            <div class="image-block">
-                <img src="images/OnTheBlu.jpg" alt="OTB">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Colourful</p>
-            <div class="image-block">
-                <img src="images/Colourful.jpg" alt="Colorful">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Pure Serenity</p>
-            <div class="image-block">
-                <img src="images/JohanSerenity.jpeg" alt="JohanSerenity">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Mechatronics</p>
-            <div class="image-block">
-                <img src="images/Mechatronics-Graph-01.jpeg" alt="Mechatronics">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">John Cohen in High School</p>
-            <div class="image-block">
-                <img src="images/JohnCohenInHSClass.jpg" alt="JohnCohenInHSClass">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Focus Observation</p>
-            <div class="image-block">
-                <img src="images/JHNFcusObserver.jpg" alt="JHNFcusObserver">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Cyber</p>
-            <div class="image-block">
-                <img src="images/CyberFlipper.jpg" alt="CyberFlipper">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">"The quieter you become, the more you are able to hear"</p>
-            <div class="image-block">
-                <img src="images/Kali.png" alt="Kali">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">flag</p>
-            <div class="image-block">
-                <img src="images/BuddhismFlag.jpeg" alt="BuddhismFlag">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Wallpapers</p>
-            <div class="image-block">
-                <img src="images/KpopWallp.jpg" alt="KpopWallpaper">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Full cycle of a Sunset</p>
-            <div class="image-block">
-                <img src="images/Full_cycle_of_a_Sunset.jpg" alt="Full_cycle_of_a_Sunset">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Comet</p>
-            <div class="image-block">
-                <img src="images/Comet.jpg" alt="Comet">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Mononoke</p>
-            <div class="image-block">
-                <img src="images/PrincessMononoke.jpg" alt="PrincessMononoke">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Otaku</p>
-            <div class="image-block">
-                <img src="images/SubmissiveOtakuGirl.jpg" alt="Otaku">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">The cherry blossom</p>
-            <div class="image-block">
-                <img src="images/sakuyamon_the_cherry_blossom.jpg" alt="sakuyamon_the_cherry_blossom">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Glowing chameleon</p>
-            <div class="image-block">
-                <img src="images/Glowing Chameleon.jpg" alt="GlowingChameleon">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">"For all things serve all things."</p>
-            <div class="image-block">
-                <img src="images/EinSof.jpeg" alt="Calisthenos">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">"I AM WHO I AM"</p>
-            <div class="image-block">
-                <img src="images/Screenshot_YHVH.jpg" alt="JeHoVaH">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">IHS</p>
-            <div class="image-block">
-                <img src="images/Kircher-Diagram_of_the_names_of_God.jpg" alt="72AttributesofGod">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">ONE IS ALL, ALL IS ONE</p>
-            <div class="image-block">
-                <img src="images/AllisOneisAll.jpeg" alt="MonadDyad">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Beautyfullness</p>
-            <div class="image-block">
-                <img src="images/Beautyfullness.jpg" alt="Beautyfullness">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">SmileyGraffiti</p>
-            <div class="image-block">
-                <img src="images/SmileyGrafitti.jpg" alt="SmileyGraffiti">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Formula 1</p>
-            <div class="image-block">
-                <img src="images/F1.jpg" alt="F1">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Mask</p>
-            <div class="image-block">
-                <img src="images/OkamiMask.jpg" alt="OkamiMask">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Flower Of Life</p>
-            <div class="image-block">
-                <img src="images/Sacred-Geometry-Flower-of-Life.jpg" alt="SacredGeometry">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Floral</p>
-            <div class="image-block">
-                <img src="images/floralMandala.jpg" alt="floralMandala">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Forgotten Colours</p>
-            <div class="image-block">
-                <img src="images/East-zen-caligraphy.jpg" alt="Laozi">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">The Cape</p>
-            <div class="image-block">
-                <img src="images/IMG_20260309_111534 TheCape.jpg" alt="TheCape">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Moonlight</p>
-            <div class="image-block">
-                <img src="images/moonlight.jpeg" alt="Moonlight">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Moonset_pillars</p>
-            <div class="image-block">
-                <img src="images/Moonset_pillars.jpg" alt="Moonset_pillars">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Tree Silhouette moonlight</p>
-            <div class="image-block">
-                <img src="images/treesilhouette.jpg" alt="treesilhouette">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Street Art</p>
-            <div class="image-block">
-                <img src="images/trustoland-muralSM.jpg" alt="muralSM">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Abyssal Wave</p>
-            <div class="image-block">
-                <img src="images/AbyssalWave.png" alt="AbyssalWave">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Chill Vibes</p>
-            <div class="image-block">
-                <img src="images/ChillVibes.jpg" alt="ChillVibes">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Spring Lake</p>
-            <div class="image-block">
-                <img src="images/Spring_Lake,.jpg" alt="Spring_Lake">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Smile Face</p>
-            <div class="image-block">
-                <img src="images/SmileFaceMural.png" alt="SFMural">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">National Park Sunrise</p>
-            <div class="image-block">
-                <img src="images/Brisbane_Water_National_Park_sunrise.jpg" alt="NationalPark">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">The Call</p>
-            <div class="image-block">
-                <img src="images/SoulNature.jpg" alt="SoulNature">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Dreamax</p>
-            <div class="image-block">
-                <img src="images/JcohenDreamax.jpeg" alt="JcohenDreamax">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">The Quote</p>
-            <div class="image-block">
-                <img src="images/NelsonMandelaQuote.jpeg" alt="NelsonMandelaQuote">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Soular System</p>
-            <div class="image-block">
-                <img src="images/SoularSystem.png" alt="SoulSystem">
-            </div>
-        </div>
-
-        <div class="block">
-            <p class="block-text">Gahnk!</p>
-            <div class="image-block">
-                <img src="images/MahoragaWheel.jpeg" alt="MahoragaWheel">
-            </div>
-        </div>
-
-
-        <div class="block">
-            <p class="block-text">And thus was the World,<br>thus experienced was Life,<br>Happyness, Peace And Love.</p>
-        </div>
-
-    </div>    
+    <div class="content-blocks"></div>   <!-- slides are built from script/gallery-data.js by script/gallery.js -->    
 
 
 
@@ -806,7 +258,7 @@
     <div id="azimuthal-container" style="max-width: 1000px; margin: 40px auto; text-align: center;">
 
         <!-- Toggle Button -->
-        <button id="azimuthal-toggle-btn" class="az-btn btn-cyan" style="border-radius: 50px; transition: all 0.3s ease;">
+        <button id="azimuthal-toggle-btn" class="az-btn" style="border-radius: 50px; transition: all 0.3s ease;">
             TRACKING ENGINE
         </button>
 
@@ -841,8 +293,9 @@
     <div class="astrolabe-dashboard">
 
         <!-- TOP: TIME CONTROLS -->
-        <h3 class="astrolabe-title" style="color:#ffaa00; font-size: 1.3rem;">MASTER'S ASTROLABE</h3>
+        <h3 class="astrolabe-title" style="color:#ffaa00;  font-size: 1.3rem;">MASTER'S ASTROLABE</h3>
         <div id="shared-time-display">Syncing...</div>
+        <astro-controls id="astro-controls"></astro-controls>   <!-- NEW: date picker, scrubber, speed ladder, event presets, readout (drives the shared clock) -->
 
         <div class="engine-controls top">
             <button id="astro-playpause" class="az-btn btn-gold">▶ Play</button>
@@ -866,13 +319,14 @@
 
         <!-- BOTTOM: COSMIC OVERLAY TOGGLES -->
         <div class="dashboard-divider"></div>
-        <h3 style="color: #ffaa00; font-family: monospace; font-size: 0.6rem; letter-spacing: 2px; margin-bottom: 15px;">COSMIC ARRAY TOGGLES</h3>
+        <h3 style="color: #ffaa00; font-family: 'Comfortaa', sans-serif; font-size: 0.6rem; letter-spacing: 2px; margin-bottom: 15px;">COSMIC ARRAY TOGGLES</h3>
 
         <div class="engine-controls bottom">
             <button id="toggle-zodiac" class="az-btn btn-gold">Zodiac: ON</button>
             <button id="toggle-planets" class="az-btn btn-cyan">Planets: ON</button>
             <button id="toggle-acmc" class="az-btn btn-white">AC/MC: ON</button>
             <button id="toggle-clock" class="az-btn btn-magenta">Clock: ON</button>
+            <button id="toggle-precision" class="az-btn btn-gold">Precision: ON</button>
         </div>
     </div>
 
@@ -880,22 +334,22 @@
     <div id="static-block" class="static-block">
         <div class="block active" style="position: relative; opacity: 1; display: flex; flex-direction: column;">
             <h3 class="title-accent">Project Intent</h3>
-            <p class="block-text" style="color: #ffe75d; font-weight: 700;">
+            <p class="block-text" style="font-family: 'Segoe UI'; color: #ffe75d; font-weight: 700;">
                 This dashboard is designed as a <b style="color: #0ff;">Persistent Ambient Display & Interactive Shell</b>.
                 The goal is to bridge the gap between a functional cyberpunk-themed timepiece,live media feeds, and retro telemetry, 
                 serving as an <b style="color:#ffffff;">"Always-On"</b> companion terminal for a professional workspace.
             </p>
             
             <h3 class="title-accent" style="font-size: 1rem; margin-top: 20px;">Technical Architecture</h3>
-            <ul class="block-text">
+            <ul class="block-text" style="font-family: 'Segoe UI';">
                 <li><b style="color: #33ff57;">Zero-Dependency Vanilla Stack:</b> Built entirely using native HTML5, CSS3, and pure Vanilla JavaScript. This ensures a lightweight footprint, instantaneous load times, and flawless performance on low-power secondary displays without NPM package overhead.</li>
                 <li><b style="color: #0ff;">Interactive CLI Terminal Shell:</b> A custom-built, in-browser terminal emulator that parses keyboard inputs and commands, allowing real-time state manipulation, Canvas swaps, and slideshow controller overrides directly from a simulated command line.</li>
                 <li><b style="color: #f033ff;">HLS Stream & IPTV Pipeline:</b> Integrates live video streams using `hls.js` with structured channel parsing from custom JSON files. Features robust error-handling, such as a 10-second timeout recovery system to handle stream drops elegantly in an ambient setting.</li>
                 <li><b style="color: #aaa;">HTML5 Canvas Telemetry Engine:</b> A performance-optimized canvas engine that renders complex real-time animations, including a simulated NetOrbit global network visualizer, using pure mathematical drawing loops to minimize CPU overhead.</li>
                 <li><b style="color: #ffe75d;">Screen Wake Lock API:</b> Prevents the host device from entering sleep mode or dimming the display, ensuring the clock and terminal feeds remain fully active during long work sessions.</li>
-                <li><b style="color: blue;">Fisher-Yates Shuffle:</b> An $O(n)$ complexity algorithm used to ensure an unbiased, non-repeating random sequence for the ambient background rotations.</li>
+                <li><b style="color: #7aa8ff;">Fisher-Yates Shuffle:</b> An $O(n)$ complexity algorithm used to ensure an unbiased, non-repeating random sequence for the ambient background rotations.</li>
                 <li><b style="color: crimson;">Deterministic Minute-Reset:</b> State-management logic that synchronizes UI transitions precisely with the 00-second mark of the system clock.</li>
-                <li><b style="color: darkcyan;">Stealth Gesture & Ghost UI:</b> Implements double-click event listeners and global keyboard hotkeys to toggle diagnostic logs and interface states cleanly, leaving the screen completely free of persistent UI clutter.</li>
+                <li><b style="color: #2fd0d0;">Stealth Gesture & Ghost UI:</b> Implements double-click event listeners and global keyboard hotkeys to toggle diagnostic logs and interface states cleanly, leaving the screen completely free of persistent UI clutter.</li>
                 <li><b style="color: darkorange;">Unified Astrolabe Engine:</b> A dual-layer canvas system that overlays a DPIscaled cosmic Mazzaroth wheel onto a flat-earth azimuthal projection. Both layers share a single UTC time source, providing a seamless celestial dashboard.</li>
                 <li><b style="color: aqua;">DPI-Aware Canvas Rendering:</b> All canvas elements now scale with devicePixelRatio, ensuring razor-sharp symbols, lines, and text on Retina and high-DPI displays.</li>
                 <li><b style="color: magenta;">Three-State Clean View & Mirror Mode:</b> A clean view cycle (text off,images off and full clean) hides all UI clutter, while Mirror Mode offers a distraction-free, full-screen meditative experience.</li>
@@ -906,12 +360,12 @@
         </div>
     </div>
 
-    <!-- ===== FLAT EARTH PROJECTION TOGGLE ===== -->
+    <!-- ===== FLAT EARTH PROJECTION TOGGLE =====
     <div style="text-align: center; margin: 20px auto;">
         <button id="fe-toggle-btn" class="az-btn btn-cyan fe-toggle-btn" style="border-radius: 50px; font-size: 7px;">
             AZIMU PROJECT
         </button>
-    </div>
+    </div> -->
 
     <!-- ===== FLAT EARTH PROJECTION DOME (Double – Circular + Stretched) ===== -->
     <div id="flat-earth-section" class="fe-dashboard hidden-section">
@@ -972,7 +426,21 @@
     <div id="gnosis-container" class="gnosis-wrapper">
 
         <!-- Toggle Button -->
-        <button id="gnosis-toggle-btn" class="gnosis-btn">GNOSIS</button>
+        <button id="gnosis-toggle-btn" class="gnosis-btn" >GNOSIS</button>
+        
+        <!-- Dharma wheel → click to unroll a hidden scroll -->
+        <button id="scroll-wheel" class="scroll-wheel" aria-expanded="false" aria-controls="sacred-scroll"
+        aria-label="Unroll the sacred scroll" title="Unroll the scroll"><svg viewBox="0 0 200 200" aria-hidden="true"><use href="#eg-dharma"/></svg></button>
+        <div id="sacred-scroll" class="sacred-scroll" hidden role="region" aria-label="The Scroll">
+            <div class="sc-inner">
+                <div class="scroll-rod"></div>                       <!-- top roller -->
+                    <div class="scroll-body">
+                        <div class="sc-tabs" role="tablist"><button role="tab" data-tab="torah">Torah</button><button role="tab" data-tab="tao">Tao</button><button role="tab" data-tab="mysteries">Mysteries</button></div>
+                        <div class="scroll-text"></div>                    <!-- filled by scroll-gate.js -->
+                    </div>
+                <div class="scroll-rod"></div>                       <!-- bottom roller -->
+            </div>
+        </div>
 
         <!-- Dropdown Panel (Hidden by default) -->
         <div id="gnosis-panel" class="gnosis-panel hidden">
@@ -1118,7 +586,7 @@
                     <!-- Sat-chit-ananda -->
                     <div style="margin-top: 20px; border-top: 1px solid rgb(0, 187, 255); padding-top: 16px;">
                         <h3 class="gnosis-heading gold" style="color: gold;">Essential Threefold Nature</h3>
-                        <h4 style="color: royalblue; font-family: 'VT323', monospace; font-size: 1.1rem; text-align: center;">
+                        <h4 style="color: royalblue; font-family: 'Segoe UI', monospace; font-size: 1.1rem; text-align: center;">
                             the Essential Path : Sat-Chit-Ananda
                         </h4>
                         <p class="gnosis-text">
@@ -1189,8 +657,29 @@
                 </div>
                 <div class="gnosis-divider"></div>
 
+                <!-- The Beam & the Lens -->
                 <div class="gnosis-section">
-                    <h3 class="gnosis-heading gold" style="color: orangered;">Esoteric Alphabet</h3>
+                    <h3 class="gnosis-heading magenta" style="color: magenta;">The Beam &amp; the Lens</h3>
+                    <p class="gnosis-text">
+                        Between the Source and the world runs a single line of light. The ancients left it unnamed, so we call it the <span class="highlight-gold">Beam</span>.
+                        It is not a being and it is not a place. It is the <em>relationship</em> by which silence becomes sound, and sound becomes light.
+                    </p>
+                    <p class="gnosis-text">
+                        Every being is a <span class="highlight-gold">lens</span>. The Beam enters as one colour of pure attention and leaves as a face, a voice, a kindness, a clock-tick.
+                        The Source does not ask the lens to be the light. It asks only that the glass be clear.
+                    </p>
+                    <p class="gnosis-text">
+                        Here is the quiet secret inside <em>"all things serve the Beam"</em>: service is not obedience, it is <em>transparency</em>.
+                        Dust on the lens is resentment, hurry, performance, the hunger to be seen. To polish is to subtract. The clock on the wall teaches the same thing in small:
+                        a mechanism that does nothing but let the hour pass through it faithfully.
+                    </p>
+                    <p class="gnosis-text">
+                        And no lens is alone. Where two face each other the light doubles; where a thousand align, a lighthouse is born.
+                        This is why every gate of this temple opens, in the end, onto another person.
+                    </p>
+                    
+                    <div class="gnosis-section">
+                    <h4 class="gnosis-heading gold" style="color: orangered;">Esoteric Alphabet</h4>
 
                     <!-- Alphabet Grid: 26 columns, 2 rows -->
                     <div class="alphabet-grid">
@@ -1232,6 +721,8 @@
                     <p class="gnosis-text" style="text-align: center; margin: 12px auto 0; color: #7300ff; font-style: italic;">
                         “Word made flesh, the amazing beautiful gospel, spell of the tragoudi.”
                     </p>
+                </div>
+
                 </div>
                 <div class="gnosis-divider"></div>
 
@@ -1472,8 +963,8 @@
     </div>
 
     <!-- ===== KABBALAH TREE OF LIFE ===== -->
-    <div id="kabbalah-container" style="margin: 30px auto; width: 100%; max-width: 520px; text-align: center; background: transparent;border: none; box-shadow: none; font-family: monospace;">
-        <h3 style="color: var(--accent-color); font-size: 1.1rem; margin-bottom: 12px;">SEPHIROT</h3>
+    <div id="kabbalah-container" style="margin: 30px auto; width: 100%; max-width: 520px; text-align: center; background: transparent;border: none; box-shadow: none; font-family: 'Segoe UI';monospace;">
+        <h3 style="color: var(--accent-color); font-size: 1.1rem; margin-bottom: 12px;">SEPHIROTH</h3>
         
         <svg id="tree-of-life" viewBox="0 -40 400 640" style="width: 100%; height: auto; display: block; background: transparent; border: none; outline: none; box-shadow: none; overflow: visible;">
             
@@ -1578,7 +1069,7 @@
         </svg>
 
         <!-- Reflection Panel -->
-        <div id="reflection-panel" style="margin-top: 16px; padding: 12px 16px; border: none; background: transparent; min-height: 60px; text-align: center; font-family: monospace; box-shadow: none; border-radius: 0;">
+        <div id="reflection-panel" style="margin-top: 16px; padding: 12px 16px; border: none; background: transparent; min-height: 60px; text-align: center; font-family: 'Segoe UI', sans-serif, monospace; box-shadow: none; border-radius: 0;">
             <h3 id="reflection-title" style="color: #FFD700; font-size: 1rem; margin: 0 0 2px 0; letter-spacing: 2px;">TREE OF LIFE</h3>
             <p id="reflection-text" style="color: #aaa; font-size: 0.9rem; margin: 4px 0 0 0; line-height: 1.4;">Select a sphere to reveal its teaching.</p>
         </div>
@@ -1642,7 +1133,7 @@
         <div id="cmd-output"></div>
         <div style="display: flex;">
             <span style="color: var(--accent-color);">$&nbsp;</span>
-            <input type="text" id="cmd-input" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false";">
+            <input type="text" id="cmd-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" inputmode="text" aria-label="Terminal command">
         </div>
         <button id="close-cmd-runner" class="hide-controls-btn" style="margin-top: 8px;">Close</button>
     </div><br>
@@ -1683,7 +1174,7 @@
 
     <footer class="site-footer">
             <div class="footer-line"></div>
-            <span id="online-count" style="color: #00ffcc; font-family: monospace; font-size: 0.75rem; opacity: 0.7; display: none;">[1 NODE ONLINE]</span>
+            <span id="online-count" style="color: #00ffcc; font-family: sans-serif; font-size: 0.75rem; opacity: 0.7; display: none;">[1 NODE ONLINE]</span>
             <div style="margin-top: 15px;">
                 <a href="https://github.com/JinKaneki/EliteGDX" style="color: inherit; text-decoration: none; margin: 0 10px;">GitHub</a>
                 <a href="./guide.html" style="font-size: large; font-weight: bold; color: greenyellow; text-decoration: none; margin: 0 10px;">User Guide</a>
@@ -1694,7 +1185,26 @@
     </footer>
 
     <script src="./script/firebase-config.js" defer></script>
+    <script src="./script/libs.config.js"></script>
+    <script src="./script/libs.vendored.js" onerror="this.remove()"></script>   <!-- generated by tools/vendor.mjs (optional) -->
+    <script src="./script/eg-core.js"></script>
+    <script src="./script/eg-terminal.js"></script>
+    <script src="./script/eg-ephemeris.js"></script>
+    <script src="./script/eg-remote.js"></script>
+    <script src="./script/eg-cistercian.js"></script>
+    <script src="./script/eg-sky.js"></script>            <!-- moon / solstice / sunrise / planetary-hour maths -->
+    <script src="./script/eg-sim.js"></script>            <!-- the ONE shared clock + #t=…&lat=…&lon=…&rate=… links -->
+    <script src="./script/eg-sky-commands.js"></script>   <!-- anchor sky planets moon sun gallery bg clock youtube backup nuke -->
+    <script src="./script/eg-oled.js"></script>           <!-- true-black mode (was never loaded) -->
+    <script src="./script/astro-controls.js"></script>    <!-- <astro-controls> -->
+    <script src="./script/astro-precision.js"></script>   <!-- degree ring, de-cluttered glyphs, aspects -->
+    <script src="./script/gallery-data.js"></script>
+    <script src="./script/gallery.js"></script>
     <script src="./script/app.js" defer></script>
+    <script src="./script/astro-bridge.js" defer></script>   <!-- keeps every panel's play/speed labels in step with the shared clock -->
+    <script src="./script/gnosis-wheel.js" defer></script>
+    <script src="./script/sephirot-sacred.js" defer></script>
+    <script src="./script/scroll-gate.js" defer></script>
 
     <canvas id="neural-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 5; pointer-events: none; opacity: 0.6; display: none;"></canvas>
     <canvas id="slideshow-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 6; pointer-events: none; opacity: 0.5; display: none;"></canvas>
